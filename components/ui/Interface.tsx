@@ -1,8 +1,12 @@
 "use client";
 
+import { AnimatePresence } from "framer-motion";
 import { emp } from "@/lib/dados";
-import { useExp } from "@/lib/store";
+import { useExp, useUnidadeSel } from "@/lib/store";
+import { useUrl } from "@/lib/useUrl";
+import { BarraPredio } from "./BarraPredio";
 import { Carregador } from "./Carregador";
+import { PainelUnidade } from "./PainelUnidade";
 
 /** Selo exibido enquanto houver qualquer dado de exemplo no JSON. */
 export function SeloDemo({ className = "" }: { className?: string }) {
@@ -22,11 +26,16 @@ export function SeloDemo({ className = "" }: { className?: string }) {
 /** Camada 2D sobre o Canvas: muda conforme o estado da experiência. */
 export function Interface() {
   const veu = useExp((s) => s.veu);
+  const estado = useExp((s) => s.estado);
+  const u = useUnidadeSel();
+  useUrl();
   return (
     <>
       <div className="pointer-events-none absolute left-4 top-[4.25rem] z-20 sm:left-6 sm:top-20">
         <SeloDemo />
       </div>
+      {estado === "PREDIO" && <BarraPredio />}
+      <AnimatePresence>{estado === "UNIDADE" && u && <PainelUnidade key="unidade" u={u} />}</AnimatePresence>
       <Carregador />
       {/* Véu branco quente dos cortes (400 ms) */}
       <div

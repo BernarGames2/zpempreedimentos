@@ -14,6 +14,7 @@ import { Ceu } from "./Ceu";
 import { Efeitos } from "./Efeitos";
 import { Luzes } from "./Luzes";
 import { Predio } from "./Predio";
+import { Unidades } from "./Unidades";
 
 const EIXO_Y = new THREE.Vector3(0, 1, 0);
 
@@ -74,6 +75,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
         />
         <group visible={!interior}>
           <Predio fonte={fonte} artificial={amb.artificial} />
+          <Unidades />
         </group>
         <Pronto />
       </Suspense>
