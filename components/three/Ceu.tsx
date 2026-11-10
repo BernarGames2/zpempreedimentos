@@ -69,15 +69,15 @@ const FRAG = /* glsl */ `
     // abaixo do horizonte: cidade ao longe, com pontos de luz
     if (d.y < 0.0) {
       float prof = clamp(-d.y, 0.0, 1.0);
-      vec3 chao = mix(uHorizonte * 0.55, uChao, smoothstep(0.0, 0.22, prof));
+      vec3 chao = mix(mix(uHorizonte * 0.3, vec3(0.16, 0.19, 0.2), 1.0 - uNoite), mix(uChao, vec3(0.2, 0.24, 0.22), 1.0 - uNoite), smoothstep(0.0, 0.12, prof));
       // projeção em perspectiva do solo visto do alto
       vec2 solo = d.xz / max(prof, 0.012) * uAltura * 0.02;
       vec2 cel = floor(solo * 2.2);
       float r = hash(cel);
       vec2 f = fract(solo * 2.2) - 0.5;
-      float ponto = step(0.86, r) * smoothstep(0.42, 0.05, length(f));
+      float ponto = step(0.72, r) * smoothstep(0.3, 0.04, length(f));
       float quadra = smoothstep(0.4, 0.75, fbm(cel * 0.07 + 11.0));
-      vec3 luz = mix(vec3(1.0, 0.78, 0.45), vec3(0.75, 0.86, 1.0), step(0.965, r));
+      vec3 luz = mix(vec3(1.0, 0.7, 0.36), vec3(0.8, 0.88, 1.0), step(0.97, r));
       float atenua = smoothstep(0.75, 0.015, prof);
       chao += luz * ponto * quadra * atenua * (0.25 + 1.6 * uNoite);
       // brilho difuso da cidade junto ao horizonte
@@ -85,6 +85,15 @@ const FRAG = /* glsl */ `
       cor = chao;
     } else {
       cor += vec3(1.0, 0.7, 0.4) * 0.12 * uNoite * smoothstep(0.08, 0.0, d.y);
+      // linha de prédios ao longe, com algumas janelas acesas
+      float ang = atan(d.z, d.x);
+      float col = floor(ang * 70.0);
+      float altP = (0.006 + 0.03 * pow(hash(vec2(col, 3.0)), 3.0)) * (0.6 + 0.4 * ruido(vec2(ang * 6.0, 1.0)));
+      if (d.y < altP) {
+        vec3 predio = mix(vec3(0.03, 0.045, 0.08), vec3(0.3, 0.34, 0.4), 1.0 - uNoite);
+        float jan = step(0.8, hash(vec2(floor(ang * 420.0), floor(d.y * 900.0))));
+        cor = predio + vec3(1.0, 0.75, 0.42) * jan * uNoite * 0.7;
+      }
     }
 
     gl_FragColor = vec4(cor, 1.0);
@@ -106,7 +115,7 @@ export function Ceu({ solDir, noite, altura, giro = 0 }: Props) {
         uniforms: {
           uTopo: { value: new THREE.Color() },
           uHorizonte: { value: new THREE.Color() },
-          uChao: { value: new THREE.Color("#0a1226") },
+          uChao: { value: new THREE.Color("#070b16") },
           uSolDir: { value: new THREE.Vector3(0, 1, 0) },
           uNoite: { value: 1 },
           uAltura: { value: 30 },

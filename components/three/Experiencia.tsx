@@ -81,7 +81,8 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
           shadows={qualidade === "baixo" ? false : { type: THREE.PCFSoftShadowMap }}
           gl={{ antialias: false, powerPreference: "high-performance", stencil: false, alpha: false }}
           camera={{ fov: intro.fov, near: 0.1, far: 1200, position: intro.pos.toArray() }}
-          onCreated={({ gl }) => {
+          onCreated={({ gl, scene }) => {
+            if (new URLSearchParams(window.location.search).get("debug") === "1") (window as unknown as { __cena?: THREE.Scene }).__cena = scene;
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1;
             gl.outputColorSpace = THREE.SRGBColorSpace;

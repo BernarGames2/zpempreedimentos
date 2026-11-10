@@ -9,7 +9,7 @@ import type { Mat, Plano } from "@/lib/procedural/torre";
 export const QUENTE = new THREE.Color("#ffc57a");
 
 /** Material da grade preta quadriculada: o quadriculado é calculado no shader, em metros. */
-function matGrade(): THREE.ShaderMaterial {
+export function matGrade(): THREE.ShaderMaterial {
   return new THREE.ShaderMaterial({
     side: THREE.DoubleSide,
     uniforms: { uCor: { value: new THREE.Color("#0b0c0f") }, uCelula: { value: 0.105 }, uFio: { value: 0.017 } },

@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { emp } from "@/lib/dados";
 import { useExp, useUnidadeSel } from "@/lib/store";
 import { useUrl } from "@/lib/useUrl";
+import { BarraMaquete, BarraPasseio, BarraVista } from "./BarraInterior";
 import { BarraPredio } from "./BarraPredio";
 import { Carregador } from "./Carregador";
 import { PainelUnidade } from "./PainelUnidade";
@@ -27,6 +28,7 @@ export function SeloDemo({ className = "" }: { className?: string }) {
 export function Interface() {
   const veu = useExp((s) => s.veu);
   const estado = useExp((s) => s.estado);
+  const cena = useExp((s) => s.cena);
   const u = useUnidadeSel();
   useUrl();
   return (
@@ -36,6 +38,9 @@ export function Interface() {
       </div>
       {estado === "PREDIO" && <BarraPredio />}
       <AnimatePresence>{estado === "UNIDADE" && u && <PainelUnidade key="unidade" u={u} />}</AnimatePresence>
+      {estado === "MAQUETE" && u && cena === "interior" && <BarraMaquete u={u} />}
+      {estado === "PASSEIO" && u && cena === "interior" && <BarraPasseio u={u} />}
+      {estado === "VISTA" && u && <BarraVista u={u} ilustrativa />}
       <Carregador />
       {/* Véu branco quente dos cortes (400 ms) */}
       <div

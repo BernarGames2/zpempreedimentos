@@ -170,7 +170,7 @@ export const useExp = create<Experiencia>((set, get) => ({
     if (s.estado === "INTRO") return;
     if (s.estado === "UNIDADE" && s.unidadeSel === numero) return;
     if (!TRANSICOES[s.estado].includes("UNIDADE")) return;
-    set({ unidadeSel: numero, lazerSel: null, comodo: null, foto: { aberta: false, mix: 1 } });
+    set({ unidadeSel: numero, lazerSel: null, comodo: null, comodoAtual: null, medidas: false, foto: { aberta: false, mix: 1 } });
     s.transicionar("UNIDADE");
     registrar("unidade_vista", { unidade: numero, tipo: u.tipo, status: u.status });
   },
@@ -210,8 +210,9 @@ export const useExp = create<Experiencia>((set, get) => ({
   irComodo: (comodo) => {
     const s = get();
     if (s.estado !== "PASSEIO") return;
-    // Mesmo cômodo: reforça o pedido para a câmera voltar ao enquadramento da foto.
-    set({ comodo, destino: null, foto: { aberta: false, mix: 1 } });
+    // Mesmo cômodo: zera antes, para o pedido valer de novo e a câmera voltar ao enquadramento da foto.
+    if (s.comodo === comodo) set({ comodo: null });
+    queueMicrotask(() => set({ comodo, destino: null, foto: { aberta: false, mix: 1 } }));
   },
 
   verVista: () => {

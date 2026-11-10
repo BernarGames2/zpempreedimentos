@@ -12,7 +12,7 @@ import {
   poseMaquete, posePredio, poseUnidade, poseVista, type Pose,
 } from "@/lib/poses";
 import { tipoDe } from "@/lib/dados";
-import { useExp, type Estado } from "@/lib/store";
+import { linkInicial, useExp, type Estado } from "@/lib/store";
 
 type Modo = "reta" | "orbita" | "curva";
 interface Voo {
@@ -159,7 +159,8 @@ export function Camera() {
     if (!pronto || introFeita.current || estado !== "INTRO") return;
     introFeita.current = true;
     const s = useExp.getState();
-    if (s.movimentoReduzido) {
+    // link direto ou movimento reduzido: sem a subida cinematográfica
+    if (s.movimentoReduzido || unidade(linkInicial.unidade)) {
       s.pularIntro();
       return;
     }
@@ -190,7 +191,6 @@ export function Camera() {
         aoFim: () => {
           window.setTimeout(() => {
             if (f !== ficha.current) return;
-            useExp.getState().set({ cena: "interior" });
             useExp.getState().transicionar("MAQUETE");
           }, 140);
         },
@@ -218,9 +218,10 @@ export function Camera() {
           const f = ++ficha.current;
           window.setTimeout(() => {
             if (f !== ficha.current) return;
+            useExp.getState().set({ cena: "interior" });
             abrir();
-            window.setTimeout(() => useExp.getState().set({ veu: false }), 120);
-          }, 60);
+            window.setTimeout(() => useExp.getState().set({ veu: false }), 160);
+          }, 260);
         } else cortar("interior", abrir);
       } else {
         cortar("exterior", () => {
