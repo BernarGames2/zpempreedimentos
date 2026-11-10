@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@theme {
+  --color-fundo: #141824;
+  --color-fundo-2: #1b2030;
+  --color-painel: #20263a;
+  --color-linha: #2f3750;
+  --color-texto: #eef0f4;
+  --color-cinza: #a9afbd;
+  --color-ambar: #e8a94e;
+  --color-ambar-claro: #f6cf96;
+  --color-esmeralda: #2fbf8f;
+  --color-madeira: #8a6a4a;
+  --font-titulo: var(--font-outfit), "Montserrat", ui-sans-serif, system-ui, sans-serif;
+  --font-texto: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --ease-suave: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--color-fundo);
+  color: var(--color-texto);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-texto);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-titulo);
+  font-weight: 300;
+  letter-spacing: -0.01em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-ambar);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Textura de apoio: veios de madeira bem discretos. */
+.veio-madeira {
+  background-image:
+    repeating-linear-gradient(92deg, rgb(138 106 74 / 0.11) 0 2px, transparent 2px 9px),
+    repeating-linear-gradient(88deg, rgb(138 106 74 / 0.07) 0 1px, transparent 1px 23px),
+    linear-gradient(180deg, #1d2233, #181c2a);
+}
+
+@layer components {
+  .vidro {
+    background: rgb(20 24 36 / 0.72);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border: 1px solid rgb(255 255 255 / 0.09);
+  }
+  .btn {
+    display: inline-flex;
+    min-height: 44px;
+    min-width: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 999px;
+    padding: 0 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s, transform 0.2s, opacity 0.2s;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-ambar { background: var(--color-ambar); color: #1a1408; }
+  .btn-ambar:hover { background: var(--color-ambar-claro); }
+  .btn-linha { border: 1px solid rgb(255 255 255 / 0.18); color: var(--color-texto); background: rgb(20 24 36 / 0.55); }
+  .btn-linha:hover { border-color: var(--color-ambar); color: var(--color-ambar-claro); }
+  .btn-ativo { border-color: var(--color-ambar); color: var(--color-ambar-claro); background: rgb(232 169 78 / 0.14); }
+  .rotulo {
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-cinza);
+  }
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 44px;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+input[type="range"]::-webkit-slider-runnable-track { height: 4px; border-radius: 4px; background: rgb(255 255 255 / 0.18); }
+input[type="range"]::-moz-range-track { height: 4px; border-radius: 4px; background: rgb(255 255 255 / 0.18); }
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px; height: 22px; margin-top: -9px; border-radius: 50%;
+  background: var(--color-ambar); border: 3px solid #141824; box-shadow: 0 0 0 1px var(--color-ambar);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--color-ambar); border: 3px solid #141824; box-shadow: 0 0 0 1px var(--color-ambar);
+}
+
+@keyframes pulso {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.pulso::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid var(--color-ambar);
+  animation: pulso 1.8s ease-out infinite;
+}

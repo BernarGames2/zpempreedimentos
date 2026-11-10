@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+test-results/
+playwright-report/
+.vercel
+.DS_Store
+# relatórios gerados pelo pipeline de modelos
+scripts/optimize-models/relatorio.json
+tests/capturas/
