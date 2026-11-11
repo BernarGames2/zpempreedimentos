@@ -100,9 +100,14 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   const altura = geo ? geo.sacada[1] : 30;
   const pano = u ? panoramaDoAndar(manifesto.vistas, u.andar) : null;
 
+  // Sombras: a cena é estática, então o mapa só é refeito quando a luz ou a cena mudam
+  // (em vez de a cada quadro). É o maior ganho de desempenho do exterior.
   useEffect(() => {
-    gl.shadowMap.autoUpdate = true;
-  }, [gl]);
+    gl.shadowMap.autoUpdate = false;
+    gl.shadowMap.needsUpdate = true;
+    const ids = [200, 900, 2500].map((ms) => window.setTimeout(() => (gl.shadowMap.needsUpdate = true), ms));
+    return () => ids.forEach((id) => window.clearTimeout(id));
+  }, [gl, cena, estado, unidadeSel, hora, noite, qualidade, versaoModelo]);
 
   return (
     <>
@@ -152,7 +157,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
             {aptoReal ? (
               <ApartamentoReal arquivo={aptoReal} corte={estado !== "PASSEIO"} oculto={comSplat} />
             ) : (
-              <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={Math.max(amb.artificial, 0.35)} fonte={fonte} oculto={comSplat} />
+              <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={Math.max(amb.artificial, 0.35)} fonte={fonte} oculto={comSplat} comodo={estado === "PASSEIO" ? comodoAtual : null} />
             )}
           </group>
           {splat && comodoObj && <SplatComodo key={splat.url} comodo={comodoObj} splat={splat} aoCarregar={setSplatOk} />}

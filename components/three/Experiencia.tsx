@@ -8,7 +8,7 @@ import { linkInicial, useExp } from "@/lib/store";
 import type { Manifesto } from "@/lib/types";
 import { Cena } from "./Cena";
 
-const DPR: Record<"alto" | "medio" | "baixo", [number, number]> = { alto: [1, 2], medio: [1, 1.5], baixo: [0.75, 1] };
+const DPR: Record<"alto" | "medio" | "baixo", [number, number]> = { alto: [1, 1.75], medio: [1, 1.25], baixo: [0.7, 1] };
 
 /** O Canvas 3D. Pausa quando a aba está oculta ou a experiência saiu da tela. */
 export default function Experiencia({ fonte, manifesto }: { fonte: string; manifesto: Manifesto }) {
@@ -32,7 +32,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
       carga: 0.35,
       movimentoReduzido: reduzido.matches,
       vistaReal: manifesto.vistas.some((v) => /andar-?\d+/i.test(v)),
-      ...(q === "alto" || q === "medio" || q === "baixo" ? { qualidade: q, qualidadeAuto: false } : { qualidade: movel ? "medio" : "alto" }),
+      ...(q === "alto" || q === "medio" || q === "baixo" ? { qualidade: q, qualidadeAuto: false } : { qualidade: movel ? "baixo" : "medio" }),
     });
     const aoMudar = () => useExp.getState().set({ movimentoReduzido: reduzido.matches });
     reduzido.addEventListener("change", aoMudar);
@@ -79,6 +79,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
         <Canvas
           frameloop={ativo ? "always" : "never"}
           dpr={[dprMin, celular ? Math.min(dprMax, 1.5) : dprMax]}
+          performance={{ min: 0.6 }}
           shadows={qualidade === "baixo" ? false : { type: THREE.PCFSoftShadowMap }}
           gl={{ antialias: false, powerPreference: "high-performance", stencil: false, alpha: false }}
           camera={{ fov: intro.fov, near: 0.1, far: 1200, position: intro.pos.toArray() }}

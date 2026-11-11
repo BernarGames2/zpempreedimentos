@@ -89,6 +89,8 @@ interface Experiencia {
   cena: "exterior" | "interior";
   /** Há panorâmicas reais em /public/vistas (senão a vista é ilustrativa). */
   vistaReal: boolean;
+  /** Conta os pedidos de aba: pedir o mesmo cômodo de novo volta ao enquadramento da foto. */
+  pedidoComodo: number;
 
   transicionar: (novo: Estado) => boolean;
   pularIntro: () => void;
@@ -135,6 +137,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   movimentoReduzido: false,
   cena: "exterior",
   vistaReal: false,
+  pedidoComodo: 0,
 
   transicionar: (novo) => {
     const atual = get().estado;
@@ -215,8 +218,7 @@ export const useExp = create<Experiencia>((set, get) => ({
     const s = get();
     if (s.estado !== "PASSEIO") return;
     // Mesmo cômodo: zera antes, para o pedido valer de novo e a câmera voltar ao enquadramento da foto.
-    if (s.comodo === comodo) set({ comodo: null });
-    queueMicrotask(() => set({ comodo, destino: null, foto: { aberta: false, mix: 1 } }));
+    set({ comodo, pedidoComodo: s.pedidoComodo + 1, destino: null, foto: { aberta: false, mix: 1 } });
   },
 
   verVista: () => {

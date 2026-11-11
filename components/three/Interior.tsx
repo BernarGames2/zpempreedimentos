@@ -95,7 +95,7 @@ function geoJardim(js: { x: number; z0: number; z1: number; y1: number }[], cort
   const gs: THREE.BufferGeometry[] = [];
   for (const j of js) {
     const topo = corte ? Math.min(j.y1, CORTE) : j.y1;
-    const n = Math.round((j.z1 - j.z0) * topo * 42);
+    const n = Math.round((j.z1 - j.z0) * topo * 24);
     for (let i = 0; i < n; i++) {
       const s = 0.26 + r() * 0.3;
       const g = new THREE.PlaneGeometry(s, s);
@@ -120,10 +120,12 @@ interface Props {
   fonte: string;
   /** Cômodos exibidos por splat no passeio (o procedural deles fica oculto). */
   oculto?: boolean;
+  /** Cômodo em que a câmera está: só as luzes mais próximas dele ficam acesas. */
+  comodo?: string | null;
 }
 
 /** Apartamento procedural: usado na maquete e como reserva quando o cômodo não tem splat. */
-export function Interior({ tipo, corte, artificial, fonte, oculto = false }: Props) {
+export function Interior({ tipo, corte, artificial, fonte, oculto = false, comodo = null }: Props) {
   const m = useMemo(() => materiaisInterior(fonte), [fonte]);
   const planta = useMemo(() => montarPlanta(tipo), [tipo]);
   const mob = useMemo(() => mobiliar(tipo), [tipo]);
@@ -160,6 +162,14 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false }: Pro
     [geos, jardim],
   );
 
+  // Luzes pontuais são caras: no máximo 4 acesas, as mais próximas do cômodo atual.
+  const luzes = useMemo(() => {
+    const c = tipo.comodos.find((x) => x.id === comodo);
+    if (!c) return mob.luzes.filter((_, i) => i % 2 === 0).slice(0, 4);
+    const [cx, cz] = centroide(c);
+    return [...mob.luzes].sort((a, b) => Math.hypot(a.pos[0] - cx, a.pos[2] - cz) - Math.hypot(b.pos[0] - cx, b.pos[2] - cz)).slice(0, 4);
+  }, [mob, tipo, comodo]);
+
   const guardas = planta.aberturas.filter((a) => a.tipo === "guarda-corpo");
   const janelas = planta.aberturas.filter((a) => a.tipo === "janela");
 
@@ -186,7 +196,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false }: Pro
           <planeGeometry args={[Math.abs(a.p2[0] - a.p1[0]), a.altura]} />
         </mesh>
       ))}
-      {mob.luzes.map((l, i) => (
+      {luzes.map((l, i) => (
         <pointLight key={i} position={l.pos} color={COR_LUZ_QUENTE} intensity={l.forca * (1 + 7 * artificial)} distance={l.alcance * 1.4} decay={1.5} />
       ))}
       {corte && <ExtrasMaquete tipo={tipo} />}

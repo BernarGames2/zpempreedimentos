@@ -23,9 +23,8 @@ export function BotaoFoto({ u }: { u: Unidade }) {
       s.setFoto({ aberta: false });
       return;
     }
-    // volta ao enquadramento da foto e só então faz o crossfade
+    // volta ao enquadramento; a foto abre sozinha quando a câmera chega
     s.irComodo(c.id);
-    window.setTimeout(() => useExp.getState().setFoto({ aberta: true, mix: 1 }), 900);
     registrar("abriu_foto_decorado", { unidade: u.numero, comodo: c.id });
   };
   return (
@@ -43,17 +42,23 @@ export function FotoDecorado({ u }: { u: Unidade }) {
   const c = comodoDaFoto(u, atual);
   if (!c?.fotoDecorado) return null;
   return (
-    <div className={`absolute inset-0 z-[9] transition-opacity duration-700 ${foto.aberta ? "opacity-100" : "pointer-events-none opacity-0"}`} aria-hidden={!foto.aberta} data-testid="camada-foto">
-      <div className="absolute inset-0 bg-fundo transition-opacity duration-300" style={{ opacity: foto.mix * 0.85 }} />
-      <Image src={c.fotoDecorado} alt={`Foto oficial do decorado: ${c.nome}`} fill sizes="100vw" className="object-contain transition-opacity duration-150" style={{ opacity: foto.mix }} />
+    <div className={`pointer-events-none absolute inset-0 z-[9] transition-opacity duration-700 ${foto.aberta ? "opacity-100" : "opacity-0"}`} aria-hidden={!foto.aberta} data-testid="camada-foto">
+      {/* fundo: a própria foto desfocada preenche a tela; por cima, a foto inteira */}
+      <Image src={c.fotoDecorado} alt="" fill sizes="100vw" className="scale-110 object-cover blur-2xl brightness-50" style={{ opacity: foto.mix }} />
+      <Image src={c.fotoDecorado} alt={`Foto oficial do decorado: ${c.nome}`} fill sizes="100vw" className="object-contain" style={{ opacity: foto.mix }} />
       {foto.aberta && (
-        <div className="vidro pointer-events-auto absolute inset-x-3 bottom-[8.2rem] mx-auto flex max-w-md items-center gap-3 rounded-full px-4 sm:bottom-24">
-          <span className="text-xs font-medium text-cinza">3D</span>
-          <label className="sr-only" htmlFor="mix-foto">Comparar 3D e foto</label>
-          <input id="mix-foto" type="range" min={0} max={1} step={0.01} value={foto.mix} onChange={(e) => setFoto({ mix: Number(e.target.value) })} data-testid="mix-foto" />
-          <span className="text-xs font-medium text-ambar-claro">Foto</span>
-          <button type="button" onClick={() => setFoto({ aberta: false })} aria-label="Fechar a foto do decorado" className="btn !min-h-11 !min-w-11 !px-0 text-texto"><IcoFechar /></button>
-        </div>
+        <>
+          <p className="vidro absolute left-1/2 top-[4.4rem] -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs text-texto sm:top-20" data-testid="aviso-foto">
+            Foto oficial do decorado · arraste para explorar em 3D
+          </p>
+          <div className="vidro pointer-events-auto absolute inset-x-3 bottom-[8.2rem] mx-auto flex max-w-md items-center gap-3 rounded-full px-4 sm:bottom-24">
+            <span className="text-xs font-medium text-cinza">3D</span>
+            <label className="sr-only" htmlFor="mix-foto">Comparar 3D e foto</label>
+            <input id="mix-foto" type="range" min={0} max={1} step={0.01} value={foto.mix} onChange={(e) => setFoto({ mix: Number(e.target.value) })} data-testid="mix-foto" />
+            <span className="text-xs font-medium text-ambar-claro">Foto</span>
+            <button type="button" onClick={() => setFoto({ aberta: false })} aria-label="Fechar a foto do decorado" className="btn !min-h-11 !min-w-11 !px-0 text-texto"><IcoFechar /></button>
+          </div>
+        </>
       )}
     </div>
   );

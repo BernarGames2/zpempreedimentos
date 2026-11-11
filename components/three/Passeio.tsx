@@ -64,6 +64,8 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     alvoAnel: null as Vec2 | null,
     prazo: 0,
     fisico: null as string | null,
+    pedirFoto: false,
+    ultimoPedido: 0,
   });
   const raio = useMemo(() => new THREE.Raycaster(), []);
   const piso = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), []);
@@ -84,6 +86,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     s.z = camera.position.z;
     s.iniciado = true;
     s.fisico = null;
+    s.pedirFoto = !soOlhar;
     // No celular em pé, um campo de visão maior compensa a tela estreita.
     const cam = camera as THREE.PerspectiveCamera;
     if (!soOlhar && cam.isPerspectiveCamera) {
@@ -91,6 +94,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       cam.updateProjectionMatrix();
     }
     s.ultimoComodo = useExp.getState().comodo;
+    s.ultimoPedido = useExp.getState().pedidoComodo;
     s.ultimoDestino = useExp.getState().destino?.n ?? 0;
   }, [ativo, camera, soOlhar]);
 
@@ -112,6 +116,11 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       if (colisorSplat.ativo && Math.hypot(p.x - colisorSplat.centro.x, p.z - colisorSplat.centro.z) > colisorSplat.raio) return null;
       return [p.x, p.z];
     };
+    // Qualquer movimento do visitante troca a foto oficial pelo 3D navegável.
+    const fecharFoto = () => {
+      s.pedirFoto = false;
+      if (useExp.getState().foto.aberta) useExp.getState().setFoto({ aberta: false });
+    };
     const aoDescer = (ev: PointerEvent) => {
       baixo = { x: ev.clientX, y: ev.clientY, id: ev.pointerId };
       arrastou = false;
@@ -123,6 +132,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
         const dy = ev.clientY - baixo.y;
         if (!arrastou && Math.hypot(dx, dy) < 6) return;
         arrastou = true;
+        fecharFoto();
         s.olhar = null;
         const k = (ev.pointerType === "touch" ? 0.0052 : 0.0034);
         s.guinada += dx * k;
@@ -142,6 +152,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       if (arrastou || soOlhar) return;
       const p = noPiso(ev);
       if (!p) return;
+      fecharFoto();
       s.rota = caminho(tipo, [s.x, s.z], p);
       s.vel = VEL_ANDAR;
       s.olhar = null;
@@ -158,6 +169,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       if (!TECLAS.includes(k) || digitando() || soOlhar) return;
       if (window.scrollY > window.innerHeight * 0.5) return;
       ev.preventDefault();
+      fecharFoto();
       s.teclas.add(k);
       s.rota = [];
       s.olhar = null;
@@ -196,12 +208,13 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
 
     if (!soOlhar) {
       // Aba de cômodo: desliza até o enquadramento da foto oficial.
-      if (!loja.comodo) s.ultimoComodo = null;
-      if (loja.comodo && loja.comodo !== s.ultimoComodo) {
+      if (loja.comodo && loja.pedidoComodo !== s.ultimoPedido) {
+        s.ultimoPedido = loja.pedidoComodo;
         s.ultimoComodo = loja.comodo;
         const c = tipo.comodos.find((x) => x.id === loja.comodo);
         if (c) {
           loja.set({ comodoAtual: c.id });
+          s.pedirFoto = true;
           const comSplat = Boolean(c.splat && splatsDoTipo.atual[c.id]);
           const alvo = c.splat && comSplat ? c.splat : { spawn: c.enquadramento.posicao, olhar: c.enquadramento.olhar };
           const [px, , pz] = alvo.spawn;
@@ -248,6 +261,8 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
           const [fx, fz] = resolverColisao(x, z, RAIO, barreiras);
           s.rota = caminho(tipo, [s.x, s.z], [fx, fz]);
           s.vel = VEL_ANDAR * 1.3;
+          s.pedirFoto = false;
+          if (loja.foto.aberta) loja.setFoto({ aberta: false });
           s.olhar = null;
           s.parado = 0;
         }
@@ -340,6 +355,13 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       s.guinada += anguloCurto(s.guinada, s.olhar.guinada) * (1 - Math.exp(-4.5 * dt));
       s.arfagem = amortecer(s.arfagem, s.olhar.arfagem, 4.5, dt);
       if (s.rota.length === 0 && Math.abs(anguloCurto(s.guinada, s.olhar.guinada)) < 0.004) s.olhar = null;
+    }
+
+    // Chegou ao enquadramento: mostra a foto oficial do cômodo (o 3D fica logo atrás).
+    if (s.pedirFoto && !soOlhar && s.rota.length === 0 && !s.olhar && !loja.veu) {
+      s.pedirFoto = false;
+      const c = tipo.comodos.find((x) => x.id === loja.comodoAtual);
+      if (c?.fotoDecorado && !loja.usandoSplat && !loja.foto.aberta) loja.setFoto({ aberta: true, mix: 1 });
     }
 
     // leve "respiração" e balanço do passo, para dar sensação de presença

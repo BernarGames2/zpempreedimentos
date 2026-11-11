@@ -37,6 +37,7 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
   const corSol = useMemo(() => new THREE.Color("#fff4e2").lerp(new THREE.Color("#ffb070"), Math.max(0, 1 - sen / 0.35)), [sen]);
   const intensidade = noite ? (interior ? 0.25 : 2.6) : 0.5 + 1.7 * Math.min(1, sen * 1.6);
   const mapa = qualidade === "alto" ? 2048 : 1024;
+  void interior;
 
   useEffect(() => {
     const l = luz.current;
@@ -68,7 +69,7 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
         ref={luz}
         color={noite ? "#dfe8ff" : corSol}
         intensity={intensidade}
-        castShadow={qualidade !== "baixo"}
+        castShadow={qualidade === "alto" || (qualidade === "medio" && !noite)}
         shadow-mapSize={[mapa, mapa]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.05}

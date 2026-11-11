@@ -28,8 +28,12 @@ test("fase 5: foto do decorado com controle 3D ↔ Foto", async ({ page }, info)
   const erros = vigiarConsole(page);
   await abrir(page, "unidade=1202&comodo=quarto");
   await esperarEstado(page, "PASSEIO");
+  // ao chegar ao cômodo a foto oficial abre sozinha; o botão fecha e reabre
+  await expect(page.getByTestId("camada-foto")).toHaveCSS("opacity", "1", { timeout: 60_000 });
   await page.getByTestId("foto-decorado").click();
-  await expect(page.getByTestId("camada-foto")).toHaveCSS("opacity", "1", { timeout: 30_000 });
+  await expect(page.getByTestId("camada-foto")).toHaveCSS("opacity", "0", { timeout: 30_000 });
+  await page.getByTestId("foto-decorado").click();
+  await expect(page.getByTestId("camada-foto")).toHaveCSS("opacity", "1", { timeout: 60_000 });
   await expect(page.getByAltText("Foto oficial do decorado: Quarto")).toBeVisible();
   await page.getByTestId("mix-foto").fill("0.5");
   expect(((await estado(page)).foto as { mix: number }).mix).toBe(0.5);
