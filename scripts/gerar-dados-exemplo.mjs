@@ -25,9 +25,9 @@ function planta({ id, nome, quartos, d }) {
     areaSegura: { centro: spawn, raio },
   });
   const r2 = (n) => Math.round(n * 100) / 100;
-  const camSala = [[r2(xc - 0.45), 1.6, r2(zs * 0.5)], [xq, 1.3, r2(zs * 0.52)]];
-  const camCoz = [[r2(xq + 1.15), 1.6, r2(zs * 0.5)], [xs, 1.25, r2(zs * 0.56)]];
-  const camQuarto = [[r2(xq - 0.35), 1.6, r2(meioQ)], [0, 1.15, r2(meioQ)]];
+  const camSala = [[r2(xc - 0.45), 1.6, r2(zs * 0.5)], [xq, 1.48, r2(zs * 0.52)]];
+  const camCoz = [[r2(xq + 1.2), 1.6, r2(zs * 0.5)], [xs, 1.42, r2(zs * 0.56)]];
+  const camQuarto = [[r2(xq - 0.35), 1.6, r2(meioQ)], [0, 1.3, r2(meioQ)]];
   const camBanho = [[r2((xb + xq) / 2 + 0.35), 1.6, r2(zb - 0.35)], [r2((xb + xq) / 2 + 0.35), 1.3, 0]];
   const camVar = [[r2(xs - 0.75), 1.6, r2((zs + zv) / 2)], [xq, 1.35, r2((zs + zv) / 2 - 0.05)]];
   return {
@@ -102,7 +102,7 @@ function planta({ id, nome, quartos, d }) {
 
 const tipos = [
   planta({ id: "studio", nome: "Studio", quartos: 0, d: { xq: 3.1, zq: 2.3, zb: 2.3, xb: 0.9, xs: 6.6, xc: 5.4, zc: 1.6, zs: 3.8, zv: 5.2 } }),
-  planta({ id: "1q", nome: "1 quarto", quartos: 1, d: { xq: 3.6, zq: 2.5, zb: 2.5, xb: 1.1, xs: 7.4, xc: 6.2, zc: 1.8, zs: 4.1, zv: 5.6 } }),
+  planta({ id: "1q", nome: "1 quarto", quartos: 1, d: { xq: 3.6, zq: 2.5, zb: 2.5, xb: 1.1, xs: 8.1, xc: 6.9, zc: 1.8, zs: 4.1, zv: 5.6 } }),
 ];
 
 // Posições no andar: 1 e 2 na frente, 3 e 4 na lateral (sacadas corridas), 5 e 6 nos fundos.

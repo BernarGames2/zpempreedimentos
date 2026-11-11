@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { emp } from "@/lib/dados";
 import { useExp } from "@/lib/store";
 import type { Manifesto } from "@/lib/types";
+import { Alternativa2D } from "./ui/Alternativa2D";
 import { Interface } from "./ui/Interface";
 
 const Experiencia = dynamic(() => import("./three/Experiencia"), { ssr: false });
@@ -29,6 +30,14 @@ export function Hero({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
     setWebgl(temWebGL());
   }, []);
 
+  if (webgl === false) {
+    return (
+      <section id="experiencia" aria-label={`Unidades do ${emp.nome}`} className="relative w-full bg-fundo">
+        <Alternativa2D />
+      </section>
+    );
+  }
+
   return (
     <section id="experiencia" aria-label={`Experiência 3D do ${emp.nome}`} className="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-fundo">
       <Image
@@ -40,7 +49,8 @@ export function Hero({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
         className={`object-cover object-top transition-opacity duration-700 ${pronto ? "opacity-0" : "opacity-60"}`}
       />
       {webgl && <Experiencia fonte={fonte} manifesto={manifesto} />}
-      {webgl !== false && <Interface />}
+      <Interface />
+      <a href="#conceito" className="btn btn-linha absolute bottom-5 right-3 z-10 !min-w-11 !px-0 max-md:hidden" aria-label="Rolar para conhecer o projeto">↓</a>
     </section>
   );
 }

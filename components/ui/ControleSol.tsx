@@ -1,9 +1,8 @@
 "use client";
 
-import { diaAtual } from "@/lib/ambiente";
 import { emp } from "@/lib/dados";
 import { geoUnidade } from "@/lib/procedural/predio";
-import { cardeal, posicaoSol, resumoSol, rumoDaNormal, solNaFachada } from "@/lib/sol";
+import { cardeal, diaAtual, posicaoSol, resumoSol, rumoDaNormal, solNaFachada } from "@/lib/sol";
 import { useExp, useUnidadeSel } from "@/lib/store";
 import { IcoLua, IcoSol } from "./Icones";
 

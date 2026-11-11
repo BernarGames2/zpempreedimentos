@@ -8,7 +8,11 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "test": "playwright test --trace off",
-    "models": "node scripts/optimize-models/index.mjs"
+    "models": "node scripts/optimize-models/index.mjs",
+    "dados-exemplo": "node scripts/gerar-dados-exemplo.mjs",
+    "comparativo": "node scripts/comparativo.mjs",
+    "splat-teste": "node scripts/splat-de-teste.mjs",
+    "modelo-teste": "node --experimental-strip-types scripts/modelo-de-teste.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

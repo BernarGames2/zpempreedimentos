@@ -71,8 +71,13 @@ function envolver(cs: Caixa[]): Caixa {
   return caixa(min[0], max[0], min[1], max[1], min[2], max[2]);
 }
 
+/** Unidades lidas de um modelo real (malhas `unidade_1201`). Têm prioridade sobre o procedural. */
+export const geosReais = new Map<string, GeoUnidade>();
+
 /** Onde cada unidade fica na fachada. As seis posições do andar seguem a planta do pavimento-tipo. */
 export function geoUnidade(u: Unidade, e: Empreendimento): GeoUnidade {
+  const real = geosReais.get(u.numero);
+  if (real) return real;
   const y0 = cotaAndar(u.andar, e.peDireito) + 0.04;
   const y1 = y0 + e.peDireito - 0.08;
   const ym = y0 + 1.25;

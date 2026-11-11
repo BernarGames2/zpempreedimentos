@@ -84,3 +84,9 @@ export function resumoSol(rumoFachada: number, latitude: number, longitude: numb
   if (manha + tarde > 0) return `Pouco sol direto na ${onde}`;
   return `Luz indireta na ${onde} nesta época do ano`;
 }
+
+const HOJE = diaDoAno(new Date());
+/** Dia do ano usado no estudo de sol (o dia em que a página foi aberta). */
+export function diaAtual(): number {
+  return HOJE;
+}

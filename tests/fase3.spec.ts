@@ -13,6 +13,7 @@ test("fase 3: entrada pela varanda, maquete, passeio com abas e minimapa", async
   expect((await estado(page)).medidas).toBe(true);
 
   // ponto de interesse do quarto leva ao passeio dentro dele
+  await expect(page.getByTestId("ponto-quarto")).toBeEnabled();
   await page.getByTestId("ponto-quarto").dispatchEvent("click"); // o ponto gira com a maquete
   await esperarEstado(page, "PASSEIO");
   expect((await estado(page)).comodoAtual).toBe("quarto");

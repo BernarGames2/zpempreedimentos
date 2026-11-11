@@ -87,6 +87,8 @@ interface Experiencia {
   movimentoReduzido: boolean;
   /** Qual cena está montada na tela. Só muda com o véu fechado, para o corte não aparecer. */
   cena: "exterior" | "interior";
+  /** Há panorâmicas reais em /public/vistas (senão a vista é ilustrativa). */
+  vistaReal: boolean;
 
   transicionar: (novo: Estado) => boolean;
   pularIntro: () => void;
@@ -132,6 +134,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   usandoSplat: false,
   movimentoReduzido: false,
   cena: "exterior",
+  vistaReal: false,
 
   transicionar: (novo) => {
     const atual = get().estado;
@@ -139,7 +142,8 @@ export const useExp = create<Experiencia>((set, get) => ({
       if (process.env.NODE_ENV !== "production") console.warn(`Transição recusada: ${atual} → ${novo}`);
       return false;
     }
-    set({ estado: novo, hover: null });
+    // emVoo já sobe aqui: a câmera sempre faz um voo ou corte ao mudar de estado e o baixa no fim.
+    set({ estado: novo, hover: null, emVoo: true });
     return true;
   },
 
@@ -180,7 +184,7 @@ export const useExp = create<Experiencia>((set, get) => ({
     if (s.estado === "ENTRANDO" || s.estado === "INTRO") return;
     if (s.estado === "PREDIO") return;
     set({ unidadeSel: null, comodo: null, lazerSel: null, comodoAtual: null, foto: { aberta: false, mix: 1 }, medidas: false });
-    set({ estado: "PREDIO", hover: null });
+    set({ estado: "PREDIO", hover: null, emVoo: true });
   },
 
   entrar: () => {
@@ -223,6 +227,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   abrirLazer: (id) => {
     const s = get();
     if (!TRANSICOES[s.estado].includes("LAZER")) return;
+    if (s.estado === "LAZER" && s.lazerSel === id) return;
     set({ lazerSel: id, unidadeSel: null });
     s.transicionar("LAZER");
     if (id) registrar("lazer_visto", { lazer: id });
@@ -234,6 +239,17 @@ export const useExp = create<Experiencia>((set, get) => ({
   setFoto: (parcial) => set((s) => ({ foto: { ...s.foto, ...parcial } })),
   caminharPara: (x, z) => set((s) => ({ destino: { x, z, n: (s.destino?.n ?? 0) + 1 } })),
 }));
+
+// Métrica "tempo no passeio": mede do momento em que entra até sair do estado PASSEIO.
+let inicioPasseio = 0;
+useExp.subscribe((s, ant) => {
+  if (s.estado === ant.estado) return;
+  if (s.estado === "PASSEIO") inicioPasseio = Date.now();
+  else if (ant.estado === "PASSEIO" && inicioPasseio > 0) {
+    registrar("tempo_no_passeio", { segundos: Math.round((Date.now() - inicioPasseio) / 1000), unidade: ant.unidadeSel ?? "" });
+    inicioPasseio = 0;
+  }
+});
 
 /** Pose da câmera no passeio (planta), lida pelo minimapa a cada quadro sem passar pelo React. */
 export const poseCamera = { x: 0, z: 0, guinada: 0 };

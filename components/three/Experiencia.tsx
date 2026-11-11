@@ -31,6 +31,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
     useExp.getState().set({
       carga: 0.35,
       movimentoReduzido: reduzido.matches,
+      vistaReal: manifesto.vistas.some((v) => /andar-?\d+/i.test(v)),
       ...(q === "alto" || q === "medio" || q === "baixo" ? { qualidade: q, qualidadeAuto: false } : { qualidade: movel ? "medio" : "alto" }),
     });
     const aoMudar = () => useExp.getState().set({ movimentoReduzido: reduzido.matches });
@@ -50,7 +51,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
       window.clearTimeout(limite);
       reduzido.removeEventListener("change", aoMudar);
     };
-  }, [fonte]);
+  }, [fonte, manifesto]);
 
   useEffect(() => {
     const el = caixa.current;
@@ -82,7 +83,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
           gl={{ antialias: false, powerPreference: "high-performance", stencil: false, alpha: false }}
           camera={{ fov: intro.fov, near: 0.1, far: 1200, position: intro.pos.toArray() }}
           onCreated={({ gl, scene }) => {
-            if (new URLSearchParams(window.location.search).get("debug") === "1") (window as unknown as { __cena?: THREE.Scene }).__cena = scene;
+            if (new URLSearchParams(window.location.search).get("debug") === "1") Object.assign(window, { __cena: scene, __gl: gl });
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1;
             gl.outputColorSpace = THREE.SRGBColorSpace;

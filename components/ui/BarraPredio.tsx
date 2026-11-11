@@ -36,7 +36,7 @@ export function BarraPredio() {
       </div>
 
       {mostrarStatus && (
-        <ul className="vidro pointer-events-none absolute left-4 top-[6.6rem] z-10 flex gap-3 rounded-full px-3 py-1.5 text-[11px] text-texto/90 md:left-auto md:right-6 md:top-20" aria-label="Legenda do status">
+        <ul className="vidro pointer-events-none absolute left-4 top-[7.4rem] z-10 flex gap-3 rounded-full px-3 py-1.5 text-[11px] text-texto/90 md:left-auto md:right-6 md:top-20" aria-label="Legenda do status">
           {([["disponivel", "Disponível"], ["reservada", "Reservada"], ["vendida", "Vendida/alugada"]] as const).map(([k, r]) => (
             <li key={k} className="flex items-center gap-1.5">
               <span className="h-2 w-2 rounded-full" style={{ background: COR_STATUS[k] }} /> {r}

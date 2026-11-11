@@ -6,7 +6,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { emp } from "@/lib/dados";
 import { P, alturaTorre, meioW } from "@/lib/procedural/predio";
 import { construirSitio, contornoLote, folhasPalmeira } from "@/lib/procedural/sitio";
-import { barrasLogoZP, construirTorre, type Mat, type Plano } from "@/lib/procedural/torre";
+import { barrasLogoZP, construirTorre, pecasVazias, type Mat, type Plano } from "@/lib/procedural/torre";
 import { Instancias } from "./Instancias";
 import { materiaisExterior, materiaisSitio } from "./materiais";
 
@@ -73,8 +73,8 @@ function extrudar(pontos: [number, number][], altura: number): THREE.BufferGeome
 }
 
 /** Torre, embasamento, portaria e entorno gerados por código a partir dos renders 01 e 02. */
-export function Predio({ fonte, artificial }: { fonte: string; artificial: number }) {
-  const torre = useMemo(() => construirTorre(emp), []);
+export function Predio({ fonte, artificial, semTorre = false }: { fonte: string; artificial: number; semTorre?: boolean }) {
+  const torre = useMemo(() => (semTorre ? pecasVazias() : construirTorre(emp)), [semTorre]);
   const sitio = useMemo(() => construirSitio(), []);
   const mats = useMemo(() => materiaisExterior(), []);
   const ms = useMemo(() => materiaisSitio(fonte), [fonte]);
@@ -166,7 +166,7 @@ export function Predio({ fonte, artificial }: { fonte: string; artificial: numbe
         </mesh>
       ))}
       {/* Logo "ZP" em relevo no alto da fachada lateral */}
-      <mesh geometry={geos.logo} material={ms.logo} position={[meioW + P.lateral.balanco + 0.14, T + 0.92, (P.lateral.faixa[0] + P.lateral.faixa[1]) / 2]} rotation={[0, Math.PI / 2, 0]} scale={1.15} />
+      {!semTorre && <mesh geometry={geos.logo} material={ms.logo} position={[meioW + P.lateral.balanco + 0.14, T + 0.92, (P.lateral.faixa[0] + P.lateral.faixa[1]) / 2]} rotation={[0, Math.PI / 2, 0]} scale={1.15} />}
 
       {/* Entorno */}
       <mesh geometry={geos.calcada} material={ms.calcada} position={[0, -0.02, 0]} receiveShadow />
@@ -176,7 +176,7 @@ export function Predio({ fonte, artificial }: { fonte: string; artificial: numbe
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, z1 + 8.2]} material={ms.asfalto} receiveShadow>
         <planeGeometry args={[640, 10.8]} />
       </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x1 + 8.2, 0.004, 0]} material={ms.asfalto} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x1 + 8.2, 0.004, 0]} material={ms.asfalto2} receiveShadow>
         <planeGeometry args={[10.8, 640]} />
       </mesh>
       <Instancias geometria={geos.tronco} material={ms.tronco} matrizes={entorno.troncos} sombra />

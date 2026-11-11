@@ -111,6 +111,7 @@ export function materiaisExterior(): MateriaisExterior {
 export interface MateriaisSitio {
   podio: THREE.Material;
   asfalto: THREE.Material;
+  asfalto2: THREE.Material;
   calcada: THREE.Material;
   grama: THREE.Material;
   arcos: THREE.MeshStandardMaterial;
@@ -125,6 +126,13 @@ export interface MateriaisSitio {
   vizinho: THREE.Material;
   logo: THREE.Material;
   ajustarLuz: (artificial: number) => void;
+}
+
+function repetir(t: THREE.Texture, u: number, v: number): THREE.Texture {
+  const c = t.clone();
+  c.repeat.set(u, v);
+  c.needsUpdate = true;
+  return c;
 }
 
 export function materiaisSitio(fonte: string): MateriaisSitio {
@@ -146,7 +154,8 @@ export function materiaisSitio(fonte: string): MateriaisSitio {
     };
     return {
       podio: new THREE.MeshStandardMaterial({ color: "#eeece7", roughness: 0.9 }),
-      asfalto: new THREE.MeshStandardMaterial({ map: texAsfalto(), roughness: 0.82, color: "#ffffff" }),
+      asfalto: new THREE.MeshStandardMaterial({ map: repetir(texAsfalto(), 128, 2.2), roughness: 0.82, color: "#ffffff" }),
+      asfalto2: new THREE.MeshStandardMaterial({ map: repetir(texAsfalto(), 2.2, 128), roughness: 0.82, color: "#ffffff" }),
       calcada: new THREE.MeshStandardMaterial({ color: "#8c8d92", roughness: 0.95 }),
       grama: new THREE.MeshStandardMaterial({ color: "#3b5a3f", roughness: 1 }),
       arcos, trelica, trelicaEscura, hall,

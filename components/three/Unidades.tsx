@@ -40,7 +40,7 @@ const FRAG = /* glsl */ `
 const NAVY = new THREE.Color("#0c1020");
 
 /** Unidades clicáveis: vidro tingido por status, filtro, contorno e rótulo flutuante. */
-export function Unidades() {
+export function Unidades({ versao = 0 }: { versao?: number }) {
   const malha = useRef<THREE.InstancedMesh>(null);
   const estado = useExp((s) => s.estado);
   const hover = useExp((s) => s.hover);
@@ -53,7 +53,9 @@ export function Unidades() {
     const donos: number[] = [];
     geos.forEach((g, i) => g.caixas.forEach(() => donos.push(i)));
     return { geos, donos, total: donos.length };
-  }, []);
+    // `versao` muda quando um modelo real termina de ser lido
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [versao]);
 
   const material = useMemo(
     () => new THREE.ShaderMaterial({ vertexShader: VERT, fragmentShader: FRAG, transparent: true, depthWrite: false, side: THREE.DoubleSide }),

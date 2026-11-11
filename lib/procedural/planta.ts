@@ -215,3 +215,27 @@ export function livre(x: number, z: number, raio: number, barreiras: Ret[]): boo
   const [px, pz] = resolverColisao(x, z, raio, barreiras);
   return Math.hypot(px - x, pz - z) < 1e-3;
 }
+
+export interface Limites {
+  x0: number;
+  x1: number;
+  z0: number;
+  z1: number;
+  cx: number;
+  cz: number;
+}
+
+/** Caixa envolvente da planta inteira. */
+export function limitesPlanta(t: TipoPlanta): Limites {
+  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
+  for (const c of t.comodos) {
+    for (const [x, z] of c.poligono) {
+      x0 = Math.min(x0, x);
+      x1 = Math.max(x1, x);
+      z0 = Math.min(z0, z);
+      z1 = Math.max(z1, z);
+    }
+  }
+  return { x0, x1, z0, z1, cx: (x0 + x1) / 2, cz: (z0 + z1) / 2 };
+}
+

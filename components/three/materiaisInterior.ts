@@ -12,7 +12,7 @@ function ladrilho(p: ParTextura, metros: number, metrosV = metros): ParTextura {
   return p;
 }
 
-const QUENTE = "#ffcf9e"; // luz quente (~2700 K), já compensada para o tone mapping
+const QUENTE = "#ffe2c2"; // luz quente (~2700 K), já compensada para o tone mapping
 
 export interface MateriaisInterior {
   mats: Record<MatInt, THREE.Material>;
@@ -26,7 +26,7 @@ export function materiaisInterior(fonte: string): MateriaisInterior {
   return memo("materiais-interior", () => {
     const std = (o: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(o);
     const tex = (p: ParTextura, o: THREE.MeshStandardMaterialParameters = {}) => std({ map: p.map, normalMap: p.normalMap ?? null, ...o });
-    const madeira = ladrilho(texMadeira("clara", ["#8f7558", "#b89d7e"], 3.2), 0.9);
+    const madeira = ladrilho(texMadeira("clara", ["#7f6a54", "#ab9478"], 3.2), 0.9);
     const madeiraEscura = ladrilho(texMadeira("escura", ["#3a2b21", "#5a4232"], 1.5), 1.2);
     const madeiraLisa = ladrilho(texMadeira("lisa", ["#b08d68", "#d9bb95"], 0.8), 1.4);
     const led = new THREE.MeshBasicMaterial({ color: "#ffd9a0", toneMapped: false });
@@ -47,7 +47,7 @@ export function materiaisInterior(fonte: string): MateriaisInterior {
       vidroFume: std({ color: "#1a1612", roughness: 0.16, metalness: 0.9, transparent: true, opacity: 0.72 }),
       vidro: std({ color: "#cfe3ee", roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.16 }),
       espelho: std({ color: "#aeb4bb", roughness: 0.14, metalness: 1, envMapIntensity: 1.4 }),
-      linho: tex(ladrilho(texTecido("linho", ["#9d978c", "#c8c2b6"]), 0.45), { roughness: 0.95 }),
+      linho: tex(ladrilho(texTecido("linho", ["#a3a19c", "#cfcdc8"]), 0.45), { roughness: 0.95 }),
       tecidoGrafite: tex(ladrilho(texTecido("grafite", ["#232427", "#3d3e43"]), 0.4), { roughness: 0.92 }),
       amarelo: std({ color: "#d9a514", roughness: 0.9 }),
       couro: std({ color: "#8a4a2a", roughness: 0.42 }),

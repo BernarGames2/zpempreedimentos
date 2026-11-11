@@ -13,3 +13,5 @@ playwright-report/
 # relatórios gerados pelo pipeline de modelos
 scripts/optimize-models/relatorio.json
 tests/capturas/
+modelos-originais/*
+!modelos-originais/.gitkeep

@@ -126,8 +126,8 @@ export function Ceu({ solDir, noite, altura, giro = 0 }: Props) {
 
   const cores = useMemo(
     () => ({
-      topoNoite: new THREE.Color("#0f3fae"),
-      horNoite: new THREE.Color("#5a9df0"),
+      topoNoite: new THREE.Color("#1a58cc"),
+      horNoite: new THREE.Color("#79b6f4"),
       topoDia: new THREE.Color("#2a6fd6"),
       horDia: new THREE.Color("#b5d6f6"),
       horBaixo: new THREE.Color("#f3b98a"),

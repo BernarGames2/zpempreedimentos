@@ -1,7 +1,8 @@
 import * as THREE from "three";
 import { emp, lazeres, tipoDe } from "./dados";
+import { limitesPlanta } from "./procedural/planta";
 import { P, geoUnidade } from "./procedural/predio";
-import type { TipoPlanta, Unidade } from "./types";
+import type { Unidade } from "./types";
 
 export interface Pose {
   pos: THREE.Vector3;
@@ -65,28 +66,6 @@ export function poseVista(u: Unidade): Pose {
   const pos = s.clone().addScaledVector(n, 0.35);
   pos.y = s.y - 1.25 + ALTURA_OLHO;
   return { pos, alvo: pos.clone().addScaledVector(n, 10).add(v(0, -1.2, 0)), fov: FOV_PASSEIO };
-}
-
-export interface Limites {
-  x0: number;
-  x1: number;
-  z0: number;
-  z1: number;
-  cx: number;
-  cz: number;
-}
-
-export function limitesPlanta(t: TipoPlanta): Limites {
-  let x0 = Infinity, x1 = -Infinity, z0 = Infinity, z1 = -Infinity;
-  for (const c of t.comodos) {
-    for (const [x, z] of c.poligono) {
-      x0 = Math.min(x0, x);
-      x1 = Math.max(x1, x);
-      z0 = Math.min(z0, z);
-      z1 = Math.max(z1, z);
-    }
-  }
-  return { x0, x1, z0, z1, cx: (x0 + x1) / 2, cz: (z0 + z1) / 2 };
 }
 
 /** Vista isométrica de cima, do lado da fachada. */

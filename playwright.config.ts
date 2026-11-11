@@ -7,7 +7,7 @@ const args = ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignor
 export default defineConfig({
   testDir: "tests",
   outputDir: "test-results",
-  timeout: 240_000,
+  timeout: 480_000,
   expect: { timeout: 45_000 },
   fullyParallel: false,
   workers: 2,

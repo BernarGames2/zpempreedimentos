@@ -27,7 +27,7 @@ function Agendar({ u, curto = false }: { u: Unidade; curto?: boolean }) {
 
 function Titulo({ u, modo }: { u: Unidade; modo: string }) {
   return (
-    <div className="vidro pointer-events-none absolute left-4 top-[6.6rem] z-10 rounded-2xl px-3.5 py-2 sm:left-6 md:top-[7.4rem]">
+    <div className="vidro pointer-events-none absolute left-4 top-[7.4rem] z-10 rounded-2xl px-3.5 py-2 sm:left-6 md:top-[8.4rem]">
       <p className="rotulo">{modo}</p>
       <p className="font-titulo text-lg font-light leading-tight">Unidade {u.numero} · {tipoDe(u).nome}</p>
     </div>
@@ -84,7 +84,7 @@ export function BarraPasseio({ u, extras }: { u: Unidade; extras?: React.ReactNo
           <span className="vidro rounded-full px-3 py-1 text-[11px] text-cinza" data-testid="previa-simplificada">Prévia simplificada</span>
         )}
       </div>
-      <div className="pointer-events-auto absolute left-3 top-[6.6rem] z-10 flex flex-col gap-2 sm:left-6 md:top-[7.4rem]" data-testid="botoes-passeio">
+      <div className="pointer-events-auto absolute left-3 top-[7.4rem] z-10 flex flex-col gap-2 sm:left-6 md:top-[8.4rem]" data-testid="botoes-passeio">
         <button type="button" disabled={emVoo} onClick={maquete} className="btn btn-linha justify-start" data-testid="ir-maquete">
           <IcoPlanta /> Maquete
         </button>

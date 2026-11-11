@@ -63,7 +63,7 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
 
   return (
     <>
-      <hemisphereLight args={[noite ? (interior ? "#f3e6d8" : "#b4c8f5") : "#cfe2ff", noite ? (interior ? "#5c5650" : "#4a5068") : "#6b6a66", noite ? (interior ? 1.15 : 2.3) : interior ? 1.4 : 0.85]} />
+      <hemisphereLight args={[noite ? (interior ? "#f3e6d8" : "#b4c8f5") : "#cfe2ff", noite ? (interior ? "#5c5650" : "#4a5068") : "#6b6a66", noite ? (interior ? 1.15 : 2.9) : interior ? 1.4 : 0.85]} />
       <directionalLight
         ref={luz}
         color={noite ? "#dfe8ff" : corSol}

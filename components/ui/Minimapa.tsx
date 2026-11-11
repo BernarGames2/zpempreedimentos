@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { limitesPlanta } from "@/lib/poses";
+import { limitesPlanta } from "@/lib/procedural/planta";
 import { poseCamera, useExp } from "@/lib/store";
 import type { TipoPlanta } from "@/lib/types";
 

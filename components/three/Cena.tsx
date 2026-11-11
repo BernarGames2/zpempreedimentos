@@ -1,7 +1,8 @@
 "use client";
 
+import { PerformanceMonitor } from "@react-three/drei";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Suspense, lazy, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ambiente } from "@/lib/ambiente";
 import { tipoDe, unidade } from "@/lib/dados";
@@ -13,7 +14,9 @@ import type { Manifesto } from "@/lib/types";
 import { Camera } from "./Camera";
 import { Ceu } from "./Ceu";
 import { Efeitos } from "./Efeitos";
+import { Lazer } from "./Lazer";
 import { Luzes } from "./Luzes";
+import { Panorama, panoramaDoAndar } from "./Panorama";
 import { Passeio } from "./Passeio";
 import { Predio } from "./Predio";
 import { Unidades } from "./Unidades";
@@ -22,6 +25,9 @@ import { Unidades } from "./Unidades";
 const Interior = lazy(() => import("./Interior").then((m) => ({ default: m.Interior })));
 
 const SplatComodo = lazy(() => import("./SplatComodo").then((m) => ({ default: m.SplatComodo })));
+
+const PredioReal = lazy(() => import("./ModelosReais").then((m) => ({ default: m.PredioReal })));
+const ApartamentoReal = lazy(() => import("./ModelosReais").then((m) => ({ default: m.ApartamentoReal })));
 
 const EIXO_Y = new THREE.Vector3(0, 1, 0);
 
@@ -61,6 +67,11 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   const geo = useMemo(() => (u ? geoUnidade(u, emp) : null), [u]);
   const tipo = u ? tipoDe(u) : null;
   const comodoAtual = useExp((s) => s.comodoAtual);
+  // Modelos reais do arquiteto, se existirem em /public/models.
+  const predioReal = manifesto.modelos.find((f) => /\/models\/predio\.glb$/i.test(f));
+  const aptoReal = tipo ? manifesto.modelos.find((f) => f.toLowerCase() === `/models/apto-${tipo.id}.glb`) : undefined;
+  const [versaoModelo, setVersaoModelo] = useState(0);
+  const aoLerModelo = useCallback(() => setVersaoModelo((v) => v + 1), []);
   const [splatOk, setSplatOk] = useState(false);
 
   // Splats: arquivo mais leve fora do nível alto (celular); o mais completo no nível alto.
@@ -87,6 +98,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   const giro = interior && geo ? -geo.rotY : 0;
   const solCena = useMemo(() => amb.solDir.clone().applyAxisAngle(EIXO_Y, giro), [amb, giro]);
   const altura = geo ? geo.sacada[1] : 30;
+  const pano = u ? panoramaDoAndar(manifesto.vistas, u.andar) : null;
 
   useEffect(() => {
     gl.shadowMap.autoUpdate = true;
@@ -96,7 +108,25 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
     <>
       <Camera />
       {/* Dentro de um splat o céu procedural sai de cena: o mundo capturado já traz o próprio fundo. */}
-      {!comSplat && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} />}
+      {!comSplat && (!pano || !(interior || estado === "VISTA")) && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} />}
+      {pano && !comSplat && (interior || estado === "VISTA") && (
+        <Suspense fallback={null}>
+          <Panorama arquivo={pano} giro={giro} />
+        </Suspense>
+      )}
+      {/* Qualidade automática: desce um nível se o aparelho não acompanha, sobe se sobra folga. */}
+      <PerformanceMonitor
+        bounds={(taxa) => (taxa > 90 ? [50, 100] : [38, 58])}
+        flipflops={3}
+        onDecline={() => {
+          const s = useExp.getState();
+          if (s.qualidadeAuto && s.qualidade !== "baixo") s.set({ qualidade: s.qualidade === "alto" ? "medio" : "baixo" });
+        }}
+        onIncline={() => {
+          const s = useExp.getState();
+          if (s.qualidadeAuto && s.qualidade !== "alto") s.set({ qualidade: s.qualidade === "baixo" ? "medio" : "alto" });
+        }}
+      />
       <Suspense fallback={null}>
         <Luzes
           amb={amb}
@@ -108,15 +138,22 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
           interior={interior}
         />
         <group visible={!interior}>
-          <Predio fonte={fonte} artificial={amb.artificial} />
-          <Unidades />
+          {/* Um predio.glb com malhas bem nomeadas substitui a torre procedural. */}
+          <Predio fonte={fonte} artificial={amb.artificial} semTorre={Boolean(predioReal)} />
+          {predioReal && <PredioReal arquivo={predioReal} aoLer={aoLerModelo} />}
+          <Unidades key={versaoModelo} versao={versaoModelo} />
+          <Lazer artificial={amb.artificial} />
         </group>
         <Pronto />
       </Suspense>
       {tipo && (
         <Suspense fallback={null}>
           <group visible={interior}>
-            <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={Math.max(amb.artificial, 0.35)} fonte={fonte} oculto={comSplat} />
+            {aptoReal ? (
+              <ApartamentoReal arquivo={aptoReal} corte={estado !== "PASSEIO"} oculto={comSplat} />
+            ) : (
+              <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={Math.max(amb.artificial, 0.35)} fonte={fonte} oculto={comSplat} />
+            )}
           </group>
           {splat && comodoObj && <SplatComodo key={splat.url} comodo={comodoObj} splat={splat} aoCarregar={setSplatOk} />}
           <Passeio tipo={tipo} ativo={estado === "PASSEIO" && interior && !emVoo} />

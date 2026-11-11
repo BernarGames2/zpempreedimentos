@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { emp } from "./dados";
-import { diaDoAno, direcaoSol, posicaoSol, type PosicaoSol } from "./sol";
+import { diaAtual, direcaoSol, posicaoSol, type PosicaoSol } from "./sol";
 
 export interface Ambiente {
   sol: PosicaoSol;
@@ -12,15 +12,9 @@ export interface Ambiente {
   artificial: number;
 }
 
-const HOJE = diaDoAno(new Date());
-
-export function diaAtual(): number {
-  return HOJE;
-}
-
 /** Estado de luz da cena para uma hora do estudo de sol ou para o modo Noite. */
 export function ambiente(hora: number, noite: boolean): Ambiente {
-  const sol = posicaoSol(hora, emp.latitude, emp.longitude, HOJE);
+  const sol = posicaoSol(hora, emp.latitude, emp.longitude, diaAtual());
   const d = direcaoSol(sol, emp.orientacaoNorteGraus);
   const solDir = new THREE.Vector3(d[0], Math.max(d[1], 0.03), d[2]).normalize();
   // perto do nascer e do pôr do sol as luzes já começam a acender

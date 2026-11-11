@@ -8,10 +8,11 @@ import type { OrbitControls as OrbitImpl } from "three-stdlib";
 import { unidade } from "@/lib/dados";
 import { easeInOutCubic } from "@/lib/easing";
 import {
-  ALVO_PREDIO, AZIMUTE_01, FOV_PREDIO, caminhoEntrada, limitesPlanta, poseComodo, poseIntro, poseLazer,
+  ALVO_PREDIO, AZIMUTE_01, FOV_PREDIO, caminhoEntrada, poseComodo, poseIntro, poseLazer,
   poseMaquete, posePredio, poseUnidade, poseVista, type Pose,
 } from "@/lib/poses";
 import { tipoDe } from "@/lib/dados";
+import { limitesPlanta } from "@/lib/procedural/planta";
 import { linkInicial, useExp, type Estado } from "@/lib/store";
 
 type Modo = "reta" | "orbita" | "curva";
