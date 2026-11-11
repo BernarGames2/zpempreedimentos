@@ -145,7 +145,7 @@ const dados = {
   nome: "Live ZP Connect",
   incorporadora: "ZP Empreendimentos",
   endereco: "Bairro Saraiva / Santa Maria, Uberlândia – MG (endereço a confirmar)",
-  whatsapp: "(34) 99879-5445",
+  whatsapp: "(34) 99898-5445",
   orientacaoNorteGraus: 45,
   latitude: -18.9,
   longitude: -48.28,

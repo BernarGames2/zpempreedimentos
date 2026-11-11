@@ -71,7 +71,7 @@ test("fase 5: lazer e formulário até o WhatsApp", async ({ page, context }, in
   await page.getByText("Quero alugar").click();
   const [popup] = await Promise.all([page.waitForEvent("popup"), page.getByRole("button", { name: "Continuar no WhatsApp" }).click()]);
   const url = decodeURIComponent(popup.url());
-  expect(url).toContain("wa.me/5534998795445");
+  expect(url).toContain("wa.me/5534998985445");
   expect(url).toContain("quero alugar no Live ZP Connect (unidade 1201)");
   const eventos = await page.evaluate(() => (window.__zpEventos ?? []).map((e) => e.evento));
   expect(eventos).toEqual(expect.arrayContaining(["lazer_visto", "lead_enviado", "clicou_whatsapp"]));

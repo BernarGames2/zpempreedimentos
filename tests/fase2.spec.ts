@@ -7,7 +7,7 @@ test("fase 2: link direto foca a unidade certa e o painel tem WhatsApp", async (
   await esperarEstado(page, "UNIDADE");
   await expect(page.getByTestId("numero-unidade")).toHaveText("1201");
   const zap = await page.getByTestId("whatsapp-unidade").getAttribute("href");
-  expect(zap).toContain("wa.me/5534998795445");
+  expect(zap).toContain("wa.me/5534998985445");
   expect(decodeURIComponent(zap ?? "")).toContain("Olá! Tenho interesse na unidade 1201 do Live ZP Connect. Pode me passar mais informações?");
   await capturar(page, "f2-unidade", info.project.name);
   // unidade de cima
