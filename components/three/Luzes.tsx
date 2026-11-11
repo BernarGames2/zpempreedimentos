@@ -35,7 +35,7 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
 
   const sen = Math.max(0, amb.solDir.y);
   const corSol = useMemo(() => new THREE.Color("#fff4e2").lerp(new THREE.Color("#ffb070"), Math.max(0, 1 - sen / 0.35)), [sen]);
-  const intensidade = noite ? (interior ? 0.25 : 2.6) : 0.6 + 3.0 * Math.min(1, sen * 1.6);
+  const intensidade = noite ? (interior ? 0.25 : 2.6) : 0.5 + 1.7 * Math.min(1, sen * 1.6);
   const mapa = qualidade === "alto" ? 2048 : 1024;
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
 
   return (
     <>
-      <hemisphereLight args={[noite ? (interior ? "#f3e6d8" : "#b4c8f5") : "#cfe2ff", noite ? (interior ? "#5c5650" : "#4a5068") : "#6b6a66", noite ? (interior ? 1.15 : 2.9) : interior ? 1.4 : 0.85]} />
+      <hemisphereLight args={[noite ? (interior ? "#f3e6d8" : "#b4c8f5") : "#cfe2ff", noite ? (interior ? "#5c5650" : "#4a5068") : "#6b6a66", noite ? (interior ? 1.15 : 2.9) : interior ? 1.4 : 0.6]} />
       <directionalLight
         ref={luz}
         color={noite ? "#dfe8ff" : corSol}
