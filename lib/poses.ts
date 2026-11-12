@@ -100,6 +100,8 @@ export function poseLazer(id: string | null, aspecto: number): Pose {
     if (!c) return { pos: v(...l.camera.posicao), alvo: v(...l.camera.olhar), fov: 45 };
     const alvo = v(...c.alvo);
     const pos = alvo.clone().add(v(...c.pos).sub(alvo).multiplyScalar(aspecto < 0.9 ? 1.65 : 1));
+    // no celular em pé o cartão ocupa a parte de baixo da tela: o olhar desce ~6° e o espaço sobe para a área livre
+    if (aspecto < 0.9) alvo.y -= pos.distanceTo(alvo) * 0.11;
     return { pos, alvo, fov: 45 };
   }
   const k = aspecto < 0.9 ? 1.45 : 1;

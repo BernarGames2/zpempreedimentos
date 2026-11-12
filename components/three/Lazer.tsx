@@ -504,8 +504,8 @@ function useCenaLazer(pc: MedidasPiscina | null) {
       const [w, , dd] = pg.tamanho;
       const piso = malha(new THREE.PlaneGeometry(w, dd).rotateX(-Math.PI / 2), d(new THREE.MeshStandardMaterial({ map: d(texPlayground(w, dd)), roughness: 0.92 })), false, "playground_piso");
       piso.position.set(cx, YD + 0.005, cz);
-      const branco = d(new THREE.MeshStandardMaterial({ color: "#f3f1ec", roughness: 0.5 }));
-      const lamelas = d(new THREE.MeshStandardMaterial({ color: "#f3f1ec", alphaMap: ripas, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.55 }));
+      const branco = d(new THREE.MeshStandardMaterial({ color: "#d9d5cd", roughness: 0.6 })); // branco fosco: o branco puro estourava no brilho sob o sol
+      const lamelas = d(new THREE.MeshStandardMaterial({ color: "#d9d5cd", alphaMap: ripas, alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.65 }));
       for (const [dx, dz, r, h] of [[-0.8, -0.7, 0.95, 2.7], [0.9, 1.1, 0.75, 2.3]] as const) {
         malha(new THREE.CylinderGeometry(0.045, 0.05, h, 16), branco, true).position.set(cx + dx, YD + h / 2, cz + dz);
         const tampo = malha(new THREE.CircleGeometry(r, 48).rotateX(-Math.PI / 2), lamelas, true);
