@@ -37,6 +37,6 @@ test("fase 2: filtros, contador e camada de status", async ({ page }, info) => {
   await expect(contador).toContainText("111 de 111");
   await page.getByRole("button", { name: "Fechar filtros" }).click();
   await page.getByTestId("ver-status").click();
-  expect((await estado(page)).mostrarStatus).toBe(false);
+  expect((await estado(page)).mostrarStatus).toBe(true);
   semErros(erros);
 });

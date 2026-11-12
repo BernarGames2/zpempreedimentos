@@ -119,7 +119,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   lazerSel: null,
   hover: null,
   filtros: filtrosIniciais(),
-  mostrarStatus: true,
+  mostrarStatus: false,
   hora: 16,
   noite: true,
   qualidade: "medio",
