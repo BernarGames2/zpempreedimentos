@@ -22,7 +22,17 @@ export interface Prim {
   raio?: number;
 }
 
+/** Móvel com modelo 3D de terceiros (arquivo em /public/modelos; licenças em CREDITOS.md). */
+export interface Modelo {
+  id: "sofa" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
+  pos: [number, number, number];
+  rotY?: number;
+  escala?: [number, number, number];
+}
+
 export interface Mobilia {
+  /** Modelos GLB que substituem peças geradas por código (só nas plantas já convertidas). */
+  modelos?: Modelo[];
   prims: Prim[];
   /** Pegadas dos móveis no piso, para a colisão da câmera. */
   obstaculos: Ret[];
@@ -33,6 +43,13 @@ export interface Mobilia {
 }
 
 class M {
+  /** Com `gl`, as peças que têm modelo 3D entram como GLB; sem ele, a versão gerada por código. */
+  gl = false;
+  modelos: Modelo[] = [];
+  troca(codigo: () => void, ...ms: Modelo[]): void {
+    if (this.gl) this.modelos.push(...ms);
+    else codigo();
+  }
   prims: Prim[] = [];
   obstaculos: Ret[] = [];
   luzes: Mobilia["luzes"] = [];
@@ -221,23 +238,46 @@ function mobiliaFinal01(m: M): void {
   const H = PE_LIVRE;
   // ═══ LIVING: sofá em L com almofadas verdes, tapete, mesa de centro redonda, aparador e mesa de jantar redonda ═══
   m.cx("tapete", 5.12, 8.5, 0.004, 0.016, 5.83, 8.05);
-  m.ar("tecidoCinza", 5.97, 8.58 - e, 0.06, 0.44, 5.6 + e, 6.55, 0.14); // assento
-  m.ar("tecidoCinza", 5.97, 8.58 - e, 0.3, 0.84, 5.6 + e, 5.88, 0.12); // encosto
-  m.ar("tecidoCinza", 7.65, 8.58 - e, 0.06, 0.44, 6.4, 7.08, 0.14); // chaise
-  for (const x of [6.0, 7.05]) m.ar("tecidoCinza", x, x + 1.0, 0.4, 0.58, 5.92, 6.5, 0.12);
-  for (const [x, z] of [[6.25, 5.98], [6.95, 5.98], [7.85, 5.98], [8.3, 6.15]] as const) m.girada("tecidoVerde", [x, 0.72, z], [0.42, 0.38, 0.12], [-0.25, 0, 0], "arred", 0.06);
-  m.ar("tecidoCinza", 5.97, 6.12, 0.3, 0.62, 5.65, 6.55, 0.06); // braço
+  m.troca(
+    () => {
+      m.ar("tecidoCinza", 5.97, 8.58 - e, 0.06, 0.44, 5.6 + e, 6.55, 0.14); // assento
+      m.ar("tecidoCinza", 5.97, 8.58 - e, 0.3, 0.84, 5.6 + e, 5.88, 0.12); // encosto
+      m.ar("tecidoCinza", 7.65, 8.58 - e, 0.06, 0.44, 6.4, 7.08, 0.14); // chaise
+      for (const x of [6.0, 7.05]) m.ar("tecidoCinza", x, x + 1.0, 0.4, 0.58, 5.92, 6.5, 0.12);
+      for (const [x, z] of [[6.25, 5.98], [6.95, 5.98], [7.85, 5.98], [8.3, 6.15]] as const) m.girada("tecidoVerde", [x, 0.72, z], [0.42, 0.38, 0.12], [-0.25, 0, 0], "arred", 0.06);
+      m.ar("tecidoCinza", 5.97, 6.12, 0.3, 0.62, 5.65, 6.55, 0.06); // braço
+    },
+    // sofá de veludo cinza de três lugares (2,4 m): o acervo livre não tem um sofá em L como o da planta
+    { id: "sofa", pos: [7.33, 0, 6.34], escala: [1.1, 1.1, 1.1] },
+  );
   m.obst(5.97, 8.63, 5.6, 6.55);
   m.obst(7.65, 8.63, 6.4, 7.08);
-  m.cil("madeiraClara", 6.7, 0, 7.32, 0.34, 0.36);
-  m.cil("louca", 6.62, 0.36, 7.25, 0.08, 0.14);
-  m.esf("planta", 6.62, 0.58, 7.25, 0.13);
+  m.troca(
+    () => {
+      m.cil("madeiraClara", 6.7, 0, 7.32, 0.34, 0.36);
+      m.cil("louca", 6.62, 0.36, 7.25, 0.08, 0.14);
+      m.esf("planta", 6.62, 0.58, 7.25, 0.13);
+    },
+    { id: "mesa-centro", pos: [6.7, 0, 7.32], escala: [0.56, 0.8, 0.56] },
+    { id: "planta-pequena", pos: [6.62, 0.392, 7.27], escala: [1.3, 1.3, 1.3] },
+  );
   m.obst(6.36, 7.04, 6.98, 7.66);
-  m.cx("madeiraClara", 5.45, 5.8, 0, 0.55, 5.72, 6.08); // mesa lateral com luminária
-  m.cil("metalBranco", 5.62, 0.55, 5.9, 0.012, 0.35);
-  m.cil("tecidoBranco", 5.62, 0.86, 5.9, 0.13, 0.2);
+  m.troca(
+    () => {
+      m.cx("madeiraClara", 5.45, 5.8, 0, 0.55, 5.72, 6.08); // mesa lateral com luminária
+      m.cil("metalBranco", 5.62, 0.55, 5.9, 0.012, 0.35);
+      m.cil("tecidoBranco", 5.62, 0.86, 5.9, 0.13, 0.2);
+    },
+    { id: "mesa-lateral", pos: [5.625, 0, 5.9], escala: [0.7, 0.95, 0.8] },
+    { id: "luminaria", pos: [5.625, 0.52, 5.9] },
+  );
   m.obst(5.45, 5.8, 5.72, 6.08);
-  m.cx("madeiraNatural", 5.73, 7.36, 0, 0.78, 8.17, 8.5 - e); // aparador junto à mureta da lavanderia
+  m.troca(
+    () => m.cx("madeiraNatural", 5.73, 7.36, 0, 0.78, 8.17, 8.5 - e), // aparador junto à mureta da lavanderia
+    { id: "aparador", pos: [6.545, 0, 8.31], rotY: Math.PI, escala: [0.668, 1.1, 0.58] },
+    { id: "vaso-a", pos: [6.1, 0.748, 8.31], escala: [0.8, 0.8, 0.8] },
+    { id: "vaso-b", pos: [6.34, 0.748, 8.33], escala: [0.8, 0.8, 0.8] },
+  );
   // portas de vidro de correr entre o living e a varanda (linha clara na planta, de z = 6,01 a 9,49)
   {
     const x = 2.4;
@@ -256,8 +296,13 @@ function mobiliaFinal01(m: M): void {
   m.cil("madeiraClara", 3.9, 0.72, 7.14, 0.69, 0.04);
   m.cil("madeiraNatural", 3.9, 0, 7.14, 0.09, 0.72);
   m.cil("madeiraNatural", 3.9, 0, 7.14, 0.32, 0.03);
-  m.cil("louca", 3.9, 0.76, 7.14, 0.1, 0.16);
-  m.esf("planta", 3.9, 1.0, 7.14, 0.16);
+  m.troca(
+    () => {
+      m.cil("louca", 3.9, 0.76, 7.14, 0.1, 0.16);
+      m.esf("planta", 3.9, 1.0, 7.14, 0.16);
+    },
+    { id: "planta-pequena", pos: [3.9, 0.76, 7.14], rotY: 1.2, escala: [1.7, 1.7, 1.7] },
+  );
   m.obst(3.21, 4.59, 6.45, 7.83);
   for (let i = 0; i < 6; i++) {
     const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
@@ -314,8 +359,13 @@ function mobiliaFinal01(m: M): void {
     }
     m.cx("madeiraNatural", 0.72, 2.24, 0, 0.45, 5.6 + e + 0.18, 6.29); // banco ripado junto à parede
     m.obst(0.69, 2.25, 5.6, 6.29);
-    m.cil("louca", 0.33, 0, 6.04, 0.2, 0.5);
-    m.esf("planta", 0.33, 0.9, 6.04, 0.36);
+    m.troca(
+      () => {
+        m.cil("louca", 0.33, 0, 6.04, 0.2, 0.5);
+        m.esf("planta", 0.33, 0.9, 6.04, 0.36);
+      },
+      { id: "planta-grande", pos: [0.36, 0, 6.08], rotY: 0.6, escala: [1.2, 1.2, 1.2] },
+    );
     m.obst(0.05, 0.6, 5.7, 6.4);
     for (const z of [7.0, 8.6]) m.spot(1.2, z);
     m.luz(1.2, 2.2, 7.8, 0.8, 4.5);
@@ -326,8 +376,14 @@ function mobiliaFinal01(m: M): void {
   m.obst(0.78, 3.22, 3.04, 3.72);
   m.cil("tapete", 1.94, 0, 4.47, 0.67, 0.012);
   m.cama(0.98, 2.73, 4.65, 5.5, "x0", "tecidoCinza", "madeiraClara");
-  m.cil("madeiraClara", 1.12, 0, 4.4, 0.18, 0.5);
-  m.cil("tecidoBranco", 1.12, 0.5, 4.4, 0.08, 0.22);
+  m.troca(
+    () => {
+      m.cil("madeiraClara", 1.12, 0, 4.4, 0.18, 0.5);
+      m.cil("tecidoBranco", 1.12, 0.5, 4.4, 0.08, 0.22);
+    },
+    { id: "mesa-lateral", pos: [1.12, 0, 4.4], rotY: Math.PI / 2, escala: [0.66, 0.9, 0.78] },
+    { id: "luminaria", pos: [1.12, 0.493, 4.4], escala: [0.8, 0.8, 0.8] },
+  );
   m.obst(0.9, 1.34, 4.18, 4.62);
   m.cx("madeiraClara", 2.85, 3.98, 0.72, 0.76, 5.0, 5.55);
   for (const x of [2.9, 3.93]) m.cx("madeiraClara", x - 0.02, x + 0.02, 0, 0.72, 5.02, 5.53);
@@ -339,9 +395,15 @@ function mobiliaFinal01(m: M): void {
   // ═══ DORM. 2: cama encostada nas paredes de cima e da esquerda, criado-mudo com vaso, tapete e armário embaixo ═══
   m.cx("tapete", 1.52, 3.03, 0.004, 0.016, 0.46, 2.04);
   m.cama(0.98, 2.79, 0.08, 1.18, "x0", "tecidoCinza", "madeiraClara");
-  m.cil("madeiraClara", 1.15, 0, 1.42, 0.18, 0.5);
-  m.cil("louca", 1.15, 0.5, 1.42, 0.06, 0.12);
-  m.esf("planta", 1.15, 0.72, 1.42, 0.12);
+  m.troca(
+    () => {
+      m.cil("madeiraClara", 1.15, 0, 1.42, 0.18, 0.5);
+      m.cil("louca", 1.15, 0.5, 1.42, 0.06, 0.12);
+      m.esf("planta", 1.15, 0.72, 1.42, 0.12);
+    },
+    { id: "mesa-lateral", pos: [1.15, 0, 1.42], rotY: Math.PI / 2, escala: [0.66, 0.9, 0.78] },
+    { id: "planta-pequena", pos: [1.15, 0.493, 1.42], escala: [1.2, 1.2, 1.2] },
+  );
   m.obst(0.93, 1.37, 1.2, 1.64);
   m.cx("laqueado", 0.91, 2.43, 0, 2.3, 2.4, 3.04 - e);
   m.obst(0.88, 2.45, 2.38, 3.04);
@@ -367,13 +429,24 @@ function mobiliaFinal01(m: M): void {
   m.obst(7.92, 8.63, 0.79, 5.6);
   m.cx("tapete", 5.28, 7.89, 0.004, 0.016, 3.19, 5.25);
   m.cama(5.74, 7.28, 3.45, 5.44, "z1", "tecidoCinza", "madeiraClara");
-  m.cil("madeiraClara", 5.48, 0, 5.2, 0.2, 0.5);
-  m.cil("tecidoBranco", 5.48, 0.5, 5.2, 0.09, 0.24);
+  m.troca(
+    () => {
+      m.cil("madeiraClara", 5.48, 0, 5.2, 0.2, 0.5);
+      m.cil("tecidoBranco", 5.48, 0.5, 5.2, 0.09, 0.24);
+    },
+    { id: "mesa-lateral", pos: [5.48, 0, 5.2], escala: [0.7, 0.92, 0.84] },
+    { id: "luminaria", pos: [5.48, 0.504, 5.2], escala: [0.85, 0.85, 0.85] },
+  );
   m.obst(5.26, 5.7, 4.98, 5.42);
   m.cx("madeiraNatural", 6.67, 7.1, 0.72, 0.76, 0.83, 1.86);
   for (const z of [0.88, 1.81]) m.cx("madeiraNatural", 6.69, 7.08, 0, 0.72, z - 0.02, z + 0.02);
-  m.cil("louca", 6.82, 0.76, 1.62, 0.06, 0.12);
-  m.esf("planta", 6.82, 0.98, 1.62, 0.12);
+  m.troca(
+    () => {
+      m.cil("louca", 6.82, 0.76, 1.62, 0.06, 0.12);
+      m.esf("planta", 6.82, 0.98, 1.62, 0.12);
+    },
+    { id: "vaso-b", pos: [6.84, 0.76, 1.62] },
+  );
   m.obst(6.63, 7.12, 0.79, 1.9);
   m.cadeira(7.3, 1.33, -Math.PI / 2, "tecidoBranco");
   m.spot(6.5, 4.3);
@@ -632,7 +705,7 @@ function espelhar(m: Mobilia, soma: number): Mobilia {
  * Living, cozinha e suíte master seguem os três renders oficiais de interiores (materiais e peças);
  * varanda, banhos e suítes 1 e 2 seguem só a planta ilustrada (sem render oficial: peças neutras).
  */
-export function mobiliar(t: TipoPlanta): Mobilia {
+export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
   if (t.espelhoDe) {
     const base = tipoPorId(t.espelhoDe);
     if (base) {
@@ -649,8 +722,9 @@ export function mobiliar(t: TipoPlanta): Mobilia {
     return limites(c.poligono);
   };
   if (t.id === "final-01") {
+    m.gl = glb;
     mobiliaFinal01(m);
-    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes, modelos: m.modelos };
   }
   if (t.id === "final-06") {
     mobiliaFinal06(m);

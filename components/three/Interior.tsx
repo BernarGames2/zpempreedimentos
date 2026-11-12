@@ -1,14 +1,16 @@
 "use client";
 
 import { Html, Line } from "@react-three/drei";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { area } from "@/lib/formato";
+import { useGLTF } from "@react-three/drei";
+import { moveisGlb } from "@/lib/controles";
 import { acabamentos } from "@/lib/procedural/acabamento";
 import { sorteio, tela } from "@/lib/procedural/canvas";
-import { mobiliar, type MatInt, type Prim } from "@/lib/procedural/mobilia";
+import { mobiliar, type MatInt, type Modelo, type Prim } from "@/lib/procedural/mobilia";
 import { CORTE, PE_LIVRE, limitesPlanta, montarPlanta, type Planta, type Ret } from "@/lib/procedural/planta";
 import { texCartaoFolhas } from "@/lib/procedural/texturasInterior";
 import { useExp } from "@/lib/store";
@@ -140,6 +142,22 @@ function sombrasDoPiso(tipo: TipoPlanta, planta: Planta, obstaculos: Ret[]): { t
   return { tex, x: (l.x0 + l.x1) / 2, z: (l.z0 + l.z1) / 2, w, h };
 }
 
+/** Móvel de terceiros (GLB com meshopt e texturas WebP, baixado só ao entrar no apartamento que o usa). */
+function ModeloGlb({ m }: { m: Modelo }) {
+  const { scene } = useGLTF(`/modelos/${m.id}.glb`, false, true);
+  const obj = useMemo(() => {
+    const c = scene.clone(true);
+    c.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh) {
+        o.castShadow = true;
+        o.receiveShadow = true;
+      }
+    });
+    return c;
+  }, [scene]);
+  return <primitive object={obj} position={m.pos} rotation={[0, m.rotY ?? 0, 0]} scale={m.escala ?? [1, 1, 1]} />;
+}
+
 interface Props {
   tipo: TipoPlanta;
   /** Maquete: sem teto e com as paredes cortadas a 1,20 m. */
@@ -156,7 +174,7 @@ interface Props {
 export function Interior({ tipo, corte, artificial, fonte, oculto = false, comodo = null }: Props) {
   const m = useMemo(() => materiaisInterior(fonte), [fonte]);
   const planta = useMemo(() => montarPlanta(tipo), [tipo]);
-  const mob = useMemo(() => mobiliar(tipo), [tipo]);
+  const mob = useMemo(() => mobiliar(tipo, moveisGlb()), [tipo]);
 
   const prims = useMemo<Prim[]>(() => {
     const paredes: Prim[] = planta.paredes.map((b) => ({
@@ -226,6 +244,9 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       {pisos.map(({ c, g }) => (
         <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
       ))}
+      <Suspense fallback={null}>
+        <group name="moveis_glb">{mob.modelos?.map((mo, i) => <ModeloGlb key={`${mo.id}-${i}`} m={mo} />)}</group>
+      </Suspense>
       {/* acima dos tapetes (1,6 cm) e abaixo de tudo o que tem volume */}
       <mesh position={[sombras.x, 0.02, sombras.z]} rotation={[-Math.PI / 2, 0, 0]} material={matSombras} renderOrder={1} name="sombras_de_contato">
         <planeGeometry args={[sombras.w, sombras.h]} />

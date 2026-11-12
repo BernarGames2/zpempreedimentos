@@ -7,7 +7,7 @@ const page = await ctx.newPage();
 const erros = [];
 page.on("pageerror", (e) => erros.push("pageerror " + e.message));
 page.on("console", (m) => { if (m.type() === "error") erros.push(m.text().slice(0, 200)); });
-await page.goto(`${base}/?debug=1&q=medio&unidade=${unidade}`);
+await page.goto(`${base}/?debug=1&q=medio&unidade=${unidade}${process.env.EXTRA ?? ""}`);
 await page.waitForFunction(() => window.__zp?.getState().pronto === true, null, { timeout: 150000 });
 await page.evaluate(() => window.__zp.getState().pularIntro());
 await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "UNIDADE" && !s.emVoo; }, null, { timeout: 120000 });

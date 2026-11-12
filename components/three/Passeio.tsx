@@ -70,6 +70,16 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     fovBase: 70,
   });
   const raio = useMemo(() => new THREE.Raycaster(), []);
+  // Só com ?debug=1: põe a câmera num ponto olhando para um alvo (capturas comparativas de enquadramento fixo).
+  useEffect(() => {
+    if (soOlhar || typeof window === "undefined" || new URLSearchParams(window.location.search).get("debug") !== "1") return;
+    Object.assign(window, {
+      __enquadrar: (x: number, z: number, ax: number, ay: number, az: number) => {
+        const est = e.current;
+        Object.assign(est, { x, z, rota: [], olhar: null, pedirFoto: false, guinada: Math.atan2(-(ax - x), -(az - z)), arfagem: Math.atan2(ay - ALTURA_OLHO, Math.hypot(ax - x, az - z)) });
+      },
+    });
+  }, [soOlhar, e]);
   const piso = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), []);
 
   // Ao ativar, assume a orientação com que a câmera chegou.

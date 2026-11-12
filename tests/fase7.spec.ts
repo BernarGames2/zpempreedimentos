@@ -28,6 +28,8 @@ test("fase 7: 13º andar → unidade 1301 → entrar e caminhar em 3D → trocar
   expect(s.comodoAtual).toBe("living");
   expect((s.foto as { aberta: boolean }).aberta).toBe(false);
   await expect(page.getByTestId("abas-comodos")).toBeVisible();
+  // os móveis com modelo 3D (GLB) da planta final 01 carregam sob demanda ao entrar
+  await page.waitForFunction(() => ((window as unknown as { __cena: { getObjectByName: (n: string) => { children: unknown[] } | undefined } }).__cena.getObjectByName("moveis_glb")?.children.length ?? 0) >= 10, null, { timeout: 90_000 });
   await capturar(page, "f7-living", info.project.name);
 
   // anda: joystick no celular, teclado (W) no computador

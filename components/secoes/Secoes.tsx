@@ -231,6 +231,12 @@ export function Secoes() {
               {emp.proposta && <> Protótipo criado por {emp.proposta.autor}.</>}
             </p>
           )}
+          <p className="mt-2 text-xs">
+            Modelos 3D de mobiliário: sofá e luminária © Wayfair, LLC (
+            <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">CC BY 4.0</a>
+            , adaptados; via Khronos glTF Sample Assets); demais peças de{" "}
+            <a href="https://polyhaven.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">Poly Haven</a> (CC0).
+          </p>
         </div>
       </footer>
     </>
