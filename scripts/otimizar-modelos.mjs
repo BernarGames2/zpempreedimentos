@@ -21,6 +21,11 @@ const lista = [
   { id: "planta-pequena", src: "bruto/potted_plant_04/potted_plant_04.gltf", tex: 512, razao: 0.4, erro: 0.004 },
   { id: "vaso-a", src: "bruto/ceramic_vase_02/ceramic_vase_02.gltf", tex: 256, razao: 0.25 },
   { id: "vaso-b", src: "bruto/ceramic_vase_04/ceramic_vase_04.gltf", tex: 256, razao: 0.25 },
+  { id: "sofa-l", src: "sf/sofa-l.glb", tex: 1024, razao: 0.16, erro: 0.004 },
+  { id: "cama-casal", src: "sf/cama-casal.glb", tex: 1024, razao: 0.13, erro: 0.004 },
+  { id: "cama-solteiro", src: "sf/cama-solteiro.glb", tex: 512 },
+  { id: "cadeira", src: "sf/cadeira.glb", tex: 512, razao: 0.1, erro: 0.004 },
+  { id: "mesa-jantar", src: "sf/mesa-jantar.glb", tex: 512, razao: 0.12, erro: 0.004 },
 ].filter((m) => !process.env.SO || process.env.SO.split(",").includes(m.id));
 const tri = (doc) => doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives()).reduce((s, p) => s + (p.getIndices()?.getCount() ?? p.getAttribute("POSITION").getCount()) / 3, 0);
 const resumo = fs.existsSync("resumo.json") ? JSON.parse(fs.readFileSync("resumo.json", "utf8")) : {};

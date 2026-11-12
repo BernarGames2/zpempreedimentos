@@ -24,7 +24,7 @@ export interface Prim {
 
 /** Móvel com modelo 3D de terceiros (arquivo em /public/modelos; licenças em CREDITOS.md). */
 export interface Modelo {
-  id: "sofa" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
+  id: "sofa-l" | "cama-casal" | "cama-solteiro" | "cadeira" | "mesa-jantar" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
   pos: [number, number, number];
   rotY?: number;
   escala?: [number, number, number];
@@ -129,6 +129,12 @@ class M {
   }
   /** Cadeira de jantar estofada (cinza na varanda) ou de madeira com palhinha (living). `dir` aponta para a mesa. */
   cadeira(x: number, z: number, dir: number, mat: MatInt): void {
+    if (this.gl) {
+      // cadeira de madeira com encosto de palhinha (modelo de 0,61 m de largura, estreitado para 0,52 m)
+      this.modelos.push({ id: "cadeira", pos: [x, 0, z], rotY: dir, escala: [0.85, 1, 0.85] });
+      this.obst(x - 0.24, x + 0.24, z - 0.24, z + 0.24);
+      return;
+    }
     const ca = Math.cos(dir);
     const sa = Math.sin(dir);
     this.girada(mat, [x, 0.46, z], [0.44, 0.06, 0.44], [0, dir, 0], "arred", 0.02);
@@ -176,6 +182,24 @@ class M {
   }
   /** Cama: base estofada, colchão, edredom, travesseiros e cabeceira, no lado `cabeceira` da pegada. */
   cama(x0: number, x1: number, z0: number, z1: number, cabeceira: "z0" | "z1" | "x0" | "x1", base: MatInt, cab: MatInt): void {
+    if (this.gl && base !== "veludo") {
+      // modelo 3D ajustado à pegada da cama na planta; a cabeceira do modelo fica em -z
+      const emZ = cabeceira === "z0" || cabeceira === "z1";
+      const [larg, comp] = emZ ? [x1 - x0, z1 - z0] : [z1 - z0, x1 - x0];
+      const casal = larg >= 1.25;
+      // medidas do modelo: largura, comprimento, distância da origem à cabeceira, unidade (o de solteiro está em cm)
+      const [mw, ml, mh, un] = casal ? [1.974, 2.271, 1.065, 1] : [1.0, 2.107, 1.0535, 0.01];
+      const folga = casal ? 0.12 : 0.06;
+      const sx = larg / mw;
+      const sz = (comp + folga) / ml;
+      const d = mh * sz - folga; // da borda da cabeceira (na planta) até a origem do modelo
+      const pos: [number, number, number] =
+        cabeceira === "z0" ? [(x0 + x1) / 2, 0, z0 + d] : cabeceira === "z1" ? [(x0 + x1) / 2, 0, z1 - d] : cabeceira === "x0" ? [x0 + d, 0, (z0 + z1) / 2] : [x1 - d, 0, (z0 + z1) / 2];
+      const rotY = cabeceira === "z0" ? 0 : cabeceira === "z1" ? Math.PI : cabeceira === "x0" ? Math.PI / 2 : -Math.PI / 2;
+      this.modelos.push({ id: casal ? "cama-casal" : "cama-solteiro", pos, rotY, escala: [sx * un, ((sx + sz) / 2) * un, sz * un] });
+      this.obst(x0, x1, z0, z1);
+      return;
+    }
     this.ar(base, x0, x1, 0.04, 0.36, z0, z1, 0.06);
     this.ar("tecidoBranco", x0 + 0.03, x1 - 0.03, 0.36, 0.58, z0 + 0.03, z1 - 0.03, 0.06);
     if (cabeceira === "z0") {
@@ -247,8 +271,8 @@ function mobiliaFinal01(m: M): void {
       for (const [x, z] of [[6.25, 5.98], [6.95, 5.98], [7.85, 5.98], [8.3, 6.15]] as const) m.girada("tecidoVerde", [x, 0.72, z], [0.42, 0.38, 0.12], [-0.25, 0, 0], "arred", 0.06);
       m.ar("tecidoCinza", 5.97, 6.12, 0.3, 0.62, 5.65, 6.55, 0.06); // braço
     },
-    // sofá de veludo cinza de três lugares (2,4 m): o acervo livre não tem um sofá em L como o da planta
-    { id: "sofa", pos: [7.33, 0, 6.34], escala: [1.1, 1.1, 1.1] },
+    // sofá cinza em L com chaise, como na planta (2,61 m de frente; chaise até z = 7,08, no lado da entrada)
+    { id: "sofa-l", pos: [7.275, 0, 6.36], escala: [-1.16, 1.04, 0.97] },
   );
   m.obst(5.97, 8.63, 5.6, 6.55);
   m.obst(7.65, 8.63, 6.4, 7.08);
@@ -293,9 +317,15 @@ function mobiliaFinal01(m: M): void {
   }
   m.obst(5.73, 7.36, 8.17, 8.55);
   // mesa de jantar redonda (Ø 1,38 m) com seis cadeiras de madeira e palhinha
-  m.cil("madeiraClara", 3.9, 0.72, 7.14, 0.69, 0.04);
-  m.cil("madeiraNatural", 3.9, 0, 7.14, 0.09, 0.72);
-  m.cil("madeiraNatural", 3.9, 0, 7.14, 0.32, 0.03);
+  m.troca(
+    () => {
+      m.cil("madeiraClara", 3.9, 0.72, 7.14, 0.69, 0.04);
+      m.cil("madeiraNatural", 3.9, 0, 7.14, 0.09, 0.72);
+      m.cil("madeiraNatural", 3.9, 0, 7.14, 0.32, 0.03);
+    },
+    // mesa redonda de madeira clara (modelo de Ø 1,20 m ampliado para os 1,38 m da planta)
+    { id: "mesa-jantar", pos: [3.9, 0.01, 7.14], escala: [1.15, 1.03, 1.15] },
+  );
   m.troca(
     () => {
       m.cil("louca", 3.9, 0.76, 7.14, 0.1, 0.16);
@@ -697,6 +727,8 @@ function espelhar(m: Mobilia, soma: number): Mobilia {
     obstaculos: m.obstaculos.map((o) => ({ x0: mx(o.x1), x1: mx(o.x0), z0: o.z0, z1: o.z1 })),
     jardins: [],
     luzes: m.luzes.map((l) => ({ ...l, pos: [mx(l.pos[0]), l.pos[1], l.pos[2]] })),
+    // modelos espelhados: escala x negativa (o sofá em L troca a chaise de lado, como a planta espelhada)
+    modelos: m.modelos?.map((o) => ({ ...o, pos: [mx(o.pos[0]), o.pos[1], o.pos[2]], rotY: -(o.rotY ?? 0), escala: [-(o.escala?.[0] ?? 1), o.escala?.[1] ?? 1, o.escala?.[2] ?? 1] })),
   };
 }
 
@@ -711,7 +743,7 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     if (base) {
       const l = t.comodos.flatMap((c) => c.poligono.map((p) => p[0]));
       const lb = base.comodos.flatMap((c) => c.poligono.map((p) => p[0]));
-      return espelhar(mobiliar(base), Math.min(...lb) + Math.max(...lb) + (Math.min(...l) - Math.min(...lb)));
+      return espelhar(mobiliar(base, glb), Math.min(...lb) + Math.max(...lb) + (Math.min(...l) - Math.min(...lb)));
     }
   }
   const m = new M();
@@ -727,12 +759,14 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes, modelos: m.modelos };
   }
   if (t.id === "final-06") {
+    m.gl = glb;
     mobiliaFinal06(m);
-    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes, modelos: m.modelos };
   }
   if (t.id === "final-03") {
+    m.gl = glb;
     mobiliaFinal03(m);
-    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes, modelos: m.modelos };
   }
   // plantas sem interior modelado (só a vista do andar): nada a mobiliar
   if (t.id !== "final-02") return { prims: [], obstaculos: [], jardins: [], luzes: [] };

@@ -1,11 +1,16 @@
 # Créditos dos modelos 3D de mobiliário
 
 Arquivos em `public/modelos/` (GLB com compressão meshopt e texturas WebP), usados no passeio dos
-apartamentos de planta final 01. Todos permitem uso comercial.
+apartamentos de planta final 01, 03, 05 e 06. Todos permitem uso comercial.
+Os modelos do Sketchfab foram obtidos pelo espelho público Objaverse (Allen Institute for AI), sob a licença original de cada autor.
 
 | Arquivo | Modelo original | Autor | Licença | Adaptações |
 |---|---|---|---|---|
-| `sofa.glb` | [GlamVelvetSofa](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlamVelvetSofa) | © 2021 Wayfair, LLC | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | variante cinza, tom mais fechado, texturas reduzidas a 1024 px |
+| `sofa-l.glb` | [Gray L-Shaped Couch](https://sketchfab.com/3d-models/gray-l-shaped-couch-f3a71dc05afb46f8a2fae64eba0acc64) | AleixoAlonso (Sketchfab: AleixoAlonso) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 1024 px; espelhado e ajustado às medidas da planta |
+| `cama-casal.glb` | [Chelsea bed with storage - 3D Model](https://sketchfab.com/3d-models/chelsea-bed-with-storage-3d-model-cbe6e0dcc10a414a84acc5cc08171b87) | BertO (Sketchfab: bertosalotti) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 1024 px; ajustado à pegada da cama em cada planta |
+| `cama-solteiro.glb` | [Bed - Sample](https://sketchfab.com/3d-models/bed-sample-b547d81073b64d3e97200fd3ae9a74af) | Mifu Saja (Sketchfab: mifusaja) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | texturas a 512 px; ajustado à pegada da cama em cada planta |
+| `cadeira.glb` | [chair](https://sketchfab.com/3d-models/chair-9328075d9f3d417d9d899043e886d3df) | MaX3Dd (Sketchfab: MaX3Dd) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px; estreitada para 0,52 m |
+| `mesa-jantar.glb` | [Round dining table made of solid ash or oak.](https://sketchfab.com/3d-models/round-dining-table-made-of-solid-ash-or-oak-f89ed38bc0384737b3d45da4dd827a85) | ariy400 (Sketchfab: ariy400) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px; ampliada para Ø 1,38 m |
 | `luminaria.glb` | [IridescenceLamp](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/IridescenceLamp) | © 2022 Wayfair, LLC | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | sem transmissão/iridescência, malha simplificada, texturas a 512 px |
 | `mesa-centro.glb` | [coffee_table_round_01](https://polyhaven.com/a/coffee_table_round_01) | Poly Haven | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | texturas a 512 px |
 | `mesa-lateral.glb` | [side_table_01](https://polyhaven.com/a/side_table_01) | Poly Haven | CC0 | texturas a 512 px |
@@ -19,5 +24,6 @@ A CC BY 4.0 exige crédito ao autor e indicação de que houve alterações: o c
 O roteiro de preparação está em `scripts/otimizar-modelos.mjs` (usa `@gltf-transform`, `meshoptimizer` e
 `sharp`, instalados à parte; não são dependências do site).
 
-Camas, cadeiras de jantar, mesas de jantar e armários continuam gerados por código: não encontrei
-modelos de licença livre, com qualidade e estilo compatíveis com os renders oficiais, para essas peças.
+Ainda gerados por código (sem modelo livre aprovado até aqui): armários, cozinha e eletrodomésticos,
+louças e bancadas dos banhos, mesas da varanda, sofás e mesas dos finais 03 e 06, e todo o mobiliário
+dos finais 02 e 04 (que segue os renders oficiais).
