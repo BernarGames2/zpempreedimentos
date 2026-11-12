@@ -6,9 +6,10 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { area } from "@/lib/formato";
-import { sorteio } from "@/lib/procedural/canvas";
+import { acabamentos } from "@/lib/procedural/acabamento";
+import { sorteio, tela } from "@/lib/procedural/canvas";
 import { mobiliar, type MatInt, type Prim } from "@/lib/procedural/mobilia";
-import { CORTE, PE_LIVRE, montarPlanta } from "@/lib/procedural/planta";
+import { CORTE, PE_LIVRE, limitesPlanta, montarPlanta, type Planta, type Ret } from "@/lib/procedural/planta";
 import { texCartaoFolhas } from "@/lib/procedural/texturasInterior";
 import { useExp } from "@/lib/store";
 import type { Comodo, TipoPlanta } from "@/lib/types";
@@ -112,6 +113,33 @@ function geoJardim(js: { x: number; z0: number; z1: number; y1: number }[], cort
   return g;
 }
 
+/**
+ * Sombras de contato "assadas" numa textura vista de cima: oclusão ao longo das paredes e debaixo de cada
+ * móvel. Custa uma chamada de desenho e funciona em qualquer nível de qualidade (sem pós-processamento).
+ */
+function sombrasDoPiso(tipo: TipoPlanta, planta: Planta, obstaculos: Ret[]): { tex: THREE.CanvasTexture; x: number; z: number; w: number; h: number } {
+  const l = limitesPlanta(tipo);
+  const m = 0.4;
+  const ppm = 44;
+  const [w, h] = [l.x1 - l.x0 + 2 * m, l.z1 - l.z0 + 2 * m];
+  const [c, g] = tela(Math.ceil(w * ppm), Math.ceil(h * ppm));
+  const longe = c.width * 3; // o retângulo é desenhado fora da tela: só a sombra borrada dele cai dentro
+  g.shadowOffsetX = longe;
+  g.fillStyle = "#000";
+  const sombra = (r: Ret, borrao: number, alfa: number, folga = 0) => {
+    g.shadowColor = `rgba(0,0,0,${alfa})`;
+    g.shadowBlur = borrao * ppm;
+    g.fillRect((r.x0 - folga - l.x0 + m) * ppm - longe, (r.z0 - folga - l.z0 + m) * ppm, (r.x1 - r.x0 + 2 * folga) * ppm, (r.z1 - r.z0 + 2 * folga) * ppm);
+  };
+  for (const b of planta.paredes) if (b.y0 < 0.01 && b.y1 > 0.3) sombra(b, 0.42, 0.5, 0.02);
+  for (const o of obstaculos) {
+    sombra(o, 0.34, 0.42, 0.03);
+    sombra(o, 0.09, 0.5);
+  }
+  const tex = new THREE.CanvasTexture(c);
+  return { tex, x: (l.x0 + l.x1) / 2, z: (l.z0 + l.z1) / 2, w, h };
+}
+
 interface Props {
   tipo: TipoPlanta;
   /** Maquete: sem teto e com as paredes cortadas a 1,20 m. */
@@ -148,8 +176,10 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       forma: "caixa", mat: "folhagem", camada: "parede",
       pos: [j.x + 0.03, j.y1 / 2, (j.z0 + j.z1) / 2], tam: [0.06, j.y1, j.z1 - j.z0],
     }));
-    return [...paredes, ...rodapes, ...jardins, ...mob.prims];
-  }, [planta, mob]);
+    return [...paredes, ...rodapes, ...jardins, ...acabamentos(tipo, planta, mob), ...mob.prims];
+  }, [tipo, planta, mob]);
+  const sombras = useMemo(() => sombrasDoPiso(tipo, planta, mob.obstaculos), [tipo, planta, mob]);
+  const matSombras = useMemo(() => new THREE.MeshBasicMaterial({ map: sombras.tex, transparent: true, depthWrite: false, toneMapped: false }), [sombras]);
 
   const geos = useMemo(() => fundir(prims, corte), [prims, corte]);
   const pisos = useMemo(() => tipo.comodos.map((c) => ({ c, g: geoPiso(c, c.piso === "externo" ? -0.03 : 0, false) })), [tipo]);
@@ -161,13 +191,20 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
   );
   const grade = useMemo(() => matGrade("#5a4129"), []);
 
-  useEffect(() => m.ajustar(artificial), [m, artificial]);
+  useEffect(() => m.ajustar(Math.max(artificial, 0.35)), [m, artificial]);
   useEffect(
     () => () => {
       Object.values(geos).forEach((g) => g?.dispose());
       jardim?.dispose();
     },
     [geos, jardim],
+  );
+  useEffect(
+    () => () => {
+      sombras.tex.dispose();
+      matSombras.dispose();
+    },
+    [sombras, matSombras],
   );
 
   // Luzes pontuais são caras: no máximo 4 acesas, as mais próximas do cômodo atual.
@@ -189,7 +226,11 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       {pisos.map(({ c, g }) => (
         <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
       ))}
-      {!corte && tetos && <mesh geometry={tetos} material={m.mats.teto} name="teto_apartamento" />}
+      {/* acima dos tapetes (1,6 cm) e abaixo de tudo o que tem volume */}
+      <mesh position={[sombras.x, 0.02, sombras.z]} rotation={[-Math.PI / 2, 0, 0]} material={matSombras} renderOrder={1} name="sombras_de_contato">
+        <planeGeometry args={[sombras.w, sombras.h]} />
+      </mesh>
+      {!corte && tetos && <mesh geometry={tetos} material={m.mats.teto} castShadow name="teto_apartamento" />}
       {jardim && <mesh geometry={jardim} material={matFolhas} castShadow />}
       {guardas.map((a) => {
         // guarda-corpo ao longo de x (final 02) ou de z (final 01): o gradil fica 5 cm para dentro da varanda
@@ -216,7 +257,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
         );
       })}
       {luzes.map((l, i) => (
-        <pointLight key={i} position={l.pos} color={COR_LUZ_QUENTE} intensity={l.forca * (1 + 7 * artificial)} distance={l.alcance * 1.4} decay={1.5} />
+        <pointLight key={i} position={l.pos} color={COR_LUZ_QUENTE} intensity={l.forca * (0.3 + 7.7 * artificial)} distance={l.alcance * 1.4} decay={1.5} />
       ))}
       {corte && <ExtrasMaquete tipo={tipo} />}
     </group>

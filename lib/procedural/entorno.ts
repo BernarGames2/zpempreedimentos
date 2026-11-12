@@ -98,9 +98,9 @@ export function gerarEntorno(): Entorno {
         const t = r();
         const longe = d > 520;
         const perto = d < 260;
-        if (perto) uso = t < 0.44 ? "casas" : t < 0.68 ? "vazio" : t < 0.8 ? "vertical" : t < 0.9 ? "praca" : "comercial";
+        if (perto) uso = t < 0.52 ? "casas" : t < 0.6 ? "vazio" : t < 0.78 ? "vertical" : t < 0.9 ? "praca" : "comercial";
         else if (longe) uso = t < 0.34 ? "casas" : t < 0.74 ? "vertical" : t < 0.86 ? "comercial" : t < 0.94 ? "praca" : "vazio";
-        else uso = t < 0.42 ? "casas" : t < 0.64 ? "vertical" : t < 0.76 ? "vazio" : t < 0.88 ? "comercial" : "praca";
+        else uso = t < 0.46 ? "casas" : t < 0.7 ? "vertical" : t < 0.77 ? "vazio" : t < 0.89 ? "comercial" : "praca";
       }
       quadras.push({ ...q, uso, semente: Math.floor(r() * 1e9) });
     }
@@ -153,8 +153,14 @@ export function gerarEntorno(): Entorno {
         const cx = q.x0 + ((i + 0.5) / n) * W + (rr() - 0.5) * 6;
         const cz = q.z0 + 14 + prof / 2 + rr() * Math.max(0, D - prof - 28);
         const andares = andaresBase + Math.floor(rr() * 16);
-        predios.push({ x: cx, z: cz, larg, prof, alt: andares * 3 + 2, giro: 0, cor: Math.floor(rr() * 6) });
+        const cor = Math.floor(rr() * 6);
+        const alt = andares * 3 + 2;
+        predios.push({ x: cx, z: cz, larg, prof, alt, giro: 0, cor });
         predios.push({ x: cx, z: cz, larg: larg + 8, prof: prof + 8, alt: 4.5, giro: 0, cor: 6 }); // embasamento
+        // volumes que quebram a caixa: casa de máquinas no topo, prumada de varandas e, às vezes, um corpo lateral mais baixo
+        predios.push({ x: cx + (rr() - 0.5) * larg * 0.3, z: cz, larg: larg * 0.38, prof: prof * 0.42, alt: alt + 3.6, giro: 0, cor: 6 });
+        predios.push({ x: cx, z: cz + prof / 2 + 0.7, larg: larg * 0.56, prof: 1.6, alt: alt - 3, giro: 0, cor: (cor + 1) % 6 });
+        if (rr() < 0.45) predios.push({ x: cx + larg / 2 + 3, z: cz, larg: 7, prof: prof * 0.7, alt: alt * (0.55 + rr() * 0.25), giro: 0, cor });
       }
       piscinas.push({ x: q.x0 + W * (0.25 + rr() * 0.5), z: q.z1 - 9, larg: 12 + rr() * 6, prof: 5 + rr() * 2 });
       for (let i = 0; i < 7; i++) arvore(q.x0 + 3 + rr() * (W - 6), q.z1 - 3 - rr() * 14, rr() < 0.5 ? "palmeira" : "copa", 0.7 + rr() * 0.5, rr);
@@ -233,7 +239,9 @@ export function gerarEntorno(): Entorno {
     const x = centro.x + Math.cos(a) * d;
     const z = centro.z + Math.sin(a) * d;
     const alt = 30 + Math.pow(r(), 1.6) * 95 * (1 - d / 520);
-    predios.push({ x, z, larg: 18 + r() * 20, prof: 16 + r() * 18, alt, giro: r() * Math.PI, cor: Math.floor(r() * 6) });
+    const [larg, prof, giro] = [18 + r() * 20, 16 + r() * 18, r() * Math.PI];
+    predios.push({ x, z, larg, prof, alt, giro, cor: Math.floor(r() * 6) });
+    if (r() < 0.6) predios.push({ x, z, larg: larg * 0.45, prof: prof * 0.45, alt: alt + 4 + r() * 6, giro, cor: 6 });
   }
   for (let i = 0; i < 150; i++) {
     const a = r() * Math.PI * 2;

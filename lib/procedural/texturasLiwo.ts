@@ -171,6 +171,18 @@ export function texMarmore(nome: string, cores: [string, string], veio: string):
 }
 
 /** Porcelanato bege de placas grandes (piso dos renders), com juntas finas. */
+/** Pintura sobre massa corrida: quase lisa, com um relevo fino que quebra o brilho uniforme da parede. */
+export function texReboco(): ParTextura {
+  return memo("reboco", () => {
+    const n = 256;
+    const a = ruido(n, n, 3, 11);
+    const b = fbm(n, n, 48, 3, 5);
+    const h = new Float32Array(n * n);
+    for (let i = 0; i < h.length; i++) h[i] = (a[i] as number) * 0.5 + (b[i] as number) * 0.5;
+    return { map: textura(pintar(h, n, n, ["#e7e2d8", "#efebe3"], 1)), normalMap: textura(normalDeAltura(h, n, n, 1.5), { cor: false }) };
+  });
+}
+
 export function texPorcelanatoBege(externo: boolean): ParTextura {
   return memo(`porcelanato-bege-${externo}`, () => {
     const n = 512;

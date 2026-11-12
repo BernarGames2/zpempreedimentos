@@ -38,6 +38,34 @@ class M {
   luzes: Mobilia["luzes"] = [];
   cx(mat: MatInt, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, camada: Camada = "movel", forma: Prim["forma"] = "caixa", raio = 0.03): void {
     this.prims.push({ forma, mat, pos: [(x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2], tam: [Math.abs(x1 - x0), Math.abs(y1 - y0), Math.abs(z1 - z0)], camada, raio });
+    if (mat === "laqueado" && forma === "caixa" && camada === "movel") this.portasDeArmario(x0, x1, y0, y1, z0, z1);
+  }
+  /** Marcenaria laqueada: juntas entre as portas e puxadores de bronze nas duas faces compridas (a de trás fica contra a parede). */
+  private portasDeArmario(x0: number, x1: number, y0: number, y1: number, z0: number, z1: number): void {
+    const [xa, xb, ya, yb, za, zb] = [Math.min(x0, x1), Math.max(x0, x1), Math.min(y0, y1), Math.max(y0, y1), Math.min(z0, z1), Math.max(z0, z1)];
+    const h = yb - ya;
+    const alto = h >= 1.8;
+    if (!alto && (h < 0.55 || h > 0.95)) return;
+    const emX = xb - xa >= zb - za;
+    const [l0, l1, d0, d1] = emX ? [xa, xb, za, zb] : [za, zb, xa, xb];
+    if (l1 - l0 < 0.5) return;
+    const n = Math.max(1, Math.round((l1 - l0) / (alto ? 0.5 : 0.55)));
+    const w = (l1 - l0) / n;
+    const caixa = (mat: MatInt, a0: number, a1: number, b0: number, b1: number, p0: number, p1: number) => {
+      const [X0, X1, Z0, Z1] = emX ? [a0, a1, p0, p1] : [p0, p1, a0, a1];
+      this.prims.push({ forma: "caixa", mat, pos: [(X0 + X1) / 2, (b0 + b1) / 2, (Z0 + Z1) / 2], tam: [X1 - X0, b1 - b0, Z1 - Z0], camada: "movel" });
+    };
+    for (let i = 1; i < n; i++) caixa("pretoFosco", l0 + i * w - 0.003, l0 + i * w + 0.003, ya + 0.01, yb - 0.01, d0 - 0.002, d1 + 0.002);
+    if (alto) caixa("pretoFosco", l0 + 0.005, l1 - 0.005, yb - 0.42, yb - 0.414, d0 - 0.002, d1 + 0.002); // maleiro
+    for (let i = 0; i < n; i++) {
+      const a = l0 + i * w;
+      for (const [p0, p1] of [[d0 - 0.028, d0], [d1, d1 + 0.028]] as const) {
+        if (alto) {
+          const al = a + (i % 2 === 0 ? w - 0.05 : 0.05);
+          caixa("bronze", al - 0.007, al + 0.007, ya + 0.95, ya + 1.25, p0, p1);
+        } else caixa("bronze", a + w / 2 - 0.08, a + w / 2 + 0.08, yb - 0.1, yb - 0.086, p0, p1);
+      }
+    }
   }
   ar(mat: MatInt, x0: number, x1: number, y0: number, y1: number, z0: number, z1: number, raio = 0.05, camada: Camada = "movel"): void {
     this.cx(mat, x0, x1, y0, y1, z0, z1, camada, "arred", raio);
@@ -159,6 +187,21 @@ class M {
       this.ar(cab, x1 - 0.02, x1 + 0.14, 0, 1.05, z0 - 0.08, z1 + 0.08, 0.06);
     }
     this.obst(x0, x1, z0, z1);
+    if (base === "veludo") return; // a cama da suíte master do final 02 segue o render oficial
+    // manta dobrada no pé da cama e almofada junto aos travesseiros (as plantas mostram roupa de cama em dois tons)
+    const emZ = cabeceira === "z0" || cabeceira === "z1";
+    const s = cabeceira === "z0" || cabeceira === "x0" ? 1 : -1;
+    const ini = emZ ? (s > 0 ? z0 : z1) : s > 0 ? x0 : x1;
+    const comp = emZ ? z1 - z0 : x1 - x0;
+    const [a, b] = [ini + s * comp * 0.66, ini + s * comp * 0.9].sort((p, q) => p - q) as [number, number];
+    const c = ini + s * 0.62;
+    if (emZ) {
+      this.ar("tecidoCinza", x0 - 0.035, x1 + 0.035, 0.44, 0.645, a, b, 0.04);
+      this.girada("tecidoVerde", [(x0 + x1) / 2, 0.76, c], [0.44, 0.3, 0.12], [-s * 0.3, 0, 0], "arred", 0.05);
+    } else {
+      this.ar("tecidoCinza", a, b, 0.44, 0.645, z0 - 0.035, z1 + 0.035, 0.04);
+      this.girada("tecidoVerde", [c, 0.76, (z0 + z1) / 2], [0.12, 0.3, 0.44], [0, 0, s * 0.3], "arred", 0.05);
+    }
   }
 }
 
@@ -200,9 +243,9 @@ function mobiliaFinal01(m: M): void {
     const x = 2.4;
     const folha = (z0: number, z1: number, dx: number) => {
       m.cx("vidro", x + dx - 0.006, x + dx + 0.006, 0.02, 2.36, z0, z1, "parede");
-      m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 2.34, 2.4, z0, z1, "alto");
-      m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 0, 0.03, z0, z1, "parede");
-      for (const zz of [z0, z1]) m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 0, 2.4, zz - 0.02, zz + 0.02, "parede");
+      m.cx("bronze", x + dx - 0.02, x + dx + 0.02, 2.34, 2.4, z0, z1, "alto");
+      m.cx("bronze", x + dx - 0.02, x + dx + 0.02, 0, 0.03, z0, z1, "parede");
+      for (const zz of [z0, z1]) m.cx("bronze", x + dx - 0.02, x + dx + 0.02, 0, 2.4, zz - 0.02, zz + 0.02, "parede");
     };
     folha(6.01, 6.9, -0.03); // fixa
     folha(6.75, 7.65, 0.03); // de correr, aberta sobre a fixa
@@ -282,7 +325,7 @@ function mobiliaFinal01(m: M): void {
   m.cx("laqueado", 0.83, 3.22, 0, 2.3, 3.04 + e, 3.7);
   m.obst(0.78, 3.22, 3.04, 3.72);
   m.cil("tapete", 1.94, 0, 4.47, 0.67, 0.012);
-  m.cama(0.98, 2.73, 4.65, 5.5, "x0", "tecidoBranco", "madeiraClara");
+  m.cama(0.98, 2.73, 4.65, 5.5, "x0", "tecidoCinza", "madeiraClara");
   m.cil("madeiraClara", 1.12, 0, 4.4, 0.18, 0.5);
   m.cil("tecidoBranco", 1.12, 0.5, 4.4, 0.08, 0.22);
   m.obst(0.9, 1.34, 4.18, 4.62);
@@ -295,7 +338,7 @@ function mobiliaFinal01(m: M): void {
 
   // ═══ DORM. 2: cama encostada nas paredes de cima e da esquerda, criado-mudo com vaso, tapete e armário embaixo ═══
   m.cx("tapete", 1.52, 3.03, 0.004, 0.016, 0.46, 2.04);
-  m.cama(0.98, 2.79, 0.08, 1.18, "x0", "tecidoBranco", "madeiraClara");
+  m.cama(0.98, 2.79, 0.08, 1.18, "x0", "tecidoCinza", "madeiraClara");
   m.cil("madeiraClara", 1.15, 0, 1.42, 0.18, 0.5);
   m.cil("louca", 1.15, 0.5, 1.42, 0.06, 0.12);
   m.esf("planta", 1.15, 0.72, 1.42, 0.12);
@@ -323,7 +366,7 @@ function mobiliaFinal01(m: M): void {
   m.cil("metalBranco", 8.3, 1.85, 0.85, 0.012, 4.55, "movel", [Math.PI / 2, 0, 0]);
   m.obst(7.92, 8.63, 0.79, 5.6);
   m.cx("tapete", 5.28, 7.89, 0.004, 0.016, 3.19, 5.25);
-  m.cama(5.74, 7.28, 3.45, 5.44, "z1", "tecidoBranco", "madeiraClara");
+  m.cama(5.74, 7.28, 3.45, 5.44, "z1", "tecidoCinza", "madeiraClara");
   m.cil("madeiraClara", 5.48, 0, 5.2, 0.2, 0.5);
   m.cil("tecidoBranco", 5.48, 0.5, 5.2, 0.09, 0.24);
   m.obst(5.26, 5.7, 4.98, 5.42);
@@ -392,9 +435,9 @@ function mobiliaFinal03(m: M): void {
     const z = 4.38;
     const folha = (x0: number, x1: number, dz: number) => {
       m.cx("vidro", x0, x1, 0.02, 2.36, z + dz - 0.006, z + dz + 0.006, "parede");
-      m.cx("pretoFosco", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
-      m.cx("pretoFosco", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
-      for (const xx of [x0, x1]) m.cx("pretoFosco", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
+      m.cx("bronze", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
+      m.cx("bronze", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
+      for (const xx of [x0, x1]) m.cx("bronze", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
     };
     folha(7.05, 8.0, -0.03);
     folha(7.85, 8.8, 0.03);
@@ -421,7 +464,7 @@ function mobiliaFinal03(m: M): void {
   m.obst(0, 0.65, 0, 2.52);
   m.obst(0.6, 1.92, 0, 0.58);
   m.cx("tapete", 0.63, 2.45, 0.004, 0.016, 2.62, 5.11);
-  m.cama(0.2, 2.1, 3.11, 4.71, "x0", "tecidoBranco", "madeiraClara");
+  m.cama(0.2, 2.1, 3.11, 4.71, "x0", "tecidoCinza", "madeiraClara");
   for (const z of [2.8, 5.0]) {
     m.cx("madeiraNatural", e + 0.02, 0.42, 0, 0.5, z - 0.18, z + 0.18);
     m.cil("tecidoBranco", 0.24, 0.5, z, 0.08, 0.22);
@@ -449,8 +492,8 @@ function mobiliaFinal03(m: M): void {
   m.cx("laqueado", 5.37 + e, 6.96, 0, 2.3, 2.56, 3.18);
   m.obst(5.37, 7.01, 2.51, 3.2);
   m.cil("tapete", 5.67, 0, 4.32, 0.97, 0.012);
-  m.cama(4.39, 5.18, 4.14, 5.84, "z1", "tecidoBranco", "madeiraClara");
-  m.cama(6.03, 6.88, 4.14, 5.84, "z1", "tecidoBranco", "madeiraClara");
+  m.cama(4.39, 5.18, 4.14, 5.84, "z1", "tecidoCinza", "madeiraClara");
+  m.cama(6.03, 6.88, 4.14, 5.84, "z1", "tecidoCinza", "madeiraClara");
   m.cx("madeiraNatural", 5.3, 5.92, 0, 0.5, 5.7, 6.04);
   m.cil("louca", 5.6, 0.5, 5.86, 0.07, 0.12);
   m.obst(5.25, 5.95, 5.66, 6.14);
@@ -506,9 +549,9 @@ function mobiliaFinal06(m: M): void {
     const z = 1.77;
     const folha = (x0: number, x1: number, dz: number) => {
       m.cx("vidro", x0, x1, 0.02, 2.36, z + dz - 0.006, z + dz + 0.006, "parede");
-      m.cx("pretoFosco", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
-      m.cx("pretoFosco", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
-      for (const xx of [x0, x1]) m.cx("pretoFosco", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
+      m.cx("bronze", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
+      m.cx("bronze", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
+      for (const xx of [x0, x1]) m.cx("bronze", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
     };
     folha(1.73, 2.7, 0.03);
     folha(2.55, 3.5, -0.03);
@@ -531,7 +574,7 @@ function mobiliaFinal06(m: M): void {
 
   // ═══ SUÍTE 1: cama de solteiro com cabeceira na parede da esquerda, criado-mudo, mesinha, tapete e armário ═══
   m.cx("tapete", 5.24, 6.88, 0.004, 0.016, 0.13, 2.26);
-  m.cama(4.72, 6.52, 0.68, 1.53, "x0", "tecidoBranco", "madeiraClara");
+  m.cama(4.72, 6.52, 0.68, 1.53, "x0", "tecidoCinza", "madeiraClara");
   m.cx("madeiraNatural", 4.62, 5.05, 0, 0.55, e, 0.45);
   m.cil("louca", 4.84, 0.55, 0.25, 0.06, 0.14);
   m.obst(4.58, 5.08, 0, 0.48);
@@ -557,7 +600,7 @@ function mobiliaFinal06(m: M): void {
 
   // ═══ SUÍTE MASTER: cama queen com cabeceira na parede da direita, criados-mudos, tapete e closet em L ═══
   m.cx("tapete", 9.13, 11.19, 0.004, 0.016, 0.92, 3.53);
-  m.cama(9.49, 11.4, 1.29, 3.05, "x1", "tecidoBranco", "madeiraClara");
+  m.cama(9.49, 11.4, 1.29, 3.05, "x1", "tecidoCinza", "madeiraClara");
   for (const z of [1.0, 3.3]) {
     m.cx("madeiraNatural", 11.08, 11.5, 0, 0.5, z - 0.2, z + 0.2);
     m.obst(11.05, 11.55, z - 0.22, z + 0.22);

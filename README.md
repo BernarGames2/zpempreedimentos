@@ -34,6 +34,12 @@ Cada número tem a fonte comentada no script.
 - **77 e 76 m², 2 suítes (finais 03 e 06)**: plantas oficiais medidas do mesmo jeito; mobília pelo desenho.
 - **Garden e coberturas**: ainda só a planta oficial e a vista do andar (falta medir; o projeto não inventa ambientes).
 
+Acabamento do interior (fase 2): luz do dia por padrão dentro do apartamento, sombras de contato
+assadas no piso (paredes e móveis), oclusão nas paredes, reflexos de um ambiente neutro, texturas com
+relevo em tecidos e paredes, guarnições e folhas de porta, esquadrias, peitoris, corrimão e marcenaria
+com juntas e puxadores. A porta de entrada é uma folha fechada (o hall do andar não é modelado).
+Tudo continua gerado por código: não há modelos 3D de mobiliário de terceiros.
+
 Ao entrar, o visitante já está andando dentro do apartamento (o 3D é o padrão, não a foto):
 joystick e arrastar para olhar no celular; W A S D ou setas, mouse e rodinha (zoom) no computador;
 tocar ou clicar no chão leva até o ponto; abas e minimapa trocam de cômodo; paredes e móveis têm colisão.

@@ -485,7 +485,28 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
       new THREE.Matrix4().compose(new THREE.Vector3(x, y, z), q.clone().setFromAxisAngle(eixoY, rot), new THREE.Vector3(sx, sy, sz));
 
     // chão: textura da malha no centro, campo repetido em volta e a serra no horizonte
-    const chao = new THREE.Mesh(guardar(new THREE.PlaneGeometry(e.meioLado * 2, e.meioLado * 2)), guardar(new THREE.MeshStandardMaterial({ map: guardar(texturaChao(e)), roughness: 1 })));
+    const matChao = guardar(new THREE.MeshStandardMaterial({ map: guardar(texturaChao(e)), roughness: 1 }));
+    // grão fino por cima da textura da malha (que tem ~0,8 m por pixel): de perto o chão deixa de ser uma cor chapada
+    matChao.onBeforeCompile = (s) => {
+      s.fragmentShader = s.fragmentShader
+        .replace(
+          "#include <common>",
+          `#include <common>
+          float h2(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+          float vn(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(h2(i), h2(i + vec2(1.0, 0.0)), f.x), mix(h2(i + vec2(0.0, 1.0)), h2(i + vec2(1.0, 1.0)), f.x), f.y); }`,
+        )
+        .replace(
+          "#include <map_fragment>",
+          `#include <map_fragment>
+          {
+            vec2 pm = vMapUv * ${(e.meioLado * 2).toFixed(1)};
+            float grao = 0.45 * vn(pm * 1.7) + 0.35 * vn(pm * 0.45) + 0.2 * vn(pm * 6.0);
+            float longe = smoothstep(0.25, 1.4, fwidth(pm.x) + fwidth(pm.y));
+            diffuseColor.rgb *= mix(0.8 + 0.4 * grao, 1.0, longe);
+          }`,
+        );
+    };
+    const chao = new THREE.Mesh(guardar(new THREE.PlaneGeometry(e.meioLado * 2, e.meioLado * 2)), matChao);
     chao.rotation.x = -Math.PI / 2;
     chao.position.y = -0.05;
     chao.receiveShadow = true;

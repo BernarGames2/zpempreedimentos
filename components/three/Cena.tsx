@@ -68,7 +68,9 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   const emVoo = useExp((s) => s.emVoo);
   const gl = useThree((s) => s.gl);
 
-  const amb = useMemo(() => ambiente(hora, noite), [hora, noite]);
+  const solTocado = useExp((s) => s.solTocado);
+  // Por dentro, o apartamento é mostrado à luz do dia (como numa visita) até o visitante mexer no controle de sol.
+  const amb = useMemo(() => ambiente(hora, cena === "interior" && !solTocado ? false : noite), [hora, noite, cena, solTocado]);
   const hdri = useMemo(() => escolherHdri(manifesto), [manifesto]);
   const interior = cena === "interior";
   const u = unidade(unidadeSel);
@@ -183,7 +185,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
             {aptoReal ? (
               <ApartamentoReal arquivo={aptoReal} corte={estado !== "PASSEIO"} oculto={comSplat} />
             ) : (
-              <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={Math.max(amb.artificial, 0.35)} fonte={fonte} oculto={comSplat} comodo={estado === "PASSEIO" ? comodoAtual : null} />
+              <Interior tipo={tipo} corte={estado !== "PASSEIO"} artificial={amb.artificial} fonte={fonte} oculto={comSplat} comodo={estado === "PASSEIO" ? comodoAtual : null} />
             )}
           </group>
           {splat && comodoObj && <SplatComodo key={splat.url} comodo={comodoObj} splat={splat} aoCarregar={setSplatOk} />}

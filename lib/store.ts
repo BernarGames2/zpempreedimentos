@@ -66,6 +66,8 @@ interface Experiencia {
   hora: number;
   /** Noite: toda a iluminação artificial acesa, como nos renders oficiais. */
   noite: boolean;
+  /** O visitante mexeu no controle de sol: até lá, o interior do apartamento é mostrado de dia. */
+  solTocado: boolean;
   qualidade: Qualidade;
   qualidadeAuto: boolean;
   medidas: boolean;
@@ -124,6 +126,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   mostrarStatus: false,
   hora: 16,
   noite: true,
+  solTocado: false,
   qualidade: "medio",
   qualidadeAuto: true,
   medidas: false,

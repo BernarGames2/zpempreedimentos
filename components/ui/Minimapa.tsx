@@ -37,10 +37,10 @@ export function Minimapa({ tipo }: { tipo: TipoPlanta }) {
   };
 
   return (
-    <div className="vidro pointer-events-auto rounded-2xl p-2" data-testid="minimapa">
+    <div className="vidro pointer-events-auto rounded-2xl p-1.5 sm:p-2" data-testid="minimapa">
       <svg
         viewBox={`${l.x0 - m} ${l.z0 - m} ${larg} ${alt}`}
-        className="block h-auto w-[132px] cursor-pointer sm:w-[176px]"
+        className="block h-auto w-[104px] cursor-pointer sm:w-[176px]"
         role="img"
         aria-label="Planta do apartamento. Clique em um ponto para ir até lá."
         onClick={aoClicar}

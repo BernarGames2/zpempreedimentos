@@ -87,15 +87,15 @@ export function BarraPasseio({ u, extras }: { u: Unidade; extras?: React.ReactNo
       <div className="absolute right-3 top-[4.25rem] z-10 flex flex-col items-end gap-2 sm:right-6 sm:top-20">
         <Minimapa tipo={tipo} />
         {!usandoSplat && (
-          <span className="vidro rounded-full px-3 py-1 text-[11px] text-cinza" data-testid="previa-simplificada">3D da planta oficial</span>
+          <span className="vidro rounded-full px-3 py-1 text-[11px] text-cinza max-sm:hidden" data-testid="previa-simplificada">3D da planta oficial</span>
         )}
       </div>
-      <div className="pointer-events-auto absolute left-3 top-[7.4rem] z-10 flex flex-col gap-2 sm:left-6 md:top-[8.4rem]" data-testid="botoes-passeio">
+      <div className="pointer-events-auto absolute left-3 top-[7.4rem] z-10 flex flex-col gap-2 max-sm:gap-1.5 max-sm:[&_.btn]:!min-h-10 max-sm:[&_.btn]:!px-3 max-sm:[&_.btn]:!text-xs sm:left-6 md:top-[8.4rem]" data-testid="botoes-passeio">
         <button type="button" disabled={emVoo} onClick={maquete} className="btn btn-linha justify-start" data-testid="ir-maquete">
           <IcoPlanta /> Maquete
         </button>
         <button type="button" disabled={emVoo} onClick={voltarPredio} className="btn btn-linha justify-start" data-testid="voltar-predio">
-          <IcoPredio /> <span className="max-sm:sr-only">Voltar ao prédio</span><span className="sm:hidden">Prédio</span>
+          <IcoPredio /> <span className="max-sm:sr-only">Voltar ao prédio</span><span className="sm:hidden">Sair</span>
         </button>
         {extras}
       </div>

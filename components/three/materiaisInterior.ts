@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { memo } from "@/lib/procedural/canvas";
 import type { MatInt } from "@/lib/procedural/mobilia";
 import { texFolhagem, texMadeira, type ParTextura } from "@/lib/procedural/texturasInterior";
-import { texBoucle, texLivros, texMarmore, texPalhinha, texPorcelanatoBege, texQuadro, texTVDesligada } from "@/lib/procedural/texturasLiwo";
+import { texBoucle, texLivros, texMarmore, texPalhinha, texPorcelanatoBege, texQuadro, texReboco, texTVDesligada } from "@/lib/procedural/texturasLiwo";
 
 /** Lado (em metros) que uma repetição da textura cobre. */
 function ladrilho(p: ParTextura, metros: number, metrosV = metros): ParTextura {
@@ -34,8 +34,18 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
     const led = new THREE.MeshBasicMaterial({ color: "#ffe6bf", toneMapped: false });
     const lampada = new THREE.MeshBasicMaterial({ color: "#fff4e0", toneMapped: false });
     const tv = new THREE.MeshStandardMaterial({ map: texTVDesligada(), roughness: 0.12, metalness: 0.3 });
+    const linho = (nome: string, cores: [string, string], lado = 0.35, relevo = 0.35) =>
+      tex(ladrilho(texBoucle(nome, cores), lado), { roughness: 0.96, normalScale: new THREE.Vector2(relevo, relevo) });
+    // parede pintada com relevo fino e oclusão junto ao piso e ao forro (a malha do interior está em metros do mundo)
+    const parede = tex(ladrilho(texReboco(), 0.9), { roughness: 0.9, normalScale: new THREE.Vector2(0.07, 0.07) });
+    parede.onBeforeCompile = (s) => {
+      s.vertexShader = s.vertexShader.replace("#include <common>", "#include <common>\nvarying float vAltura;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvAltura = position.y;");
+      s.fragmentShader = s.fragmentShader
+        .replace("#include <common>", "#include <common>\nvarying float vAltura;")
+        .replace("#include <color_fragment>", "#include <color_fragment>\ndiffuseColor.rgb *= 1.0 - 0.2 * exp(-vAltura * 6.0) - 0.15 * exp(-(2.6 - vAltura) * 5.0);");
+    };
     const mats: Record<MatInt, THREE.Material> = {
-      parede: std({ color: "#eeece7", roughness: 0.92 }),
+      parede,
       teto: std({ color: "#e4d6bd", roughness: 0.96 }),
       madeiraClara: tex(madeiraClara, { roughness: 0.55, normalScale: new THREE.Vector2(0.4, 0.4) }),
       madeiraNatural: tex(madeiraNatural, { roughness: 0.5 }),
@@ -44,10 +54,10 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       pedraBranca: std({ color: "#f1efea", roughness: 0.3 }),
       caramelo: tex(ladrilho(texBoucle("caramelo", ["#94703f", "#b48c5a"]), 0.25), { roughness: 0.98, normalScale: new THREE.Vector2(0.6, 0.6) }),
       veludo: tex(ladrilho(texBoucle("veludo", ["#a07d45", "#b38f58"]), 2.5), { roughness: 0.62, normalScale: new THREE.Vector2(0.08, 0.08) }),
-      tecidoBranco: std({ color: "#f3f1ec", roughness: 0.95 }),
-      tecidoCinza: std({ color: "#a7a6a2", roughness: 0.95 }),
-      tecidoVerde: std({ color: "#7d8f6a", roughness: 0.95 }),
-      laqueado: std({ color: "#e8e3da", roughness: 0.55 }),
+      tecidoBranco: linho("linho-branco", ["#e6e2da", "#f5f3ee"], 0.4, 0.3),
+      tecidoCinza: linho("linho-cinza", ["#96958f", "#b0afa9"]),
+      tecidoVerde: linho("linho-verde", ["#6f825c", "#889a74"]),
+      laqueado: std({ color: "#e9e4db", roughness: 0.42 }),
       palhinha: tex(ladrilho(texPalhinha(), 0.12), { roughness: 0.8 }),
       cromo: std({ color: "#d6d9dc", roughness: 0.12, metalness: 1 }),
       bronze: std({ color: "#8a6a48", roughness: 0.32, metalness: 0.9 }),
@@ -68,8 +78,8 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       quadroDegrade: new THREE.MeshStandardMaterial({ map: texQuadro("degrade"), roughness: 0.6 }),
       quadroFormas: new THREE.MeshStandardMaterial({ map: texQuadro("formas"), roughness: 0.7 }),
       resinaAmbar: std({ color: "#d9762e", roughness: 0.1, metalness: 0, transparent: true, opacity: 0.86, emissive: "#6b2a08", emissiveIntensity: 0.25 }),
-      tapete: std({ color: "#cdbfa8", roughness: 1 }),
-      porta: std({ color: "#ecebe6", roughness: 0.6 }),
+      tapete: linho("tapete", ["#bfb098", "#d8ccb7"], 0.5, 0.8),
+      porta: std({ color: "#f6f5f1", roughness: 0.45 }),
     };
     const piso = tex(ladrilho(texPorcelanatoBege(false), 1.2), { roughness: 0.38, metalness: 0.02 });
     const pisoExterno = tex(ladrilho(texPorcelanatoBege(true), 1.0), { roughness: 0.6 });

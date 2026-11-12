@@ -31,7 +31,7 @@ test("fase 7: 13º andar → unidade 1301 → entrar e caminhar em 3D → trocar
   await capturar(page, "f7-living", info.project.name);
 
   // anda: joystick no celular, teclado (W) no computador
-  const p0 = await pose(page);
+  let p0 = await pose(page);
   if (info.project.name === "celular") {
     const j = page.getByTestId("joystick");
     await expect(j).toBeVisible();
@@ -44,6 +44,12 @@ test("fase 7: 13º andar → unidade 1301 → entrar e caminhar em 3D → trocar
     await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
   } else {
     await expect(page.getByTestId("joystick")).toHaveCount(0);
+    // andar de costas contra a parede da entrada não atravessa a parede (x = 8,63 m) nem a porta fechada
+    await page.keyboard.down("s");
+    await page.waitForTimeout(2600);
+    await page.keyboard.up("s");
+    p0 = await pose(page);
+    expect(p0.x).toBeLessThan(8.6);
     await page.keyboard.down("w");
     await page.waitForTimeout(2500);
     await page.keyboard.up("w");

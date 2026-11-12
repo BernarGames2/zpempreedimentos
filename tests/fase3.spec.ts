@@ -25,7 +25,7 @@ test("fase 3: entrar leva direto ao passeio 3D; maquete, abas e minimapa", async
   await esperarEstado(page, "PASSEIO");
   expect((await estado(page)).comodoAtual).toBe("quarto");
   await expect(page.getByTestId("minimapa")).toBeVisible();
-  await expect(page.getByTestId("previa-simplificada")).toBeVisible(); // sem .spz em /public/splats
+  await expect(page.getByTestId("previa-simplificada")).toBeAttached(); // sem .spz em /public/splats
   await page.waitForFunction(() => window.location.search.includes("comodo=quarto"));
   await capturar(page, "f3-quarto", info.project.name);
 

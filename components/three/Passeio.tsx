@@ -348,7 +348,15 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
 
       if (mx !== 0 || mz !== 0) {
         const antes: Vec2 = [s.x, s.z];
-        let [nx, nz] = resolverColisao(s.x + mx, s.z + mz, RAIO, barreiras);
+        // Em passos de no máximo 8 cm: com poucos quadros por segundo um passo inteiro atravessaria a parede.
+        const passos = Math.max(1, Math.ceil(Math.hypot(mx, mz) / 0.08));
+        let [nx, nz] = [s.x, s.z];
+        for (let i = 0; i < passos; i++) {
+          const [px, pz] = resolverColisao(nx + mx / passos, nz + mz / passos, RAIO, barreiras);
+          // nunca sai da planta: se o passo cair fora de todos os cômodos, para onde estava
+          if (!comodoEm(tipo, px, pz)) break;
+          [nx, nz] = [px, pz];
+        }
         if (colisorSplat.ativo) {
           // área segura do splat: fora dela a reconstrução degrada
           const dx = nx - colisorSplat.centro.x;

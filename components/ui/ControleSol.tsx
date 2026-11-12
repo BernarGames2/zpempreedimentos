@@ -40,12 +40,12 @@ export function ControleSol({ compacto = false }: { compacto?: boolean }) {
           max={18}
           step={0.5}
           value={hora}
-          onChange={(e) => set({ hora: Number(e.target.value), noite: false })}
+          onChange={(e) => set({ hora: Number(e.target.value), noite: false, solTocado: true })}
           aria-valuetext={horaTexto(hora)}
           className={noite ? "opacity-50" : ""}
         />
         <span className="w-12 shrink-0 text-right text-sm tabular-nums text-texto">{noite ? "—" : horaTexto(hora)}</span>
-        <button type="button" onClick={() => set({ noite: !noite })} aria-pressed={noite} className={`btn btn-linha !min-h-11 !px-3 ${noite ? "btn-ativo" : ""}`}>
+        <button type="button" onClick={() => set({ noite: !noite, solTocado: true })} aria-pressed={noite} className={`btn btn-linha !min-h-11 !px-3 ${noite ? "btn-ativo" : ""}`}>
           <IcoLua width={16} height={16} />
           Noite
         </button>

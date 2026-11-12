@@ -9,7 +9,7 @@ import type { Qualidade } from "@/lib/store";
  * antisserrilhado SMAA e vinheta sutil. No nível baixo, e dentro dos splats, fica desligado.
  */
 export function Efeitos({ qualidade, interior }: { qualidade: Qualidade; interior: boolean }) {
-  const bloom = <Bloom mipmapBlur intensity={interior ? 0.55 : 0.75} luminanceThreshold={0.92} luminanceSmoothing={0.2} radius={0.72} />;
+  const bloom = <Bloom mipmapBlur intensity={interior ? 0.22 : 0.75} luminanceThreshold={interior ? 0.985 : 0.92} luminanceSmoothing={interior ? 0.08 : 0.2} radius={0.72} />;
   if (qualidade === "alto") {
     return (
       <EffectComposer multisampling={0} enableNormalPass={false}>
