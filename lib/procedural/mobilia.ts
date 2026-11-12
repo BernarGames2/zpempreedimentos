@@ -24,7 +24,7 @@ export interface Prim {
 
 /** Móvel com modelo 3D de terceiros (arquivo em /public/modelos; licenças em CREDITOS.md). */
 export interface Modelo {
-  id: "sofa-l" | "cama-casal" | "cama-solteiro" | "cadeira" | "mesa-jantar" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
+  id: "bacia" | "geladeira" | "lavadora" | "sofa-l" | "cama-casal" | "cama-solteiro" | "cadeira" | "mesa-jantar" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
   pos: [number, number, number];
   rotY?: number;
   escala?: [number, number, number];
@@ -169,9 +169,27 @@ class M {
   bacia(x: number, z: number, dir: number): void {
     const sa = Math.sin(dir);
     const ca = Math.cos(dir);
+    if (this.gl) {
+      // bacia com caixa acoplada (o modelo tem o fundo em z = 0 e avança 0,60 m)
+      this.modelos.push({ id: "bacia", pos: [x - sa * 0.22, 0, z - ca * 0.22], rotY: dir });
+      this.obst(x - 0.25, x + 0.25, z - 0.25, z + 0.25);
+      return;
+    }
     this.girada("louca", [x - sa * 0.12, 0.6, z - ca * 0.12], [0.38, 0.4, 0.16], [0, dir, 0], "arred", 0.05);
     this.girada("louca", [x + sa * 0.12, 0.2, z + ca * 0.12], [0.36, 0.4, 0.52], [0, dir, 0], "arred", 0.12);
     this.obst(x - 0.25, x + 0.25, z - 0.25, z + 0.25);
+  }
+  /** Geladeira ou lavadora: modelo 3D ajustado à pegada da planta, com a frente voltada para `frente`; sem modelos, `codigo`. */
+  eletro(id: "geladeira" | "lavadora", x0: number, x1: number, z0: number, z1: number, frente: "x0" | "x1" | "z0" | "z1", codigo: () => void): void {
+    if (!this.gl) return codigo();
+    // medidas do modelo (largura, profundidade, altura, base em y) e altura real da peça
+    const [w, d, h, base, real] = id === "geladeira" ? [3.957, 3.417, 7.953, 0, 1.85] : [23.62, 21.96, 33.46, 16.732, 0.85];
+    const emZ = frente === "z0" || frente === "z1";
+    const sx = (emZ ? x1 - x0 : z1 - z0) / w;
+    const sz = (emZ ? z1 - z0 : x1 - x0) / d;
+    const sy = real / h;
+    const rotY = frente === "z1" ? 0 : frente === "z0" ? Math.PI : frente === "x1" ? Math.PI / 2 : -Math.PI / 2;
+    this.modelos.push({ id, pos: [(x0 + x1) / 2, base * sy, (z0 + z1) / 2], rotY, escala: [sx, sy, sz] });
   }
   /** Box de vidro com chuveiro de teto. */
   box(x0: number, x1: number, z0: number, z1: number, vidro: "x" | "z", c: number): void {
@@ -348,8 +366,10 @@ function mobiliaFinal01(m: M): void {
   // ═══ COZINHA (integrada ao living): geladeira, bancada com cuba e cooktop, lavadora e tanque, na parede de baixo ═══
   {
     const z1 = 10.15 - e;
-    m.cx("pretoFosco", 2.51, 3.2, 0, 1.85, z1 - 0.68, z1); // geladeira (escura na planta)
-    m.cx("cromo", 3.18, 3.2, 0.95, 1.6, z1 - 0.7, z1 - 0.66);
+    m.eletro("geladeira", 2.51, 3.2, z1 - 0.68, z1, "z0", () => {
+      m.cx("pretoFosco", 2.51, 3.2, 0, 1.85, z1 - 0.68, z1); // geladeira (escura na planta)
+      m.cx("cromo", 3.18, 3.2, 0.95, 1.6, z1 - 0.7, z1 - 0.66);
+    });
     m.obst(2.46, 3.24, z1 - 0.7, z1 + e);
     m.cx("laqueado", 3.28, 5.7, 0.1, 0.86, z1 - 0.6, z1);
     m.cx("pretoFosco", 3.28, 5.7, 0, 0.1, z1 - 0.56, z1);
@@ -359,8 +379,10 @@ function mobiliaFinal01(m: M): void {
     m.cx("pretoFosco", 4.72, 5.3, 0.9, 0.912, z1 - 0.54, z1 - 0.06); // cooktop de 4 bocas
     for (const [dx, dz] of [[0.14, 0.14], [0.44, 0.14], [0.14, 0.34], [0.44, 0.34]] as const) m.cil("inox", 4.72 + dx, 0.912, z1 - 0.54 + dz, 0.06, 0.006);
     m.cx("pedraBranca", 3.28, 5.7, 0.9, 1.5, z1 - 0.02, z1, "alto"); // frontão
-    m.ar("eletro", 5.76, 6.4, 0, 0.85, z1 - 0.6, z1, 0.03); // lavadora
-    m.cil("vidroFosco", 6.08, 0.5, z1 - 0.61, 0.18, 0.01, "movel", [Math.PI / 2, 0, 0]);
+    m.eletro("lavadora", 5.78, 6.38, z1 - 0.6, z1, "z0", () => {
+      m.ar("eletro", 5.76, 6.4, 0, 0.85, z1 - 0.6, z1, 0.03); // lavadora
+      m.cil("vidroFosco", 6.08, 0.5, z1 - 0.61, 0.18, 0.01, "movel", [Math.PI / 2, 0, 0]);
+    });
     m.cx("louca", 6.61, 7.28, 0.62, 0.86, z1 - 0.55, z1); // tanque
     m.cx("metalBranco", 6.64, 7.25, 0, 0.62, z1 - 0.5, z1 - 0.02);
     m.cil("cromo", 6.95, 0.86, z1 - 0.06, 0.012, 0.3);
@@ -514,7 +536,7 @@ function mobiliaFinal03(m: M): void {
   // cozinha na parede da direita: geladeira, bancada com cuba e cooktop; tanque e lavadora na área de serviço
   {
     const x1 = 11.55 - e;
-    m.cx("pretoFosco", x1 - 0.66, x1, 0, 1.85, 1.3, 1.92);
+    m.eletro("geladeira", x1 - 0.66, x1, 1.26, 1.94, "x0", () => m.cx("pretoFosco", x1 - 0.66, x1, 0, 1.85, 1.3, 1.92));
     m.obst(x1 - 0.7, 11.55, 1.28, 1.95);
     m.cx("laqueado", x1 - 0.6, x1, 0.1, 0.86, 1.95, 4.3);
     m.cx("pedraBranca", x1 - 0.62, x1, 0.86, 0.9, 1.95, 4.3);
@@ -526,7 +548,7 @@ function mobiliaFinal03(m: M): void {
     m.cx("parede", 11.32, 11.55, 0, H, 4.31, 5.17, "parede"); // shaft da área de serviço (X na planta)
     m.cx("louca", 10.9, 11.3, 0.62, 0.86, 4.45, 5.05); // tanque
     m.cx("metalBranco", 10.93, 11.27, 0, 0.62, 4.48, 5.02);
-    m.ar("eletro", 10.9, 11.5, 0, 0.85, 5.3, 5.95, 0.03); // lavadora
+    m.eletro("lavadora", 10.9, 11.5, 5.32, 5.92, "x0", () => m.ar("eletro", 10.9, 11.5, 0, 0.85, 5.3, 5.95, 0.03)); // lavadora
     m.obst(10.85, 11.55, 4.31, 6.14);
   }
   for (const [x, z] of [[9.06, 0.75], [8.6, 3.1], [10.8, 2.9], [10.6, 5.0]] as const) m.spot(x, z);
@@ -610,7 +632,7 @@ function mobiliaFinal06(m: M): void {
   const e = 0.05;
   const H = PE_LIVRE;
   // ═══ COZINHA E SERVIÇO na parede da esquerda: lavadora, tanque, shaft, cooktop, cuba e geladeira ═══
-  m.ar("eletro", e, 0.68, 0, 0.85, e + 0.02, 0.66, 0.03);
+  m.eletro("lavadora", e, 0.66, e + 0.04, 0.64, "x1", () => m.ar("eletro", e, 0.68, 0, 0.85, e + 0.02, 0.66, 0.03));
   m.cx("louca", e, 0.48, 0.62, 0.86, 1.05, 1.52);
   m.cx("metalBranco", e + 0.02, 0.46, 0, 0.62, 1.08, 1.5);
   m.obst(0, 0.7, 0, 1.55);
@@ -621,7 +643,7 @@ function mobiliaFinal06(m: M): void {
   m.cx("pretoFosco", e + 0.06, 0.6, 0.9, 0.912, 2.16, 2.72); // cooktop
   m.cx("inox", e + 0.12, 0.5, 0.88, 0.905, 3.05, 3.53); // cuba
   m.cil("cromo", e + 0.06, 0.9, 3.29, 0.012, 0.32);
-  m.cx("pretoFosco", e, 0.68, 0, 1.85, 4.12, 4.8); // geladeira
+  m.eletro("geladeira", e, 0.68, 4.12, 4.8, "x1", () => m.cx("pretoFosco", e, 0.68, 0, 1.85, 4.12, 4.8)); // geladeira
   m.obst(0, 0.7, 1.8, 4.82);
   // ═══ LIVING: painel com TV e mesa de mármore com quatro cadeiras; sofá encostado na suíte 1, tapete e mesa de centro ═══
   m.cx("madeiraNatural", 1.6, 1.97, 0, 2.2, 2.38, 3.65);

@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { comLuzVolume } from "@/lib/luzVolume";
 import { memo } from "@/lib/procedural/canvas";
 import type { MatInt } from "@/lib/procedural/mobilia";
 import { texFolhagem, texMadeira, type ParTextura } from "@/lib/procedural/texturasInterior";
@@ -81,12 +82,14 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       tapete: linho("tapete", ["#bfb098", "#d8ccb7"], 0.5, 0.8),
       porta: std({ color: "#f6f5f1", roughness: 0.45 }),
     };
-    const piso = tex(ladrilho(texPorcelanatoBege(false), 1.2), { roughness: 0.38, metalness: 0.02 });
+    const piso = tex(ladrilho(texPorcelanatoBege(false), 1.2), { roughness: 0.3, metalness: 0.02, envMapIntensity: 1.25 });
     const pisoExterno = tex(ladrilho(texPorcelanatoBege(true), 1.0), { roughness: 0.6 });
     const ajustar = (a: number) => {
       led.color.set("#ffe6bf").multiplyScalar(0.3 + 1.3 * a);
       lampada.color.set("#fff4e0").multiplyScalar(0.35 + 1.6 * a);
     };
+    // todos os materiais do interior leem a iluminação indireta pré-calculada da planta
+    for (const mt of [...Object.values(mats), piso, pisoExterno]) if ((mt as THREE.MeshStandardMaterial).isMeshStandardMaterial) comLuzVolume(mt);
     return { mats, piso, pisoExterno, ajustar };
   });
 }

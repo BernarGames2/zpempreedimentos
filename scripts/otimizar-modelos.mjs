@@ -1,7 +1,7 @@
 // Prepara os modelos de terceiros para a web: escolhe variante, simplifica, comprime (meshopt + WebP) e grava um GLB por móvel.
 import { NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS, KHRMaterialsVariants } from "@gltf-transform/extensions";
-import { dedup, flatten, join, weld, simplify, prune, textureCompress, meshopt, getBounds } from "@gltf-transform/functions";
+import { dedup, flatten, join, weld, simplify, prune, textureCompress, meshopt, getBounds, metalRough } from "@gltf-transform/functions";
 import { MeshoptEncoder, MeshoptDecoder, MeshoptSimplifier } from "meshoptimizer";
 import sharp from "sharp";
 import fs from "node:fs";
@@ -22,10 +22,13 @@ const lista = [
   { id: "vaso-a", src: "bruto/ceramic_vase_02/ceramic_vase_02.gltf", tex: 256, razao: 0.25 },
   { id: "vaso-b", src: "bruto/ceramic_vase_04/ceramic_vase_04.gltf", tex: 256, razao: 0.25 },
   { id: "sofa-l", src: "sf/sofa-l.glb", tex: 1024, razao: 0.16, erro: 0.004 },
-  { id: "cama-casal", src: "sf/cama-casal.glb", tex: 1024, razao: 0.13, erro: 0.004 },
+  { id: "cama-casal", src: "sf/cama-casal.glb", tex: 512, razao: 0.13, erro: 0.004 },
   { id: "cama-solteiro", src: "sf/cama-solteiro.glb", tex: 512 },
   { id: "cadeira", src: "sf/cadeira.glb", tex: 512, razao: 0.1, erro: 0.004 },
   { id: "mesa-jantar", src: "sf/mesa-jantar.glb", tex: 512, razao: 0.12, erro: 0.004 },
+  { id: "bacia", src: "sf/bacia.glb", tex: 512, razao: 0.6, erro: 0.003 },
+  { id: "geladeira", src: "sf/geladeira.glb", tex: 512 },
+  { id: "lavadora", src: "sf/lavadora.glb", tex: 512, razao: 0.6, erro: 0.003, metalRough: true },
 ].filter((m) => !process.env.SO || process.env.SO.split(",").includes(m.id));
 const tri = (doc) => doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives()).reduce((s, p) => s + (p.getIndices()?.getCount() ?? p.getAttribute("POSITION").getCount()) / 3, 0);
 const resumo = fs.existsSync("resumo.json") ? JSON.parse(fs.readFileSync("resumo.json", "utf8")) : {};
@@ -81,6 +84,7 @@ for (const m of lista) {
     }
     for (const e of root.listExtensionsUsed()) if (["KHR_materials_transmission", "KHR_materials_volume", "KHR_materials_iridescence"].includes(e.extensionName)) e.dispose();
   }
+  if (m.metalRough) await doc.transform(metalRough()); // o three.js atual não lê mais specular-glossiness
   await doc.transform(dedup(), flatten(), join(), weld(), ...(m.razao ? [simplify({ simplifier: MeshoptSimplifier, ratio: m.razao, error: m.erro ?? 0.002 })] : []), prune(), textureCompress({ encoder: sharp, targetFormat: "webp", resize: [m.tex, m.tex], quality: 82 }), meshopt({ encoder: MeshoptEncoder, level: "medium" }));
   const b = getBounds(doc.getRoot().listScenes()[0]);
   const arq = `${saida}/${m.id}.glb`;

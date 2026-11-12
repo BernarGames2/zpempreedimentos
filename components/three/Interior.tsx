@@ -8,6 +8,7 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { area } from "@/lib/formato";
 import { useGLTF } from "@react-three/drei";
 import { moveisGlb } from "@/lib/controles";
+import { carregarLuz, comLuzVolume, luzNoite } from "@/lib/luzVolume";
 import { acabamentos } from "@/lib/procedural/acabamento";
 import { sorteio, tela } from "@/lib/procedural/canvas";
 import { mobiliar, type MatInt, type Modelo, type Prim } from "@/lib/procedural/mobilia";
@@ -148,9 +149,11 @@ function ModeloGlb({ m }: { m: Modelo }) {
   const obj = useMemo(() => {
     const c = scene.clone(true);
     c.traverse((o) => {
-      if ((o as THREE.Mesh).isMesh) {
+      const malha = o as THREE.Mesh;
+      if (malha.isMesh) {
         o.castShadow = true;
         o.receiveShadow = true;
+        for (const mt of Array.isArray(malha.material) ? malha.material : [malha.material]) comLuzVolume(mt);
       }
     });
     return c;
@@ -210,6 +213,11 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
   const grade = useMemo(() => matGrade("#5a4129"), []);
 
   useEffect(() => m.ajustar(Math.max(artificial, 0.35)), [m, artificial]);
+  useEffect(() => {
+    void carregarLuz(tipo.id);
+    return () => void carregarLuz(null);
+  }, [tipo.id]);
+  useEffect(() => luzNoite(artificial), [artificial]);
   useEffect(
     () => () => {
       Object.values(geos).forEach((g) => g?.dispose());

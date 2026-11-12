@@ -40,6 +40,12 @@ relevo em tecidos e paredes, guarnições e folhas de porta, esquadrias, peitori
 com juntas e puxadores. A porta de entrada é uma folha fechada (o hall do andar não é modelado).
 Tudo continua gerado por código: não há modelos 3D de mobiliário de terceiros.
 
+Iluminação indireta pré-calculada: `npx tsx scripts/assar-luz.ts` gera, para cada planta, um volume de
+sondas (`public/luz/*.json`, ~40 KB) com a luz do céu que entra pelas janelas e a luz das luminárias,
+já com três rebatimentos nas paredes. O site lê o volume como textura 3D e modula a luz ambiente de
+paredes, pisos, móveis e modelos. Rode de novo sempre que mudar plantas ou mobília.
+Os móveis com modelo 3D de terceiros estão em `public/modelos/` (licenças em `CREDITOS.md`).
+
 Ao entrar, o visitante já está andando dentro do apartamento (o 3D é o padrão, não a foto):
 joystick e arrastar para olhar no celular; W A S D ou setas, mouse e rodinha (zoom) no computador;
 tocar ou clicar no chão leva até o ponto; abas e minimapa trocam de cômodo; paredes e móveis têm colisão.

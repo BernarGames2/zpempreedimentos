@@ -234,7 +234,7 @@ export function Secoes() {
           <p className="mt-2 text-xs">
             Modelos 3D de mobiliário, adaptados, sob{" "}
             <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">CC BY 4.0</a>
-            : sofá de AleixoAlonso, cama de casal de BertO, cama de solteiro de Mifu Saja, cadeira de MaX3Dd e mesa de jantar de ariy400 (Sketchfab);
+            : sofá de AleixoAlonso, cama de casal de BertO, cama de solteiro de Mifu Saja, cadeira de MaX3Dd, mesa de jantar de ariy400, bacia de HippoStance, geladeira de Glowbox 3D e lavadora de Francesco Coldesina (Sketchfab);
             luminária © Wayfair, LLC (Khronos glTF Sample Assets). Demais peças de{" "}
             <a href="https://polyhaven.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">Poly Haven</a> (CC0).
           </p>

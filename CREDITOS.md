@@ -7,10 +7,13 @@ Os modelos do Sketchfab foram obtidos pelo espelho público Objaverse (Allen Ins
 | Arquivo | Modelo original | Autor | Licença | Adaptações |
 |---|---|---|---|---|
 | `sofa-l.glb` | [Gray L-Shaped Couch](https://sketchfab.com/3d-models/gray-l-shaped-couch-f3a71dc05afb46f8a2fae64eba0acc64) | AleixoAlonso (Sketchfab: AleixoAlonso) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 1024 px; espelhado e ajustado às medidas da planta |
-| `cama-casal.glb` | [Chelsea bed with storage - 3D Model](https://sketchfab.com/3d-models/chelsea-bed-with-storage-3d-model-cbe6e0dcc10a414a84acc5cc08171b87) | BertO (Sketchfab: bertosalotti) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 1024 px; ajustado à pegada da cama em cada planta |
+| `cama-casal.glb` | [Chelsea bed with storage - 3D Model](https://sketchfab.com/3d-models/chelsea-bed-with-storage-3d-model-cbe6e0dcc10a414a84acc5cc08171b87) | BertO (Sketchfab: bertosalotti) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px; ajustado à pegada da cama em cada planta |
 | `cama-solteiro.glb` | [Bed - Sample](https://sketchfab.com/3d-models/bed-sample-b547d81073b64d3e97200fd3ae9a74af) | Mifu Saja (Sketchfab: mifusaja) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | texturas a 512 px; ajustado à pegada da cama em cada planta |
 | `cadeira.glb` | [chair](https://sketchfab.com/3d-models/chair-9328075d9f3d417d9d899043e886d3df) | MaX3Dd (Sketchfab: MaX3Dd) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px; estreitada para 0,52 m |
 | `mesa-jantar.glb` | [Round dining table made of solid ash or oak.](https://sketchfab.com/3d-models/round-dining-table-made-of-solid-ash-or-oak-f89ed38bc0384737b3d45da4dd827a85) | ariy400 (Sketchfab: ariy400) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px; ampliada para Ø 1,38 m |
+| `bacia.glb` | [Toilet](https://sketchfab.com/3d-models/toilet-132a8ee2af3a40d39d270fbed3d3666c) | HippoStance (Sketchfab: hippostance) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px |
+| `geladeira.glb` | [Refrigerator - Grey Polished Metal](https://sketchfab.com/3d-models/refrigerator-grey-polished-metal-2071bda681b642218b6829b82e4fd93b) | Glowbox 3D (Sketchfab: glowbox3d) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | texturas a 512 px; ajustada à pegada da planta |
+| `lavadora.glb` | [Washing Machine Whirpool](https://sketchfab.com/3d-models/washing-machine-whirpool-0e0f28026fec40da8c0f1dfd7a8dd45f) | Francesco Coldesina (Sketchfab: topfrank2013) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, materiais convertidos para metal/rugosidade, texturas a 512 px |
 | `luminaria.glb` | [IridescenceLamp](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/IridescenceLamp) | © 2022 Wayfair, LLC | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | sem transmissão/iridescência, malha simplificada, texturas a 512 px |
 | `mesa-centro.glb` | [coffee_table_round_01](https://polyhaven.com/a/coffee_table_round_01) | Poly Haven | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | texturas a 512 px |
 | `mesa-lateral.glb` | [side_table_01](https://polyhaven.com/a/side_table_01) | Poly Haven | CC0 | texturas a 512 px |
@@ -24,6 +27,6 @@ A CC BY 4.0 exige crédito ao autor e indicação de que houve alterações: o c
 O roteiro de preparação está em `scripts/otimizar-modelos.mjs` (usa `@gltf-transform`, `meshoptimizer` e
 `sharp`, instalados à parte; não são dependências do site).
 
-Ainda gerados por código (sem modelo livre aprovado até aqui): armários, cozinha e eletrodomésticos,
-louças e bancadas dos banhos, mesas da varanda, sofás e mesas dos finais 03 e 06, e todo o mobiliário
+Ainda gerados por código (sem modelo livre aprovado até aqui): armários e marcenaria, bancadas, cooktop,
+cubas e box dos banhos, mesas da varanda, sofás e mesas dos finais 03 e 06, e todo o mobiliário
 dos finais 02 e 04 (que segue os renders oficiais).

@@ -2,7 +2,7 @@
 import { chromium } from "playwright";
 import fs from "node:fs";
 const [base, prefixo, extra = ""] = process.argv.slice(2);
-const vistas = { sofa: [4.5, 7.9, 7.3, 0.55, 6.3], estar: [8.2, 7.6, 5.9, 0.5, 6.5], aparador: [5.6, 6.9, 6.6, 0.6, 8.4], varanda: [2.0, 8.2, 0.4, 0.6, 5.9], suite: [7.6, 3.1, 5.6, 0.5, 5.2], dorm1: [3.2, 3.9, 1.3, 0.5, 4.6] };
+const vistas = { cozinha: [3.0, 9.0, 6.6, 0.9, 9.9], banho: [4.75, 1.55, 3.8, 0.9, 0.4], circ: [4.6, 5.3, 4.6, 1.3, 2.2], sofa: [4.5, 7.9, 7.3, 0.55, 6.3], estar: [8.2, 7.6, 5.9, 0.5, 6.5], aparador: [5.6, 6.9, 6.6, 0.6, 8.4], varanda: [2.0, 8.2, 0.4, 0.6, 5.9], suite: [7.6, 3.1, 5.6, 0.5, 5.2], dorm1: [3.2, 3.9, 1.3, 0.5, 4.6] };
 const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
 const ctx = await browser.newContext({ viewport: { width: 1100, height: 720 } });
 const page = await ctx.newPage();
