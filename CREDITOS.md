@@ -14,6 +14,9 @@ Os modelos do Sketchfab foram obtidos pelo espelho público Objaverse (Allen Ins
 | `bacia.glb` | [Toilet](https://sketchfab.com/3d-models/toilet-132a8ee2af3a40d39d270fbed3d3666c) | HippoStance (Sketchfab: hippostance) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, texturas a 512 px |
 | `geladeira.glb` | [Refrigerator - Grey Polished Metal](https://sketchfab.com/3d-models/refrigerator-grey-polished-metal-2071bda681b642218b6829b82e4fd93b) | Glowbox 3D (Sketchfab: glowbox3d) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | texturas a 512 px; ajustada à pegada da planta |
 | `lavadora.glb` | [Washing Machine Whirpool](https://sketchfab.com/3d-models/washing-machine-whirpool-0e0f28026fec40da8c0f1dfd7a8dd45f) | Francesco Coldesina (Sketchfab: topfrank2013) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | malha simplificada, materiais convertidos para metal/rugosidade, texturas a 512 px |
+| `cooktop.glb` | [Bosch Stainless Steel Gas Sealed Burner Cooktop](https://sketchfab.com/3d-models/bosch-stainless-steel-gas-sealed-burner-cooktop-c9497a5d11db4f648cb22144db5a9d6b) | allenbranch (Sketchfab: allenbranch) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | materiais convertidos, texturas a 512 px; ajustado à largura da planta |
+| `cuba-banho.glb` | [Simple Sink](https://sketchfab.com/3d-models/simple-sink-73bda35b6e7a499a80427fc1b049b192) | Andrew.Mischenko (Sketchfab: Andrew.Mischenko) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | materiais convertidos, texturas a 512 px |
+| `cuba-cozinha.glb` | [Small Sink and Faucet | RV | Camping | Tiny Home](https://sketchfab.com/3d-models/small-sink-and-faucet-rv-camping-tiny-home-92e6ad65f7c541b38b949f643d24400e) | 3DJeff (Sketchfab: 3DJeff) | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | materiais convertidos, texturas a 512 px |
 | `luminaria.glb` | [IridescenceLamp](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/IridescenceLamp) | © 2022 Wayfair, LLC | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | sem transmissão/iridescência, malha simplificada, texturas a 512 px |
 | `mesa-centro.glb` | [coffee_table_round_01](https://polyhaven.com/a/coffee_table_round_01) | Poly Haven | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | texturas a 512 px |
 | `mesa-lateral.glb` | [side_table_01](https://polyhaven.com/a/side_table_01) | Poly Haven | CC0 | texturas a 512 px |
@@ -30,3 +33,13 @@ O roteiro de preparação está em `scripts/otimizar-modelos.mjs` (usa `@gltf-tr
 Ainda gerados por código (sem modelo livre aprovado até aqui): armários e marcenaria, bancadas, cooktop,
 cubas e box dos banhos, mesas da varanda, sofás e mesas dos finais 03 e 06, e todo o mobiliário
 dos finais 02 e 04 (que segue os renders oficiais).
+
+## Texturas
+
+`public/texturas/carvalho-*.webp` e `okoume-*.webp`: lâminas de madeira [oak_veneer_01](https://polyhaven.com/a/oak_veneer_01)
+e [okoume_veneer](https://polyhaven.com/a/okoume_veneer), Poly Haven, CC0.
+
+## Elementos estimados (não documentados pela Maxi)
+
+Revestimento de porcelanato claro nas paredes dos banhos, sentido de abertura das portas, puxadores e
+juntas da marcenaria, manta e almofadas das camas, e a decoração em geral nas plantas sem render oficial.

@@ -6,7 +6,7 @@ import { PE_LIVRE, type Ret } from "./planta";
 export type MatInt =
   | "parede" | "teto" | "madeiraClara" | "madeiraNatural" | "marmore" | "marmoreVerde" | "pedraBranca"
   | "caramelo" | "veludo" | "tecidoBranco" | "tecidoCinza" | "palhinha" | "cromo" | "bronze" | "metalBranco"
-  | "pretoFosco" | "tecidoVerde" | "laqueado" | "vidro" | "vidroFosco" | "espelhoFume" | "tv" | "louca" | "eletro" | "inox" | "led" | "lampada"
+  | "pretoFosco" | "tecidoVerde" | "laqueado" | "azulejo" | "espelho" | "vidro" | "vidroFosco" | "espelhoFume" | "tv" | "louca" | "eletro" | "inox" | "led" | "lampada"
   | "planta" | "folhagem" | "livros" | "quadroDegrade" | "quadroFormas" | "resinaAmbar" | "tapete" | "porta";
 
 /** Camada: decide o que some ou é cortado no modo maquete. */
@@ -24,7 +24,7 @@ export interface Prim {
 
 /** Móvel com modelo 3D de terceiros (arquivo em /public/modelos; licenças em CREDITOS.md). */
 export interface Modelo {
-  id: "bacia" | "geladeira" | "lavadora" | "sofa-l" | "cama-casal" | "cama-solteiro" | "cadeira" | "mesa-jantar" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
+  id: "cooktop" | "cuba-banho" | "cuba-cozinha" | "bacia" | "geladeira" | "lavadora" | "sofa-l" | "cama-casal" | "cama-solteiro" | "cadeira" | "mesa-jantar" | "luminaria" | "mesa-centro" | "mesa-lateral" | "aparador" | "planta-grande" | "planta-pequena" | "vaso-a" | "vaso-b";
   pos: [number, number, number];
   rotY?: number;
   escala?: [number, number, number];
@@ -150,17 +150,28 @@ class M {
     this.cx("marmore", x0 - 0.01, x1 + 0.01, y - 0.04, y, z0 - 0.01, z1 + 0.01);
     const cx = (x0 + x1) / 2;
     const cz = (z0 + z1) / 2;
-    this.cil("louca", cx, y, cz, 0.19, 0.12);
+    const emZ = parede === "z0" || parede === "z1";
+    if (this.gl) {
+      // cuba de louça com torneira (modelo em cm, frente em +x; a cuba mede 0,49 × 0,51 m)
+      const [prof, larg] = emZ ? [z1 - z0, x1 - x0] : [x1 - x0, z1 - z0];
+      const s = Math.min(1, prof / 0.5, larg / 0.56) * 0.01;
+      const rotY = parede === "x0" ? 0 : parede === "x1" ? Math.PI : parede === "z0" ? -Math.PI / 2 : Math.PI / 2;
+      const [fx, fz] = parede === "x0" ? [1, 0] : parede === "x1" ? [-1, 0] : parede === "z0" ? [0, 1] : [0, -1];
+      this.modelos.push({ id: "cuba-banho", pos: [cx + fx * 10.4 * s, y + 2 * s, cz + fz * 10.4 * s], rotY, escala: [s, s, s] });
+    } else this.cil("louca", cx, y, cz, 0.19, 0.12);
+    const torneira = (x: number, z: number) => {
+      if (!this.gl) this.cil("cromo", x, y, z, 0.012, 0.3);
+    };
     if (parede === "z1") {
-      this.cx("espelhoFume", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z1 - 0.02, z1, "alto");
-      this.cil("cromo", cx, y, z1 - 0.07, 0.012, 0.3);
+      this.cx("espelho", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z1 - 0.02, z1, "alto");
+      torneira(cx, z1 - 0.07);
     } else if (parede === "z0") {
-      this.cx("espelhoFume", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z0, z0 + 0.02, "alto");
-      this.cil("cromo", cx, y, z0 + 0.07, 0.012, 0.3);
+      this.cx("espelho", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z0, z0 + 0.02, "alto");
+      torneira(cx, z0 + 0.07);
     } else {
       const xp = parede === "x0" ? x0 : x1 - 0.02;
-      this.cx("espelhoFume", xp, xp + 0.02, 1.15, 2.05, z0 + 0.05, z1 - 0.05, "alto");
-      this.cil("cromo", parede === "x0" ? x0 + 0.07 : x1 - 0.07, y, cz, 0.012, 0.3);
+      this.cx("espelho", xp, xp + 0.02, 1.15, 2.05, z0 + 0.05, z1 - 0.05, "alto");
+      torneira(parede === "x0" ? x0 + 0.07 : x1 - 0.07, cz);
     }
     this.obst(x0, x1, z0, z1);
     this.luz(cx, 2.1, cz, 0.6, 3);
@@ -371,13 +382,30 @@ function mobiliaFinal01(m: M): void {
       m.cx("cromo", 3.18, 3.2, 0.95, 1.6, z1 - 0.7, z1 - 0.66);
     });
     m.obst(2.46, 3.24, z1 - 0.7, z1 + e);
-    m.cx("laqueado", 3.28, 5.7, 0.1, 0.86, z1 - 0.6, z1);
     m.cx("pretoFosco", 3.28, 5.7, 0, 0.1, z1 - 0.56, z1);
-    m.cx("pedraBranca", 3.26, 5.72, 0.86, 0.9, z1 - 0.62, z1);
-    m.cx("inox", 3.68, 4.14, 0.88, 0.905, z1 - 0.5, z1 - 0.12); // cuba
-    m.cil("cromo", 3.91, 0.9, z1 - 0.06, 0.012, 0.32);
-    m.cx("pretoFosco", 4.72, 5.3, 0.9, 0.912, z1 - 0.54, z1 - 0.06); // cooktop de 4 bocas
-    for (const [dx, dz] of [[0.14, 0.14], [0.44, 0.14], [0.14, 0.34], [0.44, 0.34]] as const) m.cil("inox", 4.72 + dx, 0.912, z1 - 0.54 + dz, 0.06, 0.006);
+    m.troca(
+      () => {
+        m.cx("laqueado", 3.28, 5.7, 0.1, 0.86, z1 - 0.6, z1);
+        m.cx("pedraBranca", 3.26, 5.72, 0.86, 0.9, z1 - 0.62, z1);
+        m.cx("inox", 3.68, 4.14, 0.88, 0.905, z1 - 0.5, z1 - 0.12); // cuba
+        m.cil("cromo", 3.91, 0.9, z1 - 0.06, 0.012, 0.32);
+        m.cx("pretoFosco", 4.72, 5.3, 0.9, 0.912, z1 - 0.54, z1 - 0.06); // cooktop de 4 bocas
+        for (const [dx, dz] of [[0.14, 0.14], [0.44, 0.14], [0.14, 0.34], [0.44, 0.34]] as const) m.cil("inox", 4.72 + dx, 0.912, z1 - 0.54 + dz, 0.06, 0.006);
+      },
+      // cuba de inox de embutir com torneira gourmet e cooktop a gás de aço inox, nas posições da planta
+      { id: "cuba-cozinha", pos: [3.91, 0.948, z1 - 0.235], rotY: Math.PI, escala: [0.01, 0.01, 0.01] },
+      { id: "cooktop", pos: [5.01, 0.926, z1 - 0.3], rotY: Math.PI, escala: [0.1876, 0.2, 0.269] },
+    );
+    if (m.gl) {
+      // gabinetes dos dois lados da cuba, painel frontal sob ela e tampo de pedra recortado em volta da cuba
+      m.cx("laqueado", 3.28, 3.7, 0.1, 0.86, z1 - 0.6, z1);
+      m.cx("laqueado", 4.12, 5.7, 0.1, 0.86, z1 - 0.6, z1);
+      m.cx("laqueado", 3.7, 4.12, 0.1, 0.86, z1 - 0.6, z1 - 0.58);
+      m.cx("pedraBranca", 3.26, 5.72, 0.86, 0.9, z1 - 0.62, z1 - 0.49);
+      m.cx("pedraBranca", 3.26, 5.72, 0.86, 0.9, z1 - 0.215, z1);
+      m.cx("pedraBranca", 3.26, 3.735, 0.86, 0.9, z1 - 0.49, z1 - 0.215);
+      m.cx("pedraBranca", 4.085, 5.72, 0.86, 0.9, z1 - 0.49, z1 - 0.215);
+    }
     m.cx("pedraBranca", 3.28, 5.7, 0.9, 1.5, z1 - 0.02, z1, "alto"); // frontão
     m.eletro("lavadora", 5.78, 6.38, z1 - 0.6, z1, "z0", () => {
       m.ar("eletro", 5.76, 6.4, 0, 0.85, z1 - 0.6, z1, 0.03); // lavadora

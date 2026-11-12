@@ -101,5 +101,30 @@ export function acabamentos(t: TipoPlanta, planta: Planta, mob: Mobilia): Prim[]
       for (const a of [a0 + 0.02, a1 - 0.02]) cx("bronze", a - 0.02, a + 0.02, 0, 1.08, c - 0.02, c + 0.02);
     }
   }
+  // Revestimento dos banhos (ESTIMADO): placas de 6 mm sobre cada trecho de parede voltado para o banho.
+  for (const c of t.comodos) {
+    if (!/banho|bmaster|lavabo/.test(c.id)) continue;
+    const cxm = c.poligono.reduce((s, p) => s + p[0], 0) / c.poligono.length;
+    const czm = c.poligono.reduce((s, p) => s + p[1], 0) / c.poligono.length;
+    c.poligono.forEach((p, i) => {
+      const q = c.poligono[(i + 1) % c.poligono.length] as [number, number];
+      const emX = Math.abs(p[0] - q[0]) < 1e-4;
+      const linha = emX ? p[0] : p[1];
+      const [e0, e1] = emX ? [Math.min(p[1], q[1]), Math.max(p[1], q[1])] : [Math.min(p[0], q[0]), Math.max(p[0], q[0])];
+      // lado de dentro: o do centro do cômodo (para polígonos em L, o ponto logo ao lado da aresta decide)
+      const meio = (e0 + e1) / 2;
+      const dentro = (s: number) => (emX ? comodoEm(t, linha + s * 0.2, meio) : comodoEm(t, meio, linha + s * 0.2))?.id === c.id;
+      const s = dentro(1) ? 1 : dentro(-1) ? -1 : Math.sign((emX ? cxm : czm) - linha) || 1;
+      for (const b of paredes) {
+        const [bl0, bl1, ba0, ba1] = emX ? [b.x0, b.x1, b.z0, b.z1] : [b.z0, b.z1, b.x0, b.x1];
+        if (linha < bl0 - 0.01 || linha > bl1 + 0.01) continue;
+        const [a0, a1] = [Math.max(ba0, e0 + meia), Math.min(ba1, e1 - meia)];
+        if (a1 - a0 < 0.05) continue;
+        const face = s > 0 ? bl1 : bl0;
+        const [x0, x1, z0, z1] = emX ? [face, face + s * 0.006, a0, a1] : [a0, a1, face, face + s * 0.006];
+        out.push({ forma: "caixa", mat: "azulejo", camada: "parede", pos: [(x0 + x1) / 2, (b.y0 + b.y1) / 2, (z0 + z1) / 2], tam: [Math.abs(x1 - x0), b.y1 - b.y0, Math.abs(z1 - z0)] });
+      }
+    });
+  }
   return out;
 }

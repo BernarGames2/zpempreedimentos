@@ -2,8 +2,8 @@ import * as THREE from "three";
 import { comLuzVolume } from "@/lib/luzVolume";
 import { memo } from "@/lib/procedural/canvas";
 import type { MatInt } from "@/lib/procedural/mobilia";
-import { texFolhagem, texMadeira, type ParTextura } from "@/lib/procedural/texturasInterior";
-import { texBoucle, texLivros, texMarmore, texPalhinha, texPorcelanatoBege, texQuadro, texReboco, texTVDesligada } from "@/lib/procedural/texturasLiwo";
+import { texFolhagem, type ParTextura } from "@/lib/procedural/texturasInterior";
+import { texAzulejo, texBoucle, texLivros, texMarmore, texPalhinha, texPorcelanatoBege, texQuadro, texReboco, texTVDesligada } from "@/lib/procedural/texturasLiwo";
 
 /** Lado (em metros) que uma repetição da textura cobre. */
 function ladrilho(p: ParTextura, metros: number, metrosV = metros): ParTextura {
@@ -30,8 +30,6 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
   return memo("materiais-interior-liwo", () => {
     const std = (o: THREE.MeshStandardMaterialParameters) => new THREE.MeshStandardMaterial(o);
     const tex = (p: ParTextura, o: THREE.MeshStandardMaterialParameters = {}) => std({ map: p.map, normalMap: p.normalMap ?? null, ...o });
-    const madeiraClara = ladrilho(texMadeira("carvalho", ["#c9b192", "#d9c6aa"], 0.3), 2.4);
-    const madeiraNatural = ladrilho(texMadeira("freijo", ["#a98a69", "#bfa27f"], 0.2), 1.8);
     const led = new THREE.MeshBasicMaterial({ color: "#ffe6bf", toneMapped: false });
     const lampada = new THREE.MeshBasicMaterial({ color: "#fff4e0", toneMapped: false });
     const tv = new THREE.MeshStandardMaterial({ map: texTVDesligada(), roughness: 0.12, metalness: 0.3 });
@@ -45,11 +43,27 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
         .replace("#include <common>", "#include <common>\nvarying float vAltura;")
         .replace("#include <color_fragment>", "#include <color_fragment>\ndiffuseColor.rgb *= 1.0 - 0.2 * exp(-vAltura * 6.0) - 0.15 * exp(-(2.6 - vAltura) * 5.0);");
     };
+    // madeiras fotográficas (Poly Haven, CC0): cor e rugosidade medidas de lâminas reais
+    const carregador = new THREE.TextureLoader();
+    const foto = (nome: string, lado: number, o: THREE.MeshStandardMaterialParameters = {}) => {
+      const ler = (sufixo: string, cor: boolean) => {
+        const t = carregador.load(`/texturas/${nome}-${sufixo}.webp`);
+        t.wrapS = t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(1 / lado, 1 / lado);
+        t.anisotropy = 8;
+        if (cor) t.colorSpace = THREE.SRGBColorSpace;
+        return t;
+      };
+      return std({ map: ler("cor", true), roughnessMap: ler("rug", false), roughness: 1, ...o });
+    };
+    // revestimento dos banhos: porcelanato claro acetinado de grande formato (ESTIMADO: o memorial de acabamentos não foi fornecido)
+    const azulejo = std({ map: texAzulejo(), color: "#e4e1da", roughness: 0.28, metalness: 0, envMapIntensity: 0.7 });
     const mats: Record<MatInt, THREE.Material> = {
       parede,
+      azulejo,
       teto: std({ color: "#e4d6bd", roughness: 0.96 }),
-      madeiraClara: tex(madeiraClara, { roughness: 0.55, normalScale: new THREE.Vector2(0.4, 0.4) }),
-      madeiraNatural: tex(madeiraNatural, { roughness: 0.5 }),
+      madeiraClara: foto("carvalho", 1.1, { color: "#f1e6d6" }),
+      madeiraNatural: foto("okoume", 1.1, { color: "#c2a07c" }),
       marmore: tex(ladrilho(texMarmore("branco", ["#e9e7e3", "#f6f5f2"], "#8d8a86"), 1.6), { roughness: 0.18, metalness: 0.02 }),
       marmoreVerde: tex(ladrilho(texMarmore("verde", ["#5f7a62", "#86a088"], "#e3ece2"), 0.9), { roughness: 0.2 }),
       pedraBranca: std({ color: "#f1efea", roughness: 0.3 }),
@@ -67,6 +81,7 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       vidro: std({ color: "#dbe8ee", roughness: 0.06, metalness: 0.1, transparent: true, opacity: 0.14, envMapIntensity: 1.5 }),
       vidroFosco: std({ color: "#ebe7df", roughness: 0.55, transparent: true, opacity: 0.62 }),
       espelhoFume: std({ color: "#6a645d", roughness: 0.08, metalness: 1, envMapIntensity: 1.5 }),
+      espelho: std({ color: "#eef1f3", roughness: 0.03, metalness: 1, envMapIntensity: 2.4 }),
       tv,
       louca: std({ color: "#f4f3f0", roughness: 0.2 }),
       eletro: std({ color: "#f2efe8", roughness: 0.25, metalness: 0.1 }),

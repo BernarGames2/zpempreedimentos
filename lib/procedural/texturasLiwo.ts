@@ -171,6 +171,26 @@ export function texMarmore(nome: string, cores: [string, string], veio: string):
 }
 
 /** Porcelanato bege de placas grandes (piso dos renders), com juntas finas. */
+/** Porcelanato claro de 60 × 120 cm com junta fina (1 m de textura = 2 peças de largura). */
+export function texAzulejo(): THREE.Texture {
+  return memo("azulejo", () => {
+    const [c, g] = tela(512, 512);
+    g.fillStyle = "#f2f0eb";
+    g.fillRect(0, 0, 512, 512);
+    const r = sorteio(31);
+    for (let i = 0; i < 260; i++) {
+      g.fillStyle = `rgba(${200 + Math.floor(r() * 30)},${198 + Math.floor(r() * 28)},${190 + Math.floor(r() * 26)},0.05)`;
+      g.fillRect(r() * 512, r() * 512, 40 + r() * 160, 2 + r() * 10);
+    }
+    g.fillStyle = "#cfccc5";
+    for (const x of [0, 256]) g.fillRect(x - 1, 0, 2, 512);
+    g.fillRect(0, 0, 512, 2);
+    const t = textura(c);
+    t.repeat.set(1 / 1.2, 1 / 1.2);
+    return { map: t };
+  }).map;
+}
+
 /** Pintura sobre massa corrida: quase lisa, com um relevo fino que quebra o brilho uniforme da parede. */
 export function texReboco(): ParTextura {
   return memo("reboco", () => {

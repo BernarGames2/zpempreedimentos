@@ -585,7 +585,16 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
   }, []);
 
   useEffect(() => grupo.ajustar(noite), [grupo, noite]);
-  useEffect(() => grupo.detalhar(qualidade === "baixo"), [grupo, qualidade]);
+  // Visto de dentro do apartamento, o entorno não precisa projetar sombra nem das árvores mais distantes:
+  // era o maior custo do passeio (toda a cidade era redesenhada no mapa de sombras a cada quadro).
+  const interno = giro !== 0 || posicao[0] !== 0 || posicao[1] !== 0 || posicao[2] !== 0;
+  useEffect(() => grupo.detalhar(qualidade === "baixo" || interno), [grupo, qualidade, interno]);
+  useEffect(() => {
+    grupo.g.traverse((o) => {
+      if (o.userData.sombra === undefined) o.userData.sombra = o.castShadow;
+      o.castShadow = interno ? false : (o.userData.sombra as boolean);
+    });
+  }, [grupo, interno]);
   useEffect(() => () => grupo.descartar.forEach((x) => x.dispose()), [grupo]);
 
   return <primitive object={grupo.g} position={posicao} rotation={[0, giro, 0]} />;
