@@ -61,7 +61,10 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
   }, [scene, noite, interior, giro]);
 
   // O HDRI de amanhecer tingia o dia de rosa; de dia e por dentro os reflexos vêm de um ambiente neutro gerado aqui.
-  const arquivo = noite && !interior ? hdri.noite : undefined;
+  // O HDRI noturno pesava 1,5 MB (metade do primeiro carregamento) só para os reflexos: o ambiente gerado
+  // aqui embaixo faz o mesmo papel sem baixar nada.
+  const arquivo = undefined as string | undefined;
+  void hdri;
 
   return (
     <>

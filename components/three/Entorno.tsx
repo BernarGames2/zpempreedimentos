@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { toquePrincipal } from "@/lib/controles";
 import { CALCADA, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie } from "@/lib/procedural/entorno";
 
 /** Fachadas: brancos, areias, cinzas e um terracota (cores comuns no bairro). */
@@ -545,20 +546,33 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
     // árvores por espécie, em dois níveis de detalhe
     const matArvore = guardar(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }));
     const especies: Especie[] = ["copa", "ipe", "flamboyant", "palmeira", "cone", "cerrado"];
-    const distantes: { mesh: THREE.InstancedMesh; total: number; perto: number }[] = [];
+    // Três malhas por espécie, para o nível de detalhe mudar sem reconstruir nada:
+    //   perto  – modelo detalhado, da mais próxima para a mais distante (desenha as `n` primeiras);
+    //   medio  – modelo simples das árvores até 380 m, da mais distante para a mais próxima (deixa de fora as `n` mais próximas);
+    //   longe  – modelo simples das árvores além de 380 m (some no nível baixo e visto de dentro do apartamento).
+    const niveis: { perto: THREE.InstancedMesh; medio: THREE.InstancedMesh; longe: THREE.InstancedMesh | null; dist: number[] }[] = [];
+    const dist = (a: { x: number; z: number }) => Math.hypot(a.x, a.z);
     for (const sp of especies) {
-      for (const perto of [true, false]) {
-        const lista = e.arvores.filter((a) => a.especie === sp && Math.hypot(a.x, a.z) < LOD_RAIO === perto).sort((a, b) => Math.hypot(a.x, a.z) - Math.hypot(b.x, b.z));
-        if (!lista.length) continue;
+      const todas = e.arvores.filter((a) => a.especie === sp).sort((a, b) => dist(a) - dist(b));
+      if (!todas.length) continue;
+      const malha = (lista: typeof todas, detalhada: boolean) => {
         const mats = lista.map((a) => {
           const s = a.escala * (0.9 + a.tom * 0.25);
           return mtx(a.x, 0, a.z, s, s * (0.92 + ((a.tom * 7) % 1) * 0.18), s, a.giro);
         });
         const cores = lista.map((a) => new THREE.Color().setRGB(0.86 + a.tom * 0.26, 0.88 + a.tom * 0.2, 0.86 + ((a.tom * 3) % 1) * 0.16));
-        const malha = instancias(guardar(geoEspecie(sp, perto)), matArvore, mats, cores, perto);
-        if (!perto) distantes.push({ mesh: malha, total: lista.length, perto: lista.filter((a) => Math.hypot(a.x, a.z) < 380).length });
-        g.add(malha);
-      }
+        const m = instancias(guardar(geoEspecie(sp, detalhada)), matArvore, mats, cores, detalhada);
+        g.add(m);
+        return m;
+      };
+      const ate380 = todas.filter((a) => dist(a) < 380);
+      const alem = todas.filter((a) => dist(a) >= 380);
+      niveis.push({
+        perto: malha(todas.filter((a) => dist(a) < LOD_RAIO), true),
+        medio: malha([...ate380].reverse(), false),
+        longe: alem.length ? malha(alem, false) : null,
+        dist: ate380.map(dist),
+      });
     }
 
     // postes, lâmpadas e manchas de luz no chão
@@ -580,7 +594,14 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
       agua.emissiveIntensity = 0.9 * n;
     };
     // no nível "baixo" (celular sem folga) as árvores além de 380 m não são desenhadas
-    const detalhar = (baixo: boolean) => distantes.forEach((d) => (d.mesh.count = baixo ? d.perto : d.total));
+    /** `raio`: até onde as árvores usam o modelo detalhado; `distantes`: desenha as árvores além de 380 m. */
+    const detalhar = (raio: number, distantes: boolean) =>
+      niveis.forEach((n) => {
+        const k = n.dist.filter((d) => d < Math.min(raio, LOD_RAIO)).length;
+        n.perto.count = k;
+        n.medio.count = n.dist.length - k;
+        if (n.longe) n.longe.visible = distantes;
+      });
     return { g, ajustar, detalhar, descartar };
   }, []);
 
@@ -588,7 +609,12 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
   // Visto de dentro do apartamento, o entorno não precisa projetar sombra nem das árvores mais distantes:
   // era o maior custo do passeio (toda a cidade era redesenhada no mapa de sombras a cada quadro).
   const interno = giro !== 0 || posicao[0] !== 0 || posicao[1] !== 0 || posicao[2] !== 0;
-  useEffect(() => grupo.detalhar(qualidade === "baixo" || interno), [grupo, qualidade, interno]);
+  // Árvores detalhadas só onde fazem diferença: 150 m no computador, 60 m no celular, 40 m no nível baixo e
+  // nenhuma quando a cidade é vista pela janela do apartamento (ficam dezenas de metros abaixo).
+  useEffect(() => {
+    const raio = interno ? 0 : qualidade === "baixo" ? 40 : toquePrincipal() ? 60 : LOD_RAIO;
+    grupo.detalhar(raio, !(qualidade === "baixo" || interno));
+  }, [grupo, qualidade, interno]);
   useEffect(() => {
     grupo.g.traverse((o) => {
       if (o.userData.sombra === undefined) o.userData.sombra = o.castShadow;
