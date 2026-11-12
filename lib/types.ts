@@ -76,6 +76,8 @@ export interface TipoPlanta {
   interior3d?: boolean;
   /** Planta espelhada de outro tipo: a mobília é a do tipo-base, espelhada no eixo x. */
   espelhoDe?: string;
+  /** Giro (rad) da planta em relação ao padrão "varanda em +z": encaixa o interior na fachada (sol e cidade pelas janelas). */
+  giroPlanta?: number;
   quartos: number;
   vagas: number | null;
   mobiliado: boolean;

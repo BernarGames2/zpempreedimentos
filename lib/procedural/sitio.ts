@@ -14,7 +14,6 @@ export interface Sitio {
   pecas: Pecas;
   paineis: PainelSitio[];
   arvores: { x: number; y: number; z: number; escala: number }[];
-  vizinhos: { x: number; z: number; larg: number; prof: number; alt: number }[];
 }
 
 const { x0, x1, z0, z1 } = P.lote;
@@ -113,31 +112,8 @@ export function construirSitio(): Sitio {
   c.plano("janelaAcesa", -rx, yv + hv / 2, 0, 2 * rz, hv, -Math.PI / 2);
   for (const [px, pz] of [[-rx, -rz], [rx, -rz], [-rx, rz], [rx, rz]] as const) c.caixa("concreto", px - 0.25, px + 0.25, yv, P.base, pz - 0.25, pz + 0.25);
 
-  // ── Entorno: muros vizinhos, casas baixas, prédios distantes e muita mata (Parque Sul Karaíba) ──
-  const vizinhos: Sitio["vizinhos"] = [];
-  for (let i = 0; i < 70; i++) {
-    const ang = r() * Math.PI * 2;
-    const d = 45 + r() * 230;
-    const x = Math.cos(ang) * d;
-    const z = Math.sin(ang) * d;
-    if (z > 20 && Math.abs(x) < 70) continue; // a rua da frente fica livre
-    const alto = d > 160 && r() > 0.7;
-    vizinhos.push({ x, z, larg: 8 + r() * 10, prof: 8 + r() * 10, alt: alto ? 20 + r() * 35 : 3 + r() * 4 });
-  }
-  // mata do entorno: mais densa ao longe, rala perto da torre para não esconder o prédio
-  for (let i = 0; i < 260; i++) {
-    const ang = r() * Math.PI * 2;
-    const d = 40 + Math.pow(r(), 0.6) * 260;
-    const x = Math.cos(ang) * d;
-    const z = Math.sin(ang) * d;
-    if (z > 18 && z < 34 && Math.abs(x) < 160) continue; // leito da rua
-    if (d < 120 && r() < 0.6) continue;
-    arvores.push({ x, y: 0, z, escala: 0.55 + r() * 0.5 });
-  }
-  // árvores de calçada, como nos renders
-  for (const x of [-16, -4, 8, 22]) arvores.push({ x, y: 0, z: z1 + 3.2, escala: 0.55 });
-
-  return { pecas: c.pecas, paineis, arvores, vizinhos };
+  // o entorno (ruas, quadras, árvores de rua e skyline) fica em lib/procedural/entorno.ts
+  return { pecas: c.pecas, paineis, arvores };
 }
 
 /** Folhas pendentes das floreiras: plano com a base na origem, curvado para fora. */

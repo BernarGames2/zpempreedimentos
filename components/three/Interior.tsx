@@ -136,11 +136,19 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       pos: [(b.x0 + b.x1) / 2, (b.y0 + b.y1) / 2, (b.z0 + b.z1) / 2],
       tam: [b.x1 - b.x0, b.y1 - b.y0, b.z1 - b.z0],
     }));
+    // rodapé branco nas duas faces de cada parede que nasce no piso
+    const rodapes: Prim[] = planta.paredes
+      .filter((b) => b.y0 < 0.01 && b.y1 > 0.3)
+      .map((b) => ({
+        forma: "caixa", mat: "laqueado", camada: "parede",
+        pos: [(b.x0 + b.x1) / 2, 0.04, (b.z0 + b.z1) / 2],
+        tam: [b.x1 - b.x0 + 0.024, 0.08, b.z1 - b.z0 + 0.024],
+      }));
     const jardins: Prim[] = mob.jardins.map((j) => ({
       forma: "caixa", mat: "folhagem", camada: "parede",
       pos: [j.x + 0.03, j.y1 / 2, (j.z0 + j.z1) / 2], tam: [0.06, j.y1, j.z1 - j.z0],
     }));
-    return [...paredes, ...jardins, ...mob.prims];
+    return [...paredes, ...rodapes, ...jardins, ...mob.prims];
   }, [planta, mob]);
 
   const geos = useMemo(() => fundir(prims, corte), [prims, corte]);
@@ -184,9 +192,16 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       {!corte && tetos && <mesh geometry={tetos} material={m.mats.teto} name="teto_apartamento" />}
       {jardim && <mesh geometry={jardim} material={matFolhas} castShadow />}
       {guardas.map((a) => {
-        const larg = Math.abs(a.p2[0] - a.p1[0]);
+        // guarda-corpo ao longo de x (final 02) ou de z (final 01): o gradil fica 5 cm para dentro da varanda
+        const emX = Math.abs(a.p1[0] - a.p2[0]) < 1e-6;
+        const larg = emX ? Math.abs(a.p2[1] - a.p1[1]) : Math.abs(a.p2[0] - a.p1[0]);
+        const sala = tipo.comodos.find((c) => c.id === a.liga?.[0]);
+        const centro = sala ? sala.poligono.reduce((s, p) => s + (emX ? p[0] : p[1]), 0) / sala.poligono.length : emX ? a.p1[0] + 1 : a.p1[1] - 1;
+        const linha = emX ? a.p1[0] : a.p1[1];
+        const d = Math.sign(centro - linha) * 0.05;
+        const pos: [number, number, number] = emX ? [linha + d, 0.61, (a.p1[1] + a.p2[1]) / 2] : [(a.p1[0] + a.p2[0]) / 2, 0.61, linha + d];
         return (
-          <mesh key={a.id} position={[(a.p1[0] + a.p2[0]) / 2, 0.61, a.p1[1] - 0.05]} material={grade} renderOrder={2}>
+          <mesh key={a.id} position={pos} rotation={[0, emX ? Math.PI / 2 : 0, 0]} material={grade} renderOrder={2}>
             <planeGeometry args={[larg, 0.94]} />
           </mesh>
         );

@@ -6,6 +6,7 @@ import * as THREE from "three";
 import { amortecer, clamp } from "@/lib/easing";
 import { mobiliar } from "@/lib/procedural/mobilia";
 import { caminho, comodoEm, livre, montarPlanta, resolverColisao } from "@/lib/procedural/planta";
+import { joystick } from "@/lib/controles";
 import { ALTURA_OLHO } from "@/lib/poses";
 import { splatsDoTipo } from "@/lib/splats";
 import { poseCamera, useExp } from "@/lib/store";
@@ -66,6 +67,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     fisico: null as string | null,
     pedirFoto: false,
     ultimoPedido: 0,
+    fovBase: 70,
   });
   const raio = useMemo(() => new THREE.Raycaster(), []);
   const piso = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), []);
@@ -86,13 +88,15 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     s.z = camera.position.z;
     s.iniciado = true;
     s.fisico = null;
-    s.pedirFoto = !soOlhar;
+    // O 3D navegável é o padrão: a foto oficial só abre quando o visitante pede.
+    s.pedirFoto = false;
     // No celular em pé, um campo de visão maior compensa a tela estreita.
     const cam = camera as THREE.PerspectiveCamera;
     if (!soOlhar && cam.isPerspectiveCamera) {
       cam.fov = cam.aspect < 0.9 ? 88 : 70;
       cam.updateProjectionMatrix();
     }
+    if (cam.isPerspectiveCamera) s.fovBase = cam.fov;
     s.ultimoComodo = useExp.getState().comodo;
     s.ultimoPedido = useExp.getState().pedidoComodo;
     s.ultimoDestino = useExp.getState().destino?.n ?? 0;
@@ -104,6 +108,19 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
     const s = e.current;
     let baixo: { x: number; y: number; id: number } | null = null;
     let arrastou = false;
+    // pinça (dois dedos) e rodinha do mouse aproximam: só o campo de visão muda, a posição fica
+    const toques = new Map<number, { x: number; y: number }>();
+    let pinca: { d0: number; fov0: number } | null = null;
+    const cam = camera as THREE.PerspectiveCamera;
+    const zoom = (fov: number) => {
+      if (!cam.isPerspectiveCamera) return;
+      cam.fov = clamp(fov, 28, s.fovBase);
+      cam.updateProjectionMatrix();
+    };
+    const distToques = () => {
+      const [a, b] = [...toques.values()];
+      return a && b ? Math.hypot(a.x - b.x, a.y - b.y) : 1;
+    };
 
     const noPiso = (ev: PointerEvent): Vec2 | null => {
       const r = el.getBoundingClientRect();
@@ -122,11 +139,22 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       if (useExp.getState().foto.aberta) useExp.getState().setFoto({ aberta: false });
     };
     const aoDescer = (ev: PointerEvent) => {
+      toques.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (toques.size === 2) {
+        pinca = { d0: distToques(), fov0: cam.fov };
+        baixo = null;
+        return;
+      }
       baixo = { x: ev.clientX, y: ev.clientY, id: ev.pointerId };
       arrastou = false;
       el.setPointerCapture?.(ev.pointerId);
     };
     const aoMover = (ev: PointerEvent) => {
+      if (toques.has(ev.pointerId)) toques.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+      if (pinca && toques.size >= 2) {
+        zoom((pinca.fov0 * pinca.d0) / Math.max(distToques(), 1));
+        return;
+      }
       if (baixo && ev.pointerId === baixo.id) {
         const dx = ev.clientX - baixo.x;
         const dy = ev.clientY - baixo.y;
@@ -146,6 +174,8 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       }
     };
     const aoSubir = (ev: PointerEvent) => {
+      toques.delete(ev.pointerId);
+      if (toques.size < 2) pinca = null;
       if (!baixo || ev.pointerId !== baixo.id) return;
       el.releasePointerCapture?.(ev.pointerId);
       baixo = null;
@@ -175,12 +205,17 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       s.olhar = null;
     };
     const aoSoltar = (ev: KeyboardEvent) => s.teclas.delete(ev.key.toLowerCase());
+    const aoRolar = (ev: WheelEvent) => {
+      ev.preventDefault();
+      zoom(cam.fov * Math.exp(ev.deltaY * 0.0012));
+    };
     const limpar = () => s.teclas.clear();
 
     el.addEventListener("pointerdown", aoDescer);
     el.addEventListener("pointermove", aoMover);
     el.addEventListener("pointerup", aoSubir);
     el.addEventListener("pointercancel", aoSubir);
+    el.addEventListener("wheel", aoRolar, { passive: false });
     window.addEventListener("keydown", aoTeclar);
     window.addEventListener("keyup", aoSoltar);
     window.addEventListener("blur", limpar);
@@ -190,6 +225,7 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
       el.removeEventListener("pointermove", aoMover);
       el.removeEventListener("pointerup", aoSubir);
       el.removeEventListener("pointercancel", aoSubir);
+      el.removeEventListener("wheel", aoRolar);
       window.removeEventListener("keydown", aoTeclar);
       window.removeEventListener("keyup", aoSoltar);
       window.removeEventListener("blur", limpar);
@@ -214,7 +250,9 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
         const c = tipo.comodos.find((x) => x.id === loja.comodo);
         if (c) {
           loja.set({ comodoAtual: c.id });
-          s.pedirFoto = true;
+          // a foto oficial só abre na chegada se o visitante pediu (botão "Foto do decorado")
+          s.pedirFoto = loja.fotoAoChegar;
+          if (loja.fotoAoChegar) loja.set({ fotoAoChegar: false });
           const comSplat = Boolean(c.splat && splatsDoTipo.atual[c.id]);
           const alvo = c.splat && comSplat ? c.splat : { spawn: c.enquadramento.posicao, olhar: c.enquadramento.olhar };
           const [px, , pz] = alvo.spawn;
@@ -270,9 +308,22 @@ export function Passeio({ tipo, ativo, soOlhar = false }: Props) {
 
       let mx = 0;
       let mz = 0;
-      if (s.teclas.size > 0) {
-        const f = (s.teclas.has("w") || s.teclas.has("arrowup") ? 1 : 0) - (s.teclas.has("s") || s.teclas.has("arrowdown") ? 1 : 0);
-        const l = (s.teclas.has("d") || s.teclas.has("arrowright") ? 1 : 0) - (s.teclas.has("a") || s.teclas.has("arrowleft") ? 1 : 0);
+      const joy = joystick.ativo && Math.hypot(joystick.x, joystick.y) > 0.12;
+      if (joy && (s.rota.length > 0 || s.olhar || s.pedirFoto)) {
+        s.rota = [];
+        s.olhar = null;
+        s.pedirFoto = false;
+        s.alvoAnel = null;
+      }
+      if (joy && loja.foto.aberta) loja.setFoto({ aberta: false });
+      if (s.teclas.size > 0 || joy) {
+        let f = (s.teclas.has("w") || s.teclas.has("arrowup") ? 1 : 0) - (s.teclas.has("s") || s.teclas.has("arrowdown") ? 1 : 0);
+        let l = (s.teclas.has("d") || s.teclas.has("arrowright") ? 1 : 0) - (s.teclas.has("a") || s.teclas.has("arrowleft") ? 1 : 0);
+        if (s.teclas.size === 0) {
+          // joystick: para cima anda para a frente; a intensidade segue o quanto o botão foi arrastado
+          f = -joystick.y;
+          l = joystick.x;
+        }
         const sn = Math.sin(s.guinada);
         const cs = Math.cos(s.guinada);
         mx = (-sn * f + cs * l) * VEL_ANDAR * dt;

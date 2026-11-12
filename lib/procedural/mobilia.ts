@@ -6,7 +6,7 @@ import { PE_LIVRE, type Ret } from "./planta";
 export type MatInt =
   | "parede" | "teto" | "madeiraClara" | "madeiraNatural" | "marmore" | "marmoreVerde" | "pedraBranca"
   | "caramelo" | "veludo" | "tecidoBranco" | "tecidoCinza" | "palhinha" | "cromo" | "bronze" | "metalBranco"
-  | "pretoFosco" | "vidro" | "vidroFosco" | "espelhoFume" | "tv" | "louca" | "eletro" | "inox" | "led" | "lampada"
+  | "pretoFosco" | "tecidoVerde" | "laqueado" | "vidro" | "vidroFosco" | "espelhoFume" | "tv" | "louca" | "eletro" | "inox" | "led" | "lampada"
   | "planta" | "folhagem" | "livros" | "quadroDegrade" | "quadroFormas" | "resinaAmbar" | "tapete" | "porta";
 
 /** Camada: decide o que some ou é cortado no modo maquete. */
@@ -47,6 +47,18 @@ class M {
     this.prims.push({ forma: "cilindro", mat, pos: [x, y0 + h / 2, z], tam: [r * 2, h, r * 2], camada, rot });
   }
   esf(mat: MatInt, x: number, y: number, z: number, r: number, camada: Camada = "movel"): void {
+    if (mat === "planta" && r >= 0.1) {
+      // folhagem em tufos de dois verdes: uma esfera lisa não lê como planta
+      this.prims.push({ forma: "esfera", mat, pos: [x, y - r * 0.1, z], tam: [r * 1.25, r * 1.05, r * 1.25], camada });
+      for (let i = 0; i < 9; i++) {
+        const a = i * 2.39996;
+        const h = ((i % 3) - 1) * 0.42 * r;
+        const d = r * (0.5 + (i % 2) * 0.18);
+        const rr = r * (0.42 + ((i * 37) % 10) / 45);
+        this.prims.push({ forma: "esfera", mat: i % 2 ? "folhagem" : "planta", pos: [x + Math.cos(a) * d, y + h, z + Math.sin(a) * d], tam: [rr * 2, rr * 1.6, rr * 2], camada });
+      }
+      return;
+    }
     this.prims.push({ forma: "esfera", mat, pos: [x, y, z], tam: [r * 2, r * 2, r * 2], camada });
   }
   girada(mat: MatInt, pos: [number, number, number], tam: [number, number, number], rot: [number, number, number], forma: Prim["forma"] = "arred", raio = 0.04): void {
@@ -82,7 +94,7 @@ class M {
     this.obst(x - 0.24, x + 0.24, z - 0.24, z + 0.24);
   }
   /** Bancada de banheiro com cuba de apoio, espelho e torneira. `parede` = lado da parede ("x0"|"x1"|"z0"|"z1"). */
-  bancadaBanho(x0: number, x1: number, z0: number, z1: number, parede: "x0" | "x1" | "z1", y = 0.86): void {
+  bancadaBanho(x0: number, x1: number, z0: number, z1: number, parede: "x0" | "x1" | "z0" | "z1", y = 0.86): void {
     this.cx("madeiraClara", x0, x1, 0.3, y - 0.04, z0, z1);
     this.cx("marmore", x0 - 0.01, x1 + 0.01, y - 0.04, y, z0 - 0.01, z1 + 0.01);
     const cx = (x0 + x1) / 2;
@@ -91,6 +103,9 @@ class M {
     if (parede === "z1") {
       this.cx("espelhoFume", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z1 - 0.02, z1, "alto");
       this.cil("cromo", cx, y, z1 - 0.07, 0.012, 0.3);
+    } else if (parede === "z0") {
+      this.cx("espelhoFume", x0 + 0.05, x1 - 0.05, 1.15, 2.05, z0, z0 + 0.02, "alto");
+      this.cil("cromo", cx, y, z0 + 0.07, 0.012, 0.3);
     } else {
       const xp = parede === "x0" ? x0 : x1 - 0.02;
       this.cx("espelhoFume", xp, xp + 0.02, 1.15, 2.05, z0 + 0.05, z1 - 0.05, "alto");
@@ -114,8 +129,8 @@ class M {
     this.cil("cromo", (x0 + x1) / 2, PE_LIVRE - 0.04, (z0 + z1) / 2, 0.12, 0.012, "alto");
     this.cx("pedraBranca", x0, x1, 0, 0.012, z0, z1);
   }
-  /** Cama: base estofada, colchão, edredom, travesseiros e cabeceira. Cabeceira em `zCab` (cresce em +z) ou em `xCab` (cresce em -x). */
-  cama(x0: number, x1: number, z0: number, z1: number, cabeceira: "z0" | "x1", base: MatInt, cab: MatInt): void {
+  /** Cama: base estofada, colchão, edredom, travesseiros e cabeceira, no lado `cabeceira` da pegada. */
+  cama(x0: number, x1: number, z0: number, z1: number, cabeceira: "z0" | "z1" | "x0" | "x1", base: MatInt, cab: MatInt): void {
     this.ar(base, x0, x1, 0.04, 0.36, z0, z1, 0.06);
     this.ar("tecidoBranco", x0 + 0.03, x1 - 0.03, 0.36, 0.58, z0 + 0.03, z1 - 0.03, 0.06);
     if (cabeceira === "z0") {
@@ -126,6 +141,18 @@ class M {
         this.girada("tecidoBranco", [a + (x1 - x0) / n / 2, 0.72, z0 + 0.3], [(x1 - x0) / n - 0.06, 0.2, 0.36], [-0.35, 0, 0], "arred", 0.08);
       }
       this.ar(cab, x0 - 0.15, x1 + 0.15, 0, 1.15, z0 - 0.16, z0 + 0.02, 0.09);
+    } else if (cabeceira === "z1") {
+      this.ar("tecidoBranco", x0 - 0.02, x1 + 0.02, 0.5, 0.62, z0 - 0.02, z1 - 0.6, 0.05);
+      const n = Math.max(1, Math.round((x1 - x0) / 0.75));
+      for (let i = 0; i < n; i++) {
+        const a = x0 + ((x1 - x0) * i) / n;
+        this.girada("tecidoBranco", [a + (x1 - x0) / n / 2, 0.72, z1 - 0.3], [(x1 - x0) / n - 0.06, 0.2, 0.36], [0.35, 0, 0], "arred", 0.08);
+      }
+      this.ar(cab, x0 - 0.15, x1 + 0.15, 0, 1.15, z1 - 0.02, z1 + 0.16, 0.09);
+    } else if (cabeceira === "x0") {
+      this.ar("tecidoBranco", x0 + 0.6, x1 + 0.02, 0.5, 0.62, z0 - 0.02, z1 + 0.02, 0.05);
+      this.girada("tecidoBranco", [x0 + 0.3, 0.72, (z0 + z1) / 2], [0.36, 0.2, z1 - z0 - 0.1], [0, 0, -0.35], "arred", 0.08);
+      this.ar(cab, x0 - 0.14, x0 + 0.02, 0, 1.05, z0 - 0.08, z1 + 0.08, 0.06);
     } else {
       this.ar("tecidoBranco", x0 - 0.02, x1 - 0.6, 0.5, 0.62, z0 - 0.02, z1 + 0.02, 0.05);
       this.girada("tecidoBranco", [x1 - 0.3, 0.72, (z0 + z1) / 2], [0.36, 0.2, z1 - z0 - 0.1], [0, 0, 0.35], "arred", 0.08);
@@ -139,6 +166,411 @@ function limites(pol: Vec2[]): Ret {
   const xs = pol.map((p) => p[0]);
   const zs = pol.map((p) => p[1]);
   return { x0: Math.min(...xs), x1: Math.max(...xs), z0: Math.min(...zs), z1: Math.max(...zs) };
+}
+
+/**
+ * Mobília do apartamento de 91 m² (final 01; o 05 é o espelho), posicionada pelo desenho da planta
+ * oficial ilustrada (medidas convertidas de pixels a 82,4 px/m). Não há render oficial deste final:
+ * as peças seguem só o que a planta mostra, com os materiais neutros da paleta do Liwo.
+ */
+function mobiliaFinal01(m: M): void {
+  const e = 0.05;
+  const H = PE_LIVRE;
+  // ═══ LIVING: sofá em L com almofadas verdes, tapete, mesa de centro redonda, aparador e mesa de jantar redonda ═══
+  m.cx("tapete", 5.12, 8.5, 0.004, 0.016, 5.83, 8.05);
+  m.ar("tecidoCinza", 5.97, 8.58 - e, 0.06, 0.44, 5.6 + e, 6.55, 0.14); // assento
+  m.ar("tecidoCinza", 5.97, 8.58 - e, 0.3, 0.84, 5.6 + e, 5.88, 0.12); // encosto
+  m.ar("tecidoCinza", 7.65, 8.58 - e, 0.06, 0.44, 6.4, 7.08, 0.14); // chaise
+  for (const x of [6.0, 7.05]) m.ar("tecidoCinza", x, x + 1.0, 0.4, 0.58, 5.92, 6.5, 0.12);
+  for (const [x, z] of [[6.25, 5.98], [6.95, 5.98], [7.85, 5.98], [8.3, 6.15]] as const) m.girada("tecidoVerde", [x, 0.72, z], [0.42, 0.38, 0.12], [-0.25, 0, 0], "arred", 0.06);
+  m.ar("tecidoCinza", 5.97, 6.12, 0.3, 0.62, 5.65, 6.55, 0.06); // braço
+  m.obst(5.97, 8.63, 5.6, 6.55);
+  m.obst(7.65, 8.63, 6.4, 7.08);
+  m.cil("madeiraClara", 6.7, 0, 7.32, 0.34, 0.36);
+  m.cil("louca", 6.62, 0.36, 7.25, 0.08, 0.14);
+  m.esf("planta", 6.62, 0.58, 7.25, 0.13);
+  m.obst(6.36, 7.04, 6.98, 7.66);
+  m.cx("madeiraClara", 5.45, 5.8, 0, 0.55, 5.72, 6.08); // mesa lateral com luminária
+  m.cil("metalBranco", 5.62, 0.55, 5.9, 0.012, 0.35);
+  m.cil("tecidoBranco", 5.62, 0.86, 5.9, 0.13, 0.2);
+  m.obst(5.45, 5.8, 5.72, 6.08);
+  m.cx("madeiraNatural", 5.73, 7.36, 0, 0.78, 8.17, 8.5 - e); // aparador junto à mureta da lavanderia
+  // portas de vidro de correr entre o living e a varanda (linha clara na planta, de z = 6,01 a 9,49)
+  {
+    const x = 2.4;
+    const folha = (z0: number, z1: number, dx: number) => {
+      m.cx("vidro", x + dx - 0.006, x + dx + 0.006, 0.02, 2.36, z0, z1, "parede");
+      m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 2.34, 2.4, z0, z1, "alto");
+      m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 0, 0.03, z0, z1, "parede");
+      for (const zz of [z0, z1]) m.cx("pretoFosco", x + dx - 0.02, x + dx + 0.02, 0, 2.4, zz - 0.02, zz + 0.02, "parede");
+    };
+    folha(6.01, 6.9, -0.03); // fixa
+    folha(6.75, 7.65, 0.03); // de correr, aberta sobre a fixa
+    folha(8.6, 9.49, -0.03); // fixa junto à cozinha
+  }
+  m.obst(5.73, 7.36, 8.17, 8.55);
+  // mesa de jantar redonda (Ø 1,38 m) com seis cadeiras de madeira e palhinha
+  m.cil("madeiraClara", 3.9, 0.72, 7.14, 0.69, 0.04);
+  m.cil("madeiraNatural", 3.9, 0, 7.14, 0.09, 0.72);
+  m.cil("madeiraNatural", 3.9, 0, 7.14, 0.32, 0.03);
+  m.cil("louca", 3.9, 0.76, 7.14, 0.1, 0.16);
+  m.esf("planta", 3.9, 1.0, 7.14, 0.16);
+  m.obst(3.21, 4.59, 6.45, 7.83);
+  for (let i = 0; i < 6; i++) {
+    const a = (i / 6) * Math.PI * 2 + Math.PI / 6;
+    const x = 3.9 + Math.sin(a) * 0.98;
+    const z = 7.14 + Math.cos(a) * 0.98;
+    m.cadeira(x, z, a + Math.PI, "palhinha");
+  }
+  for (const [x, z] of [[3.9, 7.14], [6.7, 7.3], [7.9, 9.4], [5.2, 6.4]] as const) m.spot(x, z);
+  m.luz(3.9, 2.2, 7.14, 0.9, 5);
+  m.luz(6.9, 2.2, 7.0, 0.9, 5);
+  m.luz(8.0, 2.2, 9.4, 0.5, 3);
+
+  // ═══ COZINHA (integrada ao living): geladeira, bancada com cuba e cooktop, lavadora e tanque, na parede de baixo ═══
+  {
+    const z1 = 10.15 - e;
+    m.cx("pretoFosco", 2.51, 3.2, 0, 1.85, z1 - 0.68, z1); // geladeira (escura na planta)
+    m.cx("cromo", 3.18, 3.2, 0.95, 1.6, z1 - 0.7, z1 - 0.66);
+    m.obst(2.46, 3.24, z1 - 0.7, z1 + e);
+    m.cx("laqueado", 3.28, 5.7, 0.1, 0.86, z1 - 0.6, z1);
+    m.cx("pretoFosco", 3.28, 5.7, 0, 0.1, z1 - 0.56, z1);
+    m.cx("pedraBranca", 3.26, 5.72, 0.86, 0.9, z1 - 0.62, z1);
+    m.cx("inox", 3.68, 4.14, 0.88, 0.905, z1 - 0.5, z1 - 0.12); // cuba
+    m.cil("cromo", 3.91, 0.9, z1 - 0.06, 0.012, 0.32);
+    m.cx("pretoFosco", 4.72, 5.3, 0.9, 0.912, z1 - 0.54, z1 - 0.06); // cooktop de 4 bocas
+    for (const [dx, dz] of [[0.14, 0.14], [0.44, 0.14], [0.14, 0.34], [0.44, 0.34]] as const) m.cil("inox", 4.72 + dx, 0.912, z1 - 0.54 + dz, 0.06, 0.006);
+    m.cx("pedraBranca", 3.28, 5.7, 0.9, 1.5, z1 - 0.02, z1, "alto"); // frontão
+    m.ar("eletro", 5.76, 6.4, 0, 0.85, z1 - 0.6, z1, 0.03); // lavadora
+    m.cil("vidroFosco", 6.08, 0.5, z1 - 0.61, 0.18, 0.01, "movel", [Math.PI / 2, 0, 0]);
+    m.cx("louca", 6.61, 7.28, 0.62, 0.86, z1 - 0.55, z1); // tanque
+    m.cx("metalBranco", 6.64, 7.25, 0, 0.62, z1 - 0.5, z1 - 0.02);
+    m.cil("cromo", 6.95, 0.86, z1 - 0.06, 0.012, 0.3);
+    m.obst(3.28, 7.33, z1 - 0.62, z1 + e);
+    for (const x of [3.9, 5.0, 6.6]) m.spot(x, 9.45);
+    m.luz(4.8, 2.2, 9.4, 0.8, 4.5);
+  }
+
+  // ═══ VARANDA GOURMET: bancada com churrasqueira e cuba, mesa de madeira com quatro cadeiras, banco e vaso ═══
+  {
+    const z1 = 10.15 - e;
+    m.cx("laqueado", 0.05, 2.15, 0.1, 0.86, z1 - 0.58, z1);
+    m.cx("pedraBranca", 0.03, 2.17, 0.86, 0.9, z1 - 0.6, z1);
+    m.cx("pretoFosco", 0.15, 0.75, 0.86, 1.02, z1 - 0.52, z1 - 0.06); // churrasqueira (grelha na planta)
+    for (let i = 0; i < 7; i++) m.cx("inox", 0.19 + i * 0.075, 0.2 + i * 0.075, 1.02, 1.03, z1 - 0.5, z1 - 0.08);
+    m.cx("inox", 1.25, 1.65, 0.88, 0.905, z1 - 0.48, z1 - 0.12); // cuba
+    m.cil("cromo", 1.45, 0.9, z1 - 0.06, 0.012, 0.3);
+    m.cx("parede", 2.18, 2.4, 0, H, 9.49, 10.15, "parede"); // shaft no canto (X na planta)
+    m.obst(0, 2.4, z1 - 0.6, 10.15);
+    m.cx("madeiraNatural", 0.69, 1.58, 0.72, 0.76, 7.05, 8.53);
+    for (const [x, z] of [[0.75, 7.11], [1.52, 7.11], [0.75, 8.47], [1.52, 8.47]] as const) m.cx("madeiraNatural", x - 0.03, x + 0.03, 0, 0.72, z - 0.03, z + 0.03);
+    m.obst(0.69, 1.58, 7.05, 8.53);
+    for (const z of [7.38, 8.17]) {
+      m.cadeira(0.48, z, Math.PI / 2, "palhinha");
+      m.cadeira(1.79, z, -Math.PI / 2, "palhinha");
+    }
+    m.cx("madeiraNatural", 0.72, 2.24, 0, 0.45, 5.6 + e + 0.18, 6.29); // banco ripado junto à parede
+    m.obst(0.69, 2.25, 5.6, 6.29);
+    m.cil("louca", 0.33, 0, 6.04, 0.2, 0.5);
+    m.esf("planta", 0.33, 0.9, 6.04, 0.36);
+    m.obst(0.05, 0.6, 5.7, 6.4);
+    for (const z of [7.0, 8.6]) m.spot(1.2, z);
+    m.luz(1.2, 2.2, 7.8, 0.8, 4.5);
+  }
+
+  // ═══ DORM. 1: armário na parede de cima, cama de solteiro, criado-mudo, tapete redondo e escrivaninha ═══
+  m.cx("laqueado", 0.83, 3.22, 0, 2.3, 3.04 + e, 3.7);
+  m.obst(0.78, 3.22, 3.04, 3.72);
+  m.cil("tapete", 1.94, 0, 4.47, 0.67, 0.012);
+  m.cama(0.98, 2.73, 4.65, 5.5, "x0", "tecidoBranco", "madeiraClara");
+  m.cil("madeiraClara", 1.12, 0, 4.4, 0.18, 0.5);
+  m.cil("tecidoBranco", 1.12, 0.5, 4.4, 0.08, 0.22);
+  m.obst(0.9, 1.34, 4.18, 4.62);
+  m.cx("madeiraClara", 2.85, 3.98, 0.72, 0.76, 5.0, 5.55);
+  for (const x of [2.9, 3.93]) m.cx("madeiraClara", x - 0.02, x + 0.02, 0, 0.72, 5.02, 5.53);
+  m.obst(2.85, 3.98, 5.0, 5.6);
+  m.cadeira(3.42, 4.72, 0, "tecidoCinza");
+  m.spot(2.4, 4.3);
+  m.luz(2.4, 2.2, 4.3, 0.7, 4);
+
+  // ═══ DORM. 2: cama encostada nas paredes de cima e da esquerda, criado-mudo com vaso, tapete e armário embaixo ═══
+  m.cx("tapete", 1.52, 3.03, 0.004, 0.016, 0.46, 2.04);
+  m.cama(0.98, 2.79, 0.08, 1.18, "x0", "tecidoBranco", "madeiraClara");
+  m.cil("madeiraClara", 1.15, 0, 1.42, 0.18, 0.5);
+  m.cil("louca", 1.15, 0.5, 1.42, 0.06, 0.12);
+  m.esf("planta", 1.15, 0.72, 1.42, 0.12);
+  m.obst(0.93, 1.37, 1.2, 1.64);
+  m.cx("laqueado", 0.91, 2.43, 0, 2.3, 2.4, 3.04 - e);
+  m.obst(0.88, 2.45, 2.38, 3.04);
+  m.spot(2.0, 1.5);
+  m.luz(2.0, 2.2, 1.5, 0.7, 4);
+
+  // ═══ BANHO: box no canto de cima (vidro em x = 4,27), bacia na parede de cima, bancada na parede da esquerda ═══
+  m.box(3.38, 4.27, 0.05, 0.9, "x", 4.27);
+  m.bacia(4.67, 0.32, 0);
+  m.bancadaBanho(3.38, 3.86, 1.01, 1.83, "x0");
+
+  // ═══ BANHO MASTER: box em cima (vidro em z = 0,85), bacia e bancada na parede da esquerda ═══
+  m.box(5.46, 6.49, 0.05, 0.85, "z", 0.85);
+  m.bacia(5.4, 1.25, Math.PI / 2);
+  m.bancadaBanho(5.165, 5.62, 1.7, 2.62, "x0");
+
+  // ═══ SUÍTE MASTER: closet aberto na parede da direita, cama queen com cabeceira embaixo, escrivaninha no recanto ═══
+  m.cx("parede", 6.54, 7.12, 0, H, 2.71, 2.83, "parede"); // trecho de parede que separa o recanto (planta)
+  m.obst(6.54, 7.12, 2.71, 2.83);
+  m.cx("laqueado", 7.95, 8.63 - e, 0, 2.4, 0.79 + e, 5.44);
+  m.cx("madeiraNatural", 7.97, 8.0, 0.1, 2.3, 0.9, 5.35); // frente aberta com cabideiro
+  m.cil("metalBranco", 8.3, 1.85, 0.85, 0.012, 4.55, "movel", [Math.PI / 2, 0, 0]);
+  m.obst(7.92, 8.63, 0.79, 5.6);
+  m.cx("tapete", 5.28, 7.89, 0.004, 0.016, 3.19, 5.25);
+  m.cama(5.74, 7.28, 3.45, 5.44, "z1", "tecidoBranco", "madeiraClara");
+  m.cil("madeiraClara", 5.48, 0, 5.2, 0.2, 0.5);
+  m.cil("tecidoBranco", 5.48, 0.5, 5.2, 0.09, 0.24);
+  m.obst(5.26, 5.7, 4.98, 5.42);
+  m.cx("madeiraNatural", 6.67, 7.1, 0.72, 0.76, 0.83, 1.86);
+  for (const z of [0.88, 1.81]) m.cx("madeiraNatural", 6.69, 7.08, 0, 0.72, z - 0.02, z + 0.02);
+  m.cil("louca", 6.82, 0.76, 1.62, 0.06, 0.12);
+  m.esf("planta", 6.82, 0.98, 1.62, 0.12);
+  m.obst(6.63, 7.12, 0.79, 1.9);
+  m.cadeira(7.3, 1.33, -Math.PI / 2, "tecidoBranco");
+  m.spot(6.5, 4.3);
+  m.spot(7.4, 1.8);
+  m.luz(6.5, 2.2, 4.3, 0.8, 4.5);
+  m.luz(7.3, 2.2, 1.8, 0.5, 3);
+}
+
+/** Mobília do apartamento de 77 m² (final 03, 2 suítes), pelo desenho da planta oficial ilustrada (82,4 px/m). */
+function mobiliaFinal03(m: M): void {
+  const e = 0.05;
+  const H = PE_LIVRE;
+  // ═══ LIVING: mesa de jantar junto à parede de cima, sofá de couro, tapete, mesa de centro e painel com TV ═══
+  m.cx("madeiraNatural", 8.58, 9.55, 0.72, 0.76, e + 0.02, 1.41);
+  for (const [x, z] of [[8.62, 0.12], [9.51, 0.12], [8.62, 1.37], [9.51, 1.37]] as const) m.cx("madeiraNatural", x - 0.03, x + 0.03, 0, 0.72, z - 0.03, z + 0.03);
+  m.cil("louca", 9.06, 0.76, 0.75, 0.07, 0.12);
+  m.esf("planta", 9.06, 0.98, 0.75, 0.12);
+  m.obst(8.58, 9.55, 0, 1.41);
+  for (const z of [0.4, 1.05]) {
+    m.cadeira(8.3, z, Math.PI / 2, "tecidoVerde");
+    m.cadeira(9.85, z, -Math.PI / 2, "tecidoVerde");
+  }
+  m.cx("tapete", 7.49, 9.49, 0.004, 0.016, 1.95, 4.26);
+  m.ar("caramelo", 7.15, 8.0, 0.06, 0.44, 2.08, 4.14, 0.14); // sofá de couro, encosto à esquerda
+  m.ar("caramelo", 7.15, 7.42, 0.3, 0.84, 2.08, 4.14, 0.12);
+  for (const z of [2.12, 3.13]) m.ar("caramelo", 7.4, 7.98, 0.4, 0.58, z, z + 0.98, 0.12);
+  m.obst(7.1, 8.0, 2.05, 4.17);
+  m.cil("madeiraClara", 8.88, 0, 3.05, 0.3, 0.38);
+  m.esf("planta", 8.88, 0.6, 3.05, 0.13);
+  m.cil("madeiraNatural", 8.55, 0, 3.45, 0.16, 0.48);
+  m.obst(8.5, 9.2, 2.72, 3.65);
+  m.cx("madeiraNatural", 9.61, 9.98, 0, 2.3, 2.17, 4.26); // painel ripado com a TV (traço preto na planta)
+  m.cx("tv", 9.59, 9.61, 1.0, 1.7, 2.6, 3.8, "alto");
+  m.obst(9.6, 10.0, 2.17, 4.26);
+  // cozinha na parede da direita: geladeira, bancada com cuba e cooktop; tanque e lavadora na área de serviço
+  {
+    const x1 = 11.55 - e;
+    m.cx("pretoFosco", x1 - 0.66, x1, 0, 1.85, 1.3, 1.92);
+    m.obst(x1 - 0.7, 11.55, 1.28, 1.95);
+    m.cx("laqueado", x1 - 0.6, x1, 0.1, 0.86, 1.95, 4.3);
+    m.cx("pedraBranca", x1 - 0.62, x1, 0.86, 0.9, 1.95, 4.3);
+    m.cx("pedraBranca", x1 - 0.02, x1, 0.9, 1.5, 1.95, 4.3, "alto");
+    m.cx("inox", x1 - 0.5, x1 - 0.12, 0.88, 0.905, 2.55, 3.05); // cuba
+    m.cil("cromo", x1 - 0.06, 0.9, 2.8, 0.012, 0.32);
+    m.cx("pretoFosco", x1 - 0.54, x1 - 0.06, 0.9, 0.912, 3.45, 4.0); // cooktop
+    m.obst(x1 - 0.62, 11.55, 1.95, 4.3);
+    m.cx("parede", 11.32, 11.55, 0, H, 4.31, 5.17, "parede"); // shaft da área de serviço (X na planta)
+    m.cx("louca", 10.9, 11.3, 0.62, 0.86, 4.45, 5.05); // tanque
+    m.cx("metalBranco", 10.93, 11.27, 0, 0.62, 4.48, 5.02);
+    m.ar("eletro", 10.9, 11.5, 0, 0.85, 5.3, 5.95, 0.03); // lavadora
+    m.obst(10.85, 11.55, 4.31, 6.14);
+  }
+  for (const [x, z] of [[9.06, 0.75], [8.6, 3.1], [10.8, 2.9], [10.6, 5.0]] as const) m.spot(x, z);
+  m.luz(9.0, 2.2, 0.9, 0.8, 4.5);
+  m.luz(8.6, 2.2, 3.1, 0.9, 5);
+  m.luz(10.8, 2.2, 3.0, 0.6, 3.5);
+  // portas de vidro de correr entre o living e a varanda (z = 4,38)
+  {
+    const z = 4.38;
+    const folha = (x0: number, x1: number, dz: number) => {
+      m.cx("vidro", x0, x1, 0.02, 2.36, z + dz - 0.006, z + dz + 0.006, "parede");
+      m.cx("pretoFosco", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
+      m.cx("pretoFosco", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
+      for (const xx of [x0, x1]) m.cx("pretoFosco", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
+    };
+    folha(7.05, 8.0, -0.03);
+    folha(7.85, 8.8, 0.03);
+    folha(8.9, 9.83, -0.03);
+  }
+
+  // ═══ VARANDA GOURMET: bancada de madeira com três banquetas, bancada com cuba e churrasqueira ═══
+  m.cx("parede", 7.01, 7.3, 0, H, 5.0, 6.14, "parede"); // shaft no canto (X na planta)
+  m.cx("madeiraNatural", 7.3, 7.79, 0, 1.0, 4.5, 6.02);
+  m.obst(7.0, 7.8, 4.5, 6.14);
+  for (const z of [4.87, 5.24, 5.6]) m.banqueta(8.0, z, 0.72);
+  m.cx("laqueado", 9.19, 9.82, 0.1, 0.86, 4.5, 6.02);
+  m.cx("pedraBranca", 9.17, 9.84, 0.86, 0.9, 4.48, 6.04);
+  m.cx("inox", 9.3, 9.7, 0.88, 0.905, 4.7, 5.1);
+  m.cx("pretoFosco", 9.25, 9.78, 0.86, 1.02, 5.35, 5.9); // churrasqueira
+  for (let i = 0; i < 6; i++) m.cx("inox", 9.27, 9.76, 1.02, 1.03, 5.38 + i * 0.09, 5.39 + i * 0.09);
+  m.obst(9.15, 9.87, 4.48, 6.14);
+  m.spot(8.5, 5.2);
+  m.luz(8.5, 2.2, 5.2, 0.8, 4);
+
+  // ═══ SUÍTE MASTER: closet em L, cama queen com cabeceira na parede da esquerda, criados-mudos e tapete ═══
+  m.cx("laqueado", e, 0.63, 0, 2.3, e, 2.5);
+  m.cx("laqueado", 0.63, 1.9, 0, 2.3, e, 0.56);
+  m.obst(0, 0.65, 0, 2.52);
+  m.obst(0.6, 1.92, 0, 0.58);
+  m.cx("tapete", 0.63, 2.45, 0.004, 0.016, 2.62, 5.11);
+  m.cama(0.2, 2.1, 3.11, 4.71, "x0", "tecidoBranco", "madeiraClara");
+  for (const z of [2.8, 5.0]) {
+    m.cx("madeiraNatural", e + 0.02, 0.42, 0, 0.5, z - 0.18, z + 0.18);
+    m.cil("tecidoBranco", 0.24, 0.5, z, 0.08, 0.22);
+    m.obst(0, 0.45, z - 0.2, z + 0.2);
+  }
+  m.spot(1.4, 3.9);
+  m.spot(3.4, 0.5);
+  m.luz(1.4, 2.2, 3.9, 0.8, 4.5);
+
+  // ═══ BANHO MASTER: bancada e bacia na parede da direita, box embaixo (vidro em z = 5,25) ═══
+  m.bancadaBanho(3.75, 4.2, 3.68, 4.2, "x1");
+  m.bacia(4.0, 4.82, -Math.PI / 2);
+  m.box(2.79, 3.81, 5.27, 6.09, "z", 5.25);
+  // ═══ BANHO 1: bancada na parede de cima, bacia na da esquerda, box embaixo ao lado do shaft ═══
+  m.bancadaBanho(2.82, 3.6, 1.09, 1.55, "z0");
+  m.bacia(3.08, 2.2, Math.PI / 2);
+  m.cx("parede", 2.79, 3.24, 0, H, 2.74, 3.55, "parede"); // shaft (X na planta)
+  m.obst(2.74, 3.26, 2.72, 3.6);
+  m.box(3.26, 4.2, 2.62, 3.55, "z", 2.62);
+  // ═══ LAVABO: bacia na parede de baixo, cuba no canto ═══
+  m.bacia(5.79, 2.12, Math.PI);
+  m.bancadaBanho(6.42, 6.96, 1.95, 2.46, "z1");
+
+  // ═══ SUÍTE 1: armário na parede de cima, duas camas de solteiro, criado-mudo entre elas, tapete redondo ═══
+  m.cx("laqueado", 5.37 + e, 6.96, 0, 2.3, 2.56, 3.18);
+  m.obst(5.37, 7.01, 2.51, 3.2);
+  m.cil("tapete", 5.67, 0, 4.32, 0.97, 0.012);
+  m.cama(4.39, 5.18, 4.14, 5.84, "z1", "tecidoBranco", "madeiraClara");
+  m.cama(6.03, 6.88, 4.14, 5.84, "z1", "tecidoBranco", "madeiraClara");
+  m.cx("madeiraNatural", 5.3, 5.92, 0, 0.5, 5.7, 6.04);
+  m.cil("louca", 5.6, 0.5, 5.86, 0.07, 0.12);
+  m.obst(5.25, 5.95, 5.66, 6.14);
+  m.spot(5.6, 4.6);
+  m.spot(4.8, 1.6);
+  m.luz(5.6, 2.2, 4.6, 0.8, 4.5);
+}
+
+/** Mobília do apartamento de 76 m² (final 06, 2 suítes), pelo desenho da planta oficial ilustrada (82,4 px/m). */
+function mobiliaFinal06(m: M): void {
+  const e = 0.05;
+  const H = PE_LIVRE;
+  // ═══ COZINHA E SERVIÇO na parede da esquerda: lavadora, tanque, shaft, cooktop, cuba e geladeira ═══
+  m.ar("eletro", e, 0.68, 0, 0.85, e + 0.02, 0.66, 0.03);
+  m.cx("louca", e, 0.48, 0.62, 0.86, 1.05, 1.52);
+  m.cx("metalBranco", e + 0.02, 0.46, 0, 0.62, 1.08, 1.5);
+  m.obst(0, 0.7, 0, 1.55);
+  m.cx("parede", 0, 0.23, 0, H, 0.87, 1.77, "parede"); // shaft (X na planta)
+  m.cx("laqueado", e, 0.65, 0.1, 0.86, 1.8, 4.08);
+  m.cx("pedraBranca", e, 0.67, 0.86, 0.9, 1.8, 4.08);
+  m.cx("pedraBranca", e, e + 0.02, 0.9, 1.5, 1.8, 4.08, "alto");
+  m.cx("pretoFosco", e + 0.06, 0.6, 0.9, 0.912, 2.16, 2.72); // cooktop
+  m.cx("inox", e + 0.12, 0.5, 0.88, 0.905, 3.05, 3.53); // cuba
+  m.cil("cromo", e + 0.06, 0.9, 3.29, 0.012, 0.32);
+  m.cx("pretoFosco", e, 0.68, 0, 1.85, 4.12, 4.8); // geladeira
+  m.obst(0, 0.7, 1.8, 4.82);
+  // ═══ LIVING: painel com TV e mesa de mármore com quatro cadeiras; sofá encostado na suíte 1, tapete e mesa de centro ═══
+  m.cx("madeiraNatural", 1.6, 1.97, 0, 2.2, 2.38, 3.65);
+  m.cx("tv", 1.97, 1.99, 1.0, 1.65, 2.55, 3.5, "alto");
+  m.obst(1.58, 2.0, 2.38, 3.65);
+  m.cx("pedraBranca", 1.6, 2.51, 0.74, 0.78, 3.65, 4.99);
+  m.cx("pedraBranca", 1.95, 2.15, 0, 0.74, 3.9, 4.75);
+  m.esf("planta", 2.05, 0.92, 4.3, 0.12);
+  m.obst(1.58, 2.53, 3.63, 5.0);
+  for (const z of [3.96, 4.6]) {
+    m.cadeira(1.36, z, Math.PI / 2, "madeiraNatural");
+    m.cadeira(2.76, z, -Math.PI / 2, "madeiraNatural");
+  }
+  m.cx("tapete", 2.21, 4.21, 0.004, 0.016, 1.89, 5.0);
+  m.ar("tecidoCinza", 3.54, 4.54 - e, 0.06, 0.44, 1.95, 4.32, 0.14);
+  m.ar("tecidoCinza", 4.2, 4.54 - e, 0.3, 0.84, 1.95, 4.32, 0.12);
+  for (const z of [1.98, 3.17]) m.ar("tecidoCinza", 3.57, 4.22, 0.4, 0.58, z, z + 1.12, 0.12);
+  m.obst(3.5, 4.54, 1.93, 4.34);
+  m.cil("madeiraClara", 2.88, 0, 2.68, 0.35, 0.36);
+  m.esf("planta", 2.88, 0.58, 2.68, 0.12);
+  m.obst(2.5, 3.26, 2.3, 3.06);
+  for (const [x, z] of [[0.6, 3.0], [2.1, 4.3], [3.2, 3.0], [1.5, 5.5]] as const) m.spot(x, z);
+  m.luz(2.1, 2.2, 4.3, 0.9, 5);
+  m.luz(3.2, 2.2, 3.0, 0.8, 4.5);
+  m.luz(0.8, 2.2, 1.0, 0.5, 3);
+  // portas de vidro de correr entre o living e a varanda (z = 1,77)
+  {
+    const z = 1.77;
+    const folha = (x0: number, x1: number, dz: number) => {
+      m.cx("vidro", x0, x1, 0.02, 2.36, z + dz - 0.006, z + dz + 0.006, "parede");
+      m.cx("pretoFosco", x0, x1, 2.34, 2.4, z + dz - 0.02, z + dz + 0.02, "alto");
+      m.cx("pretoFosco", x0, x1, 0, 0.03, z + dz - 0.02, z + dz + 0.02, "parede");
+      for (const xx of [x0, x1]) m.cx("pretoFosco", xx - 0.02, xx + 0.02, 0, 2.4, z + dz - 0.02, z + dz + 0.02, "parede");
+    };
+    folha(1.73, 2.7, 0.03);
+    folha(2.55, 3.5, -0.03);
+    folha(3.55, 4.5, 0.03);
+  }
+
+  // ═══ VARANDA GOURMET: bancada com churrasqueira e cuba na parede da esquerda, mesa de madeira e cadeiras ═══
+  m.cx("laqueado", 1.69 + e, 2.37, 0.1, 0.86, 0.07, 1.41);
+  m.cx("pedraBranca", 1.69 + e, 2.39, 0.86, 0.9, 0.05, 1.43);
+  m.cx("pretoFosco", 1.8, 2.32, 0.86, 1.02, 0.15, 0.62);
+  for (let i = 0; i < 6; i++) m.cx("inox", 1.82, 2.3, 1.02, 1.03, 0.18 + i * 0.08, 0.19 + i * 0.08);
+  m.cx("inox", 1.86, 2.26, 0.88, 0.905, 0.84, 1.24);
+  m.obst(1.69, 2.4, 0, 1.45);
+  m.cx("madeiraNatural", 3.91, 4.45, 0.72, 0.76, 0.32, 1.59);
+  for (const [x, z] of [[3.95, 0.36], [4.41, 0.36], [3.95, 1.55], [4.41, 1.55]] as const) m.cx("madeiraNatural", x - 0.03, x + 0.03, 0, 0.72, z - 0.03, z + 0.03);
+  m.obst(3.9, 4.54, 0.3, 1.6);
+  for (const z of [0.55, 0.95, 1.35]) m.cadeira(3.66, z, Math.PI / 2, "tecidoVerde");
+  m.spot(3.0, 0.9);
+  m.luz(3.0, 2.2, 0.9, 0.8, 4);
+
+  // ═══ SUÍTE 1: cama de solteiro com cabeceira na parede da esquerda, criado-mudo, mesinha, tapete e armário ═══
+  m.cx("tapete", 5.24, 6.88, 0.004, 0.016, 0.13, 2.26);
+  m.cama(4.72, 6.52, 0.68, 1.53, "x0", "tecidoBranco", "madeiraClara");
+  m.cx("madeiraNatural", 4.62, 5.05, 0, 0.55, e, 0.45);
+  m.cil("louca", 4.84, 0.55, 0.25, 0.06, 0.14);
+  m.obst(4.58, 5.08, 0, 0.48);
+  m.cil("madeiraClara", 4.84, 0, 1.83, 0.2, 0.5);
+  m.esf("planta", 4.84, 0.68, 1.83, 0.12);
+  m.obst(4.6, 5.08, 1.6, 2.06);
+  m.cx("laqueado", 4.54 + e, 6.26, 0, 2.3, 2.85, 3.57 - e);
+  m.obst(4.54, 6.28, 2.8, 3.6);
+  m.spot(5.9, 1.2);
+  m.spot(6.7, 4.3);
+  m.luz(5.9, 2.2, 1.4, 0.8, 4.5);
+  // ═══ LAVABO: cuba e bacia na parede de cima ═══
+  m.bancadaBanho(4.62, 5.3, 3.62, 4.1, "z0");
+  m.bacia(5.73, 3.9, 0);
+  // ═══ BANHO MASTER: box em cima (vidro em z = 0,9) e bancada na parede da esquerda (o que a planta mostra) ═══
+  m.box(7.8, 8.77, 0.05, 0.9, "z", 0.9);
+  m.bancadaBanho(7.35, 7.92, 1.6, 2.25, "x0");
+  // ═══ BANHO 1: box em cima ao lado do shaft, bancada na parede da direita ═══
+  m.cx("parede", 8.37, 8.82, 0, H, 2.5, 3.42, "parede");
+  m.obst(8.35, 8.82, 2.48, 3.44);
+  m.box(7.35, 8.33, 2.53, 3.41, "z", 3.41);
+  m.bancadaBanho(8.27, 8.77, 4.1, 4.8, "x1");
+
+  // ═══ SUÍTE MASTER: cama queen com cabeceira na parede da direita, criados-mudos, tapete e closet em L ═══
+  m.cx("tapete", 9.13, 11.19, 0.004, 0.016, 0.92, 3.53);
+  m.cama(9.49, 11.4, 1.29, 3.05, "x1", "tecidoBranco", "madeiraClara");
+  for (const z of [1.0, 3.3]) {
+    m.cx("madeiraNatural", 11.08, 11.5, 0, 0.5, z - 0.2, z + 0.2);
+    m.obst(11.05, 11.55, z - 0.22, z + 0.22);
+  }
+  m.esf("planta", 11.29, 0.68, 1.0, 0.12);
+  m.cil("tecidoBranco", 11.29, 0.5, 3.3, 0.08, 0.22);
+  m.cx("laqueado", 10.89, 11.55 - e, 0, 2.3, 3.59, 6.08 - e);
+  m.cx("laqueado", 9.67, 10.89, 0, 2.3, 5.53, 6.08 - e);
+  m.obst(10.87, 11.55, 3.55, 6.08);
+  m.obst(9.65, 10.9, 5.5, 6.08);
+  m.spot(10.2, 2.2);
+  m.spot(8.1, 5.6);
+  m.luz(10.2, 2.2, 2.4, 0.8, 4.5);
 }
 
 /** Espelha a mobília no eixo x (plantas espelhadas, como o final 04 em relação ao 02). */
@@ -173,6 +605,20 @@ export function mobiliar(t: TipoPlanta): Mobilia {
     if (!c) throw new Error(`A planta "${t.id}" precisa do cômodo "${id}".`);
     return limites(c.poligono);
   };
+  if (t.id === "final-01") {
+    mobiliaFinal01(m);
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+  }
+  if (t.id === "final-06") {
+    mobiliaFinal06(m);
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+  }
+  if (t.id === "final-03") {
+    mobiliaFinal03(m);
+    return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+  }
+  // plantas sem interior modelado (só a vista do andar): nada a mobiliar
+  if (t.id !== "final-02") return { prims: [], obstaculos: [], jardins: [], luzes: [] };
   const e = 0.05; // meia espessura de parede
   const S = de("sala");
   const C = de("cozinha");

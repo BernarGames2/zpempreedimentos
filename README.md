@@ -15,6 +15,8 @@ O Liwo vive na branch **`maxi-liwo`**.
 |---|---|
 | Imagens (fachadas, aérea, interiores, lazer, Working), plantas, metragens, tipologias, 24 pavimentos, lazer de 921,38 m², ficha técnica, estágio da obra, endereço, WhatsApp | Site da Maxi, [construtoramaxi.com.br/projetos/liwo](https://construtoramaxi.com.br/projetos/liwo/), consultado em 11/11/2026 |
 | Planta 3D do apartamento de 102 m² (finais 02 e 04) | Medida sobre a planta oficial (escala pelas cotas) |
+| Plantas 3D de 91, 77 e 76 m² (finais 01, 03, 05 e 06) | Paredes detectadas na imagem da planta oficial (82,4 px/m, conferido pelas cotas do Dorm. 1); mobília pelo desenho da planta |
+| **Entorno (ruas, quadras, casas, prédios, árvores, skyline)** | **Ilustrativo**: reproduz o padrão do bairro, não o entorno real |
 | Posição dos espaços de lazer no 5º pavimento | Medida sobre a planta oficial do pavimento de lazer |
 | Forma da torre (frente com varandas em onda, laterais em terracota, terço central recuado, embasamento com floreiras) | Plantas e renders oficiais |
 | **Disponibilidade, numeração das unidades, orientação solar** | **Demonstração** (selo "Dados de demonstração" na tela) |
@@ -25,10 +27,16 @@ Cada número tem a fonte comentada no script.
 
 ## O que tem interior 3D
 
-Só o apartamento de **102 m² com 3 suítes (finais 02 e 04)**. Ele tem planta oficial *e* três renders
-oficiais de interiores (living, cozinha e suíte master), então o 3D segue os dois. As outras tipologias
-(91, 77, 76, 97 m² e coberturas) mostram a planta oficial no painel da unidade, sem 3D: não há render
-de interiores delas, e o projeto não inventa ambientes.
+- **102 m², 3 suítes (finais 02 e 04)**: planta oficial *e* três renders oficiais (living, cozinha e suíte
+  master); a foto oficial abre pelo botão "Foto do decorado", sobre o 3D, com o controle 3D ↔ Foto.
+- **91 m², 3 quartos sendo 1 suíte (finais 01 e 05)**: planta oficial medida; sem render oficial, os
+  materiais são os neutros da paleta do Liwo.
+- **77 e 76 m², 2 suítes (finais 03 e 06)**: plantas oficiais medidas do mesmo jeito; mobília pelo desenho.
+- **Garden e coberturas**: ainda só a planta oficial e a vista do andar (falta medir; o projeto não inventa ambientes).
+
+Ao entrar, o visitante já está andando dentro do apartamento (o 3D é o padrão, não a foto):
+joystick e arrastar para olhar no celular; W A S D ou setas, mouse e rodinha (zoom) no computador;
+tocar ou clicar no chão leva até o ponto; abas e minimapa trocam de cômodo; paredes e móveis têm colisão.
 
 Cômodos sem render oficial (banhos, lavabo, suítes 1 e 2, varanda) seguem só a planta ilustrada, com peças neutras.
 

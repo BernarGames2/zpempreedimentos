@@ -65,9 +65,112 @@ const final02 = {
   ],
 };
 
-/** Espelha a planta no eixo x (o final 04 é o final 02 espelhado). */
-function espelhar(p) {
-  const mx = (x) => r2(L02 - x);
+// ── Planta do final 01 (91 m², 3 quartos sendo 1 suíte; o final 05 é o espelho), medida sobre a planta
+// oficial: paredes detectadas na imagem (82,4 px/m; Dorm. 1 = 3,12 × 2,40 m confere). Origem no guarda-corpo
+// da varanda (x = 0) e na face interna da parede de cima (z = 0). Áreas técnicas (A.T.) e shafts ficam fora.
+const L01 = 8.63;
+const final01 = {
+  comodos: [
+    comodo("living", "Living", [[2.4, 5.6], [8.63, 5.6], [8.63, 10.15], [7.41, 10.15], [7.41, 8.55], [2.4, 8.55]], [8.05, 1.6, 8.2], [2.6, 1.1, 7.3], { semRender: true }),
+    comodo("cozinha", "Cozinha", ret(2.4, 8.55, 7.41, 10.15), [3.0, 1.6, 9.0], [7.0, 1.0, 9.9], { semRender: true }),
+    comodo("varanda", "Varanda gourmet", ret(0, 5.6, 2.4, 10.15), [2.05, 1.6, 6.75], [0.5, 0.9, 9.8], { piso: "externo", semRender: true }),
+    comodo("suite", "Suíte master", [[5.115, 2.77], [6.54, 2.77], [6.54, 0.79], [8.63, 0.79], [8.63, 5.6], [5.115, 5.6]], [7.55, 1.6, 2.55], [6.3, 0.8, 4.9], { semRender: true }),
+    comodo("bmaster", "Banho master", [[5.44, 0], [6.54, 0], [6.54, 2.77], [5.115, 2.77], [5.115, 0.85], [5.44, 0.85]], [6.15, 1.6, 2.35], [5.5, 1.1, 0.7], { semRender: true }),
+    comodo("dorm1", "Dorm. 1", ret(0.78, 3.04, 4.05, 5.6), [3.65, 1.6, 3.95], [1.3, 0.9, 5.0], { semRender: true }),
+    comodo("dorm2", "Dorm. 2", [[0.78, 0], [3.33, 0], [3.33, 1.97], [4.05, 1.97], [4.05, 3.04], [0.78, 3.04]], [3.7, 1.6, 2.5], [1.4, 0.9, 0.7], { semRender: true }),
+    comodo("banho", "Banho", ret(3.33, 0, 5.115, 1.97), [4.75, 1.6, 1.6], [3.8, 1.1, 0.4], { semRender: true }),
+    comodo("circ", "Circulação", ret(4.05, 1.97, 5.115, 5.6), [4.6, 1.6, 5.3], [4.6, 1.4, 2.3], { semRender: true }),
+  ],
+  portas: [
+    porta("entrada", "porta", [8.63, 9.1], [8.63, 10.05], ["living", "hall"]),
+    porta("living-varanda", "vao", [2.4, 6.01], [2.4, 8.55], ["living", "varanda"], 2.4),
+    porta("cozinha-varanda", "vao", [2.4, 8.55], [2.4, 9.49], ["cozinha", "varanda"], 2.4),
+    porta("living-cozinha", "vao", [2.46, 8.55], [5.73, 8.55], ["living", "cozinha"], 2.6),
+    porta("living-circ", "vao", [4.12, 5.6], [5.05, 5.6], ["living", "circ"], 2.3),
+    porta("circ-banho", "porta", [4.34, 1.97], [5.0, 1.97], ["circ", "banho"]),
+    porta("circ-dorm2", "porta", [4.05, 2.13], [4.05, 2.93], ["circ", "dorm2"]),
+    porta("circ-dorm1", "porta", [4.05, 3.15], [4.05, 3.95], ["circ", "dorm1"]),
+    porta("circ-suite", "porta", [5.115, 2.92], [5.115, 3.66], ["circ", "suite"]),
+    porta("suite-bmaster", "porta", [6.54, 1.95], [6.54, 2.68], ["suite", "bmaster"]),
+  ],
+  janelas: [
+    porta("janela-dorm2", "janela", [0.78, 0.93], [0.78, 2.09], ["dorm2", "exterior"], 1.3, 1.0),
+    porta("janela-dorm1", "janela", [0.78, 3.85], [0.78, 5.02], ["dorm1", "exterior"], 1.3, 1.0),
+    porta("janela-suite", "janela", [6.68, 0.79], [7.92, 0.79], ["suite", "exterior"], 1.3, 1.0),
+    porta("janela-banho", "janela", [3.55, 0], [4.0, 0], ["banho", "exterior"], 0.6, 1.6),
+    porta("janela-bmaster", "janela", [5.68, 0], [6.12, 0], ["bmaster", "exterior"], 0.6, 1.6),
+    porta("guarda-corpo", "guarda-corpo", [0, 5.6], [0, 10.15], ["varanda", "exterior"], 2.6, 0),
+  ],
+};
+
+// ── Planta do final 03 (77 m², 2 suítes), medida sobre a planta oficial (82,4 px/m; Suíte 1 = 2,60 × 3,50 m
+// mais o corredor confere os 10,51 m²). Origem na face interna da parede da esquerda e da de cima.
+// A cozinha e a área de serviço são integradas ao living (a planta não as separa).
+const final03 = {
+  comodos: [
+    comodo("living", "Living", [[7.01, 0], [11.55, 0], [11.55, 6.14], [9.87, 6.14], [9.87, 4.38], [7.01, 4.38]], [9.3, 1.6, 4.1], [7.8, 1.0, 0.8], { semRender: true }),
+    comodo("varanda", "Varanda gourmet", ret(7.01, 4.38, 9.87, 6.14), [8.6, 1.6, 4.65], [7.3, 0.9, 6.0], { piso: "externo", semRender: true }),
+    comodo("suite", "Suíte master", [[0, 0], [4.25, 0], [4.25, 1.04], [2.74, 1.04], [2.74, 5.39], [0, 5.39]], [2.3, 1.6, 0.8], [0.8, 0.8, 4.0], { semRender: true }),
+    comodo("bmaster", "Banho master", [[2.74, 3.6], [4.25, 3.6], [4.25, 5.18], [3.86, 5.18], [3.86, 6.14], [2.74, 6.14]], [3.0, 1.6, 4.0], [4.0, 1.0, 5.6], { semRender: true }),
+    comodo("suite1", "Suíte 1", [[4.25, 1.04], [5.37, 1.04], [5.37, 2.51], [7.01, 2.51], [7.01, 6.14], [4.25, 6.14]], [4.8, 1.6, 2.0], [6.0, 0.8, 5.5], { semRender: true }),
+    comodo("banho1", "Banho 1", ret(2.74, 1.04, 4.25, 3.6), [3.9, 1.6, 1.5], [3.0, 1.0, 2.9], { semRender: true }),
+    comodo("lavabo", "Lavabo", ret(5.37, 1.04, 7.01, 2.51), [6.6, 1.6, 1.35], [5.8, 1.0, 2.25], { semRender: true }),
+    comodo("circ", "Circulação", ret(4.25, 0, 7.01, 1.04), [6.6, 1.6, 0.5], [4.0, 1.4, 0.5], { semRender: true }),
+  ],
+  portas: [
+    porta("entrada", "porta", [10.5, 0], [11.5, 0], ["living", "hall"]),
+    porta("circ-living", "vao", [7.01, 0.02], [7.01, 1.0], ["circ", "living"], 2.3),
+    porta("living-varanda", "vao", [7.05, 4.38], [9.83, 4.38], ["living", "varanda"], 2.4),
+    porta("circ-suite", "porta", [4.25, 0.08], [4.25, 0.92], ["circ", "suite"]),
+    porta("circ-suite1", "porta", [4.42, 1.04], [5.18, 1.04], ["circ", "suite1"]),
+    porta("circ-lavabo", "porta", [6.14, 1.04], [6.92, 1.04], ["circ", "lavabo"]),
+    porta("suite1-banho1", "porta", [4.25, 1.15], [4.25, 1.85], ["suite1", "banho1"]),
+    porta("suite-bmaster", "porta", [2.74, 3.77], [2.74, 4.4], ["suite", "bmaster"]),
+  ],
+  janelas: [
+    porta("janela-suite", "janela", [0.66, 5.39], [2.12, 5.39], ["suite", "exterior"], 1.3, 1.0),
+    porta("janela-suite1", "janela", [5.06, 6.14], [6.22, 6.14], ["suite1", "exterior"], 1.3, 1.0),
+    porta("janela-bmaster", "janela", [3.1, 6.14], [3.5, 6.14], ["bmaster", "exterior"], 0.6, 1.6),
+    porta("janela-servico", "janela", [10.05, 6.14], [11.25, 6.14], ["living", "exterior"], 1.2, 1.0),
+    porta("guarda-corpo", "guarda-corpo", [7.33, 6.14], [9.78, 6.14], ["varanda", "exterior"], 2.6, 0),
+  ],
+};
+
+// ── Planta do final 06 (76 m², 2 suítes), medida sobre a planta oficial (82,4 px/m; circulação = 7,26 m de
+// comprimento confere). Origem na face interna da parede da esquerda e da de cima (a fachada da varanda).
+const final06 = {
+  comodos: [
+    comodo("living", "Living", [[0, 0], [1.69, 0], [1.69, 1.77], [4.54, 1.77], [4.54, 6.08], [0, 6.08]], [0.7, 1.6, 5.6], [3.6, 1.0, 2.4], { semRender: true }),
+    comodo("varanda", "Varanda gourmet", ret(1.69, 0, 4.54, 1.77), [3.0, 1.6, 1.45], [1.9, 0.9, 0.2], { piso: "externo", semRender: true }),
+    comodo("suite", "Suíte master", [[8.82, 0.7], [11.55, 0.7], [11.55, 6.08], [7.3, 6.08], [7.3, 5.04], [8.82, 5.04]], [9.3, 1.6, 5.2], [10.6, 0.8, 2.0], { semRender: true }),
+    comodo("bmaster", "Banho master", [[7.78, 0], [8.82, 0], [8.82, 2.48], [7.3, 2.48], [7.3, 0.9], [7.78, 0.9]], [8.4, 1.6, 2.1], [8.0, 1.0, 0.5], { semRender: true }),
+    comodo("suite1", "Suíte 1", [[4.54, 0], [7.3, 0], [7.3, 5.04], [6.18, 5.04], [6.18, 3.57], [4.54, 3.57]], [6.9, 1.6, 2.6], [5.0, 0.8, 1.0], { semRender: true }),
+    comodo("banho1", "Banho 1", ret(7.3, 2.48, 8.82, 5.04), [7.75, 1.6, 4.75], [8.5, 1.0, 3.6], { semRender: true }),
+    comodo("lavabo", "Lavabo", ret(4.54, 3.57, 6.18, 5.04), [5.0, 1.6, 4.7], [5.6, 1.0, 3.8], { semRender: true }),
+    comodo("circ", "Circulação", ret(4.54, 5.04, 7.3, 6.08), [5.0, 1.6, 5.6], [7.2, 1.4, 5.6], { semRender: true }),
+  ],
+  portas: [
+    porta("entrada", "porta", [0.2, 6.08], [1.15, 6.08], ["living", "hall"]),
+    porta("living-varanda", "vao", [1.73, 1.77], [4.5, 1.77], ["living", "varanda"], 2.4),
+    porta("living-circ", "vao", [4.54, 5.06], [4.54, 6.06], ["living", "circ"], 2.3),
+    porta("circ-lavabo", "porta", [4.64, 5.04], [5.42, 5.04], ["circ", "lavabo"]),
+    porta("circ-suite1", "porta", [6.37, 5.04], [7.13, 5.04], ["circ", "suite1"]),
+    porta("suite1-banho1", "porta", [7.3, 4.2], [7.3, 4.92], ["suite1", "banho1"]),
+    porta("circ-suite", "porta", [7.3, 5.1], [7.3, 6.02], ["circ", "suite"]),
+    porta("suite-bmaster", "porta", [8.82, 1.65], [8.82, 2.31], ["suite", "bmaster"]),
+  ],
+  janelas: [
+    porta("janela-servico", "janela", [0.1, 0], [1.55, 0], ["living", "exterior"], 1.2, 1.0),
+    porta("janela-suite1", "janela", [5.36, 0], [6.5, 0], ["suite1", "exterior"], 1.3, 1.0),
+    porta("janela-bmaster", "janela", [8.05, 0], [8.45, 0], ["bmaster", "exterior"], 0.6, 1.6),
+    porta("janela-suite", "janela", [9.44, 0.7], [10.9, 0.7], ["suite", "exterior"], 1.3, 1.0),
+    porta("guarda-corpo", "guarda-corpo", [1.77, 0], [4.2, 0], ["varanda", "exterior"], 2.6, 0),
+  ],
+};
+
+/** Espelha a planta no eixo x (o final 04 é o 02 espelhado; o 05 é o 01). */
+function espelhar(p, largura = L02) {
+  const mx = (x) => r2(largura - x);
   const pt = ([x, z]) => [mx(x), z];
   const v3 = ([x, y, z]) => [mx(x), y, z];
   return {
@@ -81,12 +184,17 @@ const semInterior = { interior3d: false, comodos: [], portas: [], janelas: [] };
 const tipo = (id, nome, grupo, descricao, quartos, planta, resto) => ({ id, nome, grupo, descricao, plantaImagem: `/referencias/plantas/${planta}.jpg`, quartos, vagas: null, mobiliado: false, ...resto });
 
 const tipos = [
-  tipo("final-01", "3 quartos", "3 quartos", "3 quartos, sendo 1 suíte", 3, "final-01", semInterior),
+  tipo("final-01", "3 quartos", "3 quartos", "3 quartos, sendo 1 suíte", 3, "final-01", { ...final01, giroPlanta: r2(Math.PI / 2) }),
   tipo("final-02", "3 suítes", "3 suítes", "3 suítes", 3, "final-02", final02),
-  tipo("final-03", "2 suítes", "2 suítes", "2 suítes, sendo 1 master", 2, "final-03", semInterior),
+  tipo("final-03", "2 suítes", "2 suítes", "2 suítes, sendo 1 master", 2, "final-03", final03),
   tipo("final-04", "3 suítes", "3 suítes", "3 suítes", 3, "final-04", { espelhoDe: "final-02", ...espelhar(final02) }),
-  tipo("final-05", "3 quartos", "3 quartos", "3 quartos, sendo 1 suíte", 3, "final-05", semInterior),
-  tipo("final-06", "2 suítes", "2 suítes", "2 suítes, sendo 1 master", 2, "final-06", semInterior),
+  // no final 05 a planta oficial chama de "Dorm. 1" o quarto de cima (7,77 m²) e de "Dorm. 2" o do meio
+  tipo("final-05", "3 quartos", "3 quartos", "3 quartos, sendo 1 suíte", 3, "final-05", (() => {
+    const p = espelhar(final01, L01);
+    const nomes = { dorm1: "Dorm. 2", dorm2: "Dorm. 1" };
+    return { espelhoDe: "final-01", giroPlanta: r2(-Math.PI / 2), ...p, comodos: p.comodos.map((c) => (nomes[c.id] ? { ...c, nome: nomes[c.id] } : c)) };
+  })()),
+  tipo("final-06", "2 suítes", "2 suítes", "2 suítes, sendo 1 master", 2, "final-06", { ...final06, giroPlanta: r2(Math.PI) }),
   tipo("garden", "Garden", "Garden", "2 suítes, sendo 1 master (unidade Garden)", 2, "garden", semInterior),
   tipo("cobertura-01", "Cobertura", "Coberturas", "4 suítes, sendo 1 master", 4, "cobertura", semInterior),
   tipo("cobertura-02", "Cobertura", "Coberturas", "3 suítes, sendo 1 master", 3, "cobertura", semInterior),

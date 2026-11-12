@@ -192,7 +192,7 @@ export function Camera() {
         aoFim: () => {
           window.setTimeout(() => {
             if (f !== ficha.current) return;
-            useExp.getState().transicionar("MAQUETE");
+            useExp.getState().transicionar("PASSEIO");
           }, 140);
         },
       });

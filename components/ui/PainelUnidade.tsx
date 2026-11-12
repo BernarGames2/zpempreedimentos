@@ -110,7 +110,7 @@ export function PainelUnidade({ u }: { u: Unidade }) {
           </button>
         ) : (
           <p className="col-span-2 rounded-xl bg-white/[0.05] px-3 py-2 text-xs leading-relaxed text-cinza" data-testid="sem-interior">
-            O passeio 3D por dentro está pronto para o apartamento de 102 m² (finais 02 e 04). Para esta planta, use a planta oficial acima.
+            O passeio 3D por dentro está pronto para os finais 01 a 06 do pavimento-tipo. Garden e coberturas ainda não foram modelados: veja a planta oficial acima e a vista do andar.
           </p>
         )}
         <button type="button" onClick={verVista} disabled={emVoo} className="btn btn-linha" data-testid="ver-vista">

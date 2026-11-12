@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { memo } from "@/lib/procedural/canvas";
-import { texAsfalto, texBrilho, texCone, texJanela, texJanelaLuz, texJanelinha, texPortaVidro } from "@/lib/procedural/texturasExterior";
+import { texBrilho, texCone, texJanela, texJanelaLuz, texJanelinha, texPortaVidro } from "@/lib/procedural/texturasExterior";
 import { texConcreto, texLetreiro, texPendente, texPerfurado, texTerracota, texVitrine } from "@/lib/procedural/texturasLiwo";
 import type { Mat, Plano } from "@/lib/procedural/torre";
 
@@ -122,10 +122,7 @@ export function materiaisExterior(): MateriaisExterior {
 
 export interface MateriaisSitio {
   podio: THREE.Material;
-  asfalto: THREE.Material;
-  asfalto2: THREE.Material;
   calcada: THREE.Material;
-  grama: THREE.Material;
   vitrine: THREE.MeshStandardMaterial;
   perfurado: THREE.MeshStandardMaterial;
   escuro: THREE.Material;
@@ -134,7 +131,6 @@ export interface MateriaisSitio {
   copa: THREE.MeshStandardMaterial;
   arbusto: THREE.MeshStandardMaterial;
   pendente: THREE.MeshStandardMaterial;
-  vizinho: THREE.Material;
   ajustarLuz: (artificial: number) => void;
 }
 
@@ -161,14 +157,10 @@ export function materiaisSitio(fonte: string, nome: string): MateriaisSitio {
     const conc = texConcreto(false);
     return {
       podio: new THREE.MeshStandardMaterial({ map: repetir(conc.map, 0.2, 0.2), roughness: 0.9 }),
-      asfalto: new THREE.MeshStandardMaterial({ map: repetir(texAsfalto(), 128, 2.2), roughness: 0.82, color: "#ffffff" }),
-      asfalto2: new THREE.MeshStandardMaterial({ map: repetir(texAsfalto(), 2.2, 128), roughness: 0.82, color: "#ffffff" }),
       calcada: new THREE.MeshStandardMaterial({ color: "#9b968d", roughness: 0.95 }),
-      grama: new THREE.MeshStandardMaterial({ color: "#4a6b3e", roughness: 1 }),
       vitrine, perfurado, letreiro, copa, arbusto, pendente,
       escuro: new THREE.MeshStandardMaterial({ color: "#3b3732", roughness: 0.8 }),
       tronco: new THREE.MeshStandardMaterial({ color: "#6f6352", roughness: 0.95 }),
-      vizinho: new THREE.MeshStandardMaterial({ color: "#a39d93", roughness: 0.95 }),
       ajustarLuz,
     };
   });

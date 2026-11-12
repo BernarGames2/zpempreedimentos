@@ -80,8 +80,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       copas.push(new THREE.Matrix4().compose(new THREE.Vector3(a.x, a.y + h + 1.4 * a.escala, a.z), giro, new THREE.Vector3(2.6 * a.escala, 2.1 * a.escala, 2.6 * a.escala)));
       copas.push(new THREE.Matrix4().compose(new THREE.Vector3(a.x + 1.1 * a.escala, a.y + h + 0.7 * a.escala, a.z + 0.6 * a.escala), giro, new THREE.Vector3(1.7 * a.escala, 1.4 * a.escala, 1.7 * a.escala)));
     });
-    const vizinhos = sitio.vizinhos.map((v) => new THREE.Matrix4().compose(new THREE.Vector3(v.x, v.alt / 2, v.z), q, new THREE.Vector3(v.larg, v.alt, v.prof)));
-    return { troncos, copas, vizinhos };
+    return { troncos, copas };
   }, [sitio]);
 
   const caixas = useMemo(() => {
@@ -98,7 +97,6 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
   const pendentes = useMemo(() => [...torre.pendentes, ...sitio.pecas.pendentes], [torre, sitio]);
 
   const matPainel = { vitrine: ms.vitrine, perfurado: ms.perfurado, letreiro: ms.letreiro, escuro: ms.escuro };
-  const { x1, z1 } = P.lote;
 
   return (
     <group name="predio">
@@ -122,18 +120,8 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
 
       {/* Entorno */}
       <mesh geometry={geos.calcada} material={ms.calcada} position={[0, -0.02, 0]} receiveShadow />
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.05, 0]} material={ms.grama} receiveShadow>
-        <circleGeometry args={[1500, 64]} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, z1 + 9.6]} material={ms.asfalto} receiveShadow>
-        <planeGeometry args={[680, 10]} />
-      </mesh>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[x1 + 40, 0.004, 0]} material={ms.asfalto2} receiveShadow>
-        <planeGeometry args={[9, 680]} />
-      </mesh>
       <Instancias geometria={geos.tronco} material={ms.tronco} matrizes={entorno.troncos} sombra />
       <Instancias geometria={geos.copa} material={ms.copa} matrizes={entorno.copas} sombra />
-      <Instancias geometria={geos.caixa} material={ms.vizinho} matrizes={entorno.vizinhos} />
     </group>
   );
 }

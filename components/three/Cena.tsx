@@ -7,6 +7,7 @@ import * as THREE from "three";
 import { ambiente } from "@/lib/ambiente";
 import { temInterior, tipoDe, unidade } from "@/lib/dados";
 import { limitesPlanta } from "@/lib/procedural/planta";
+import { Entorno } from "./Entorno";
 import { alturaTorre, geoUnidade } from "@/lib/procedural/predio";
 import { emp } from "@/lib/dados";
 import { resolverTodos, splatsDoTipo } from "@/lib/splats";
@@ -101,8 +102,20 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
     const urls = new Set(Object.values(splats).map((x) => x?.url).filter((x): x is string => Boolean(x)));
     urls.forEach((url) => void fetch(url, { priority: "low" } as RequestInit).catch(() => undefined));
   }, [estado, splats]);
-  // No interior a cena fica no referencial da planta: o céu e o sol giram no sentido contrário.
-  const giro = interior && geo ? -geo.rotY : 0;
+  // No interior a cena fica no referencial da planta: o céu, o sol e a cidade giram no sentido contrário.
+  const giro = interior && geo ? -(geo.rotY + (tipo?.giroPlanta ?? 0)) : 0;
+  const refInterior = useMemo(() => {
+    if (!interior || !geo || !tipo) return null;
+    // o guarda-corpo da varanda (planta) coincide com a sacada da unidade na fachada (prédio)
+    const gc = tipo.janelas.find((a) => a.tipo === "guarda-corpo");
+    const l = limitesPlanta(tipo);
+    const pg = gc ? [(gc.p1[0] + gc.p2[0]) / 2, (gc.p1[1] + gc.p2[1]) / 2] : [(l.x0 + l.x1) / 2, (l.z0 + l.z1) / 2];
+    const [sx, sy, sz] = geo.sacada;
+    const c = Math.cos(giro);
+    const s = Math.sin(giro);
+    const pos: [number, number, number] = [(pg[0] as number) - (sx * c + sz * s), -(sy - 1.25), (pg[1] as number) - (-sx * s + sz * c)];
+    return pos;
+  }, [interior, geo, tipo, giro]);
   const solCena = useMemo(() => amb.solDir.clone().applyAxisAngle(EIXO_Y, giro), [amb, giro]);
   const altura = geo ? geo.sacada[1] : 30;
   const pano = u ? panoramaDoAndar(manifesto.vistas, u.andar) : null;
@@ -120,7 +133,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
     <>
       <Camera />
       {/* Perspectiva aérea: o entorno some aos poucos no horizonte, como nos renders */}
-      {!interior && <fog attach="fog" args={[amb.noite > 0.5 ? "#2a3a62" : "#c3d2de", 170, 1150]} />}
+      <fog attach="fog" args={[amb.noite > 0.5 ? "#22304d" : "#c3d2de", amb.noite > 0.5 ? 300 : 200, amb.noite > 0.5 ? 4000 : 2600]} />
       {/* Dentro de um splat o céu procedural sai de cena: o mundo capturado já traz o próprio fundo. */}
       {!comSplat && (!pano || !(interior || estado === "VISTA")) && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} />}
       {pano && !comSplat && (interior || estado === "VISTA") && (
@@ -151,6 +164,10 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
           giro={giro}
           interior={interior}
         />
+        {/* a mesma cidade serve o exterior e o passeio (vista pelas janelas, no referencial da planta) */}
+        <group visible={!comSplat && (!interior || estado === "PASSEIO")}>
+          <Entorno noite={amb.noite} qualidade={qualidade} posicao={refInterior ?? undefined} giro={refInterior ? giro : 0} />
+        </group>
         <group visible={!interior}>
           {/* Um predio.glb com malhas bem nomeadas substitui a torre procedural. */}
           <Predio fonte={fonte} artificial={amb.artificial} semTorre={Boolean(predioReal)} />
@@ -171,9 +188,10 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
           </group>
           {splat && comodoObj && <SplatComodo key={splat.url} comodo={comodoObj} splat={splat} aoCarregar={setSplatOk} />}
           <Passeio tipo={tipo} ativo={estado === "PASSEIO" && interior && !emVoo} />
-          <Passeio tipo={tipo} soOlhar ativo={estado === "VISTA" && !emVoo} />
         </Suspense>
       )}
+      {/* a vista do andar não depende de interior modelado: vale para todas as plantas */}
+      {tipo && <Passeio tipo={tipo} soOlhar ativo={estado === "VISTA" && !emVoo} />}
       {/* A luz dos splats já vem assada: sem pós-processamento dentro deles. */}
       {!comSplat && <Efeitos qualidade={qualidade} interior={interior} />}
     </>

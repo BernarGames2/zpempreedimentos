@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { fbm, memo, sorteio, tela, textura } from "./canvas";
+import { memo, sorteio, tela, textura } from "./canvas";
 
 
 /** Janela com veneziana: metade persiana, metade vidro (acesa ou apagada). */
@@ -142,23 +142,4 @@ export function texCone(): THREE.CanvasTexture {
   });
 }
 
-/** Asfalto com leve variação. */
-export function texAsfalto(): THREE.CanvasTexture {
-  return memo("asfalto", () => {
-    const n = 256;
-    const base = fbm(n, n, 40, 4, 5);
-    const [c, g] = tela(n, n);
-    const img = g.createImageData(n, n);
-    const r = sorteio(9);
-    for (let i = 0; i < n * n; i++) {
-      const v = 62 + (base[i] as number) * 30 + (r() - 0.5) * 18;
-      img.data[i * 4] = v;
-      img.data[i * 4 + 1] = v + 1;
-      img.data[i * 4 + 2] = v + 5;
-      img.data[i * 4 + 3] = 255;
-    }
-    g.putImageData(img, 0, 0);
-    return textura(c, { repetir: [30, 30] });
-  });
-}
 

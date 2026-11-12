@@ -91,6 +91,8 @@ interface Experiencia {
   vistaReal: boolean;
   /** Conta os pedidos de aba: pedir o mesmo cômodo de novo volta ao enquadramento da foto. */
   pedidoComodo: number;
+  /** O visitante pediu a foto oficial: ela abre quando a câmera chegar ao enquadramento. */
+  fotoAoChegar: boolean;
 
   transicionar: (novo: Estado) => boolean;
   pularIntro: () => void;
@@ -138,6 +140,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   cena: "exterior",
   vistaReal: false,
   pedidoComodo: 0,
+  fotoAoChegar: false,
 
   transicionar: (novo) => {
     const atual = get().estado;
@@ -195,6 +198,9 @@ export const useExp = create<Experiencia>((set, get) => ({
     if (s.estado !== "UNIDADE" || !s.unidadeSel) return;
     const alvo = unidade(s.unidadeSel);
     if (!alvo || !temInterior(tipoDe(alvo))) return;
+    // entra direto andando, a partir do primeiro cômodo (o living, junto à porta)
+    const primeiro = tipoDe(alvo).comodos[0]?.id ?? null;
+    set({ comodo: primeiro, comodoAtual: primeiro, foto: { aberta: false, mix: 1 } });
     if (s.transicionar("ENTRANDO")) registrar("entrou_no_apartamento", { unidade: s.unidadeSel, origem: "painel" });
   },
 

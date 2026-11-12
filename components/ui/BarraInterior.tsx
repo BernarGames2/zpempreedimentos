@@ -1,12 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { toquePrincipal } from "@/lib/controles";
 import { emp, tipoDe } from "@/lib/dados";
 import { linkWhatsApp, mensagemVisita } from "@/lib/formato";
 import { registrar } from "@/lib/metricas";
 import { useExp } from "@/lib/store";
 import type { Unidade } from "@/lib/types";
 import { ControleSol } from "./ControleSol";
+import { DicaPasseio } from "./DicaPasseio";
+import { Joystick } from "./Joystick";
 import { IcoPlanta, IcoPorta, IcoPredio, IcoRegua, IcoSol, IcoVoltar, IcoWhats } from "./Icones";
 import { Minimapa } from "./Minimapa";
 
@@ -76,12 +79,15 @@ export function BarraPasseio({ u, extras }: { u: Unidade; extras?: React.ReactNo
   const usandoSplat = useExp((s) => s.usandoSplat);
   const emVoo = useExp((s) => s.emVoo);
   const { irComodo, maquete, voltarPredio } = useExp.getState();
+  const [toque, setToque] = useState(false);
+  useEffect(() => setToque(toquePrincipal()), []);
   return (
     <>
+      <DicaPasseio />
       <div className="absolute right-3 top-[4.25rem] z-10 flex flex-col items-end gap-2 sm:right-6 sm:top-20">
         <Minimapa tipo={tipo} />
         {!usandoSplat && (
-          <span className="vidro rounded-full px-3 py-1 text-[11px] text-cinza" data-testid="previa-simplificada">Prévia simplificada</span>
+          <span className="vidro rounded-full px-3 py-1 text-[11px] text-cinza" data-testid="previa-simplificada">3D da planta oficial</span>
         )}
       </div>
       <div className="pointer-events-auto absolute left-3 top-[7.4rem] z-10 flex flex-col gap-2 sm:left-6 md:top-[8.4rem]" data-testid="botoes-passeio">
@@ -93,9 +99,12 @@ export function BarraPasseio({ u, extras }: { u: Unidade; extras?: React.ReactNo
         </button>
         {extras}
       </div>
-      <div className="pointer-events-auto absolute inset-x-0 bottom-0 z-10 flex flex-col items-center gap-2 px-3 pb-[max(0.9rem,env(safe-area-inset-bottom))]">
-        <div className="sm:absolute sm:bottom-4 sm:right-6"><Agendar u={u} /></div>
-        <nav aria-label="Cômodos" className="vidro flex max-w-full gap-1 overflow-x-auto rounded-full p-1" data-testid="abas-comodos">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 flex flex-col gap-2 px-3 pb-[max(0.9rem,env(safe-area-inset-bottom))]">
+        <div className="flex items-end justify-between gap-2 sm:contents">
+          {toque ? <Joystick /> : <span aria-hidden />}
+          <div className="pointer-events-auto sm:absolute sm:bottom-4 sm:right-6"><Agendar u={u} curto={toque} /></div>
+        </div>
+        <nav aria-label="Cômodos" className="vidro pointer-events-auto mx-auto flex max-w-full gap-1 overflow-x-auto rounded-full p-1" data-testid="abas-comodos">
           {tipo.comodos.map((c) => (
             <button
               key={c.id}

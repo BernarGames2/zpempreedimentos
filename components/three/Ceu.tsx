@@ -84,16 +84,8 @@ const FRAG = /* glsl */ `
       chao += vec3(1.0, 0.72, 0.42) * 0.22 * uNoite * smoothstep(0.1, 0.0, prof) * (0.5 + 0.5 * fbm(d.xz * 9.0));
       cor = chao;
     } else {
-      cor += vec3(1.0, 0.7, 0.4) * 0.12 * uNoite * smoothstep(0.08, 0.0, d.y);
-      // linha de prédios ao longe, com algumas janelas acesas
-      float ang = atan(d.z, d.x);
-      float col = floor(ang * 70.0);
-      float altP = (0.006 + 0.03 * pow(hash(vec2(col, 3.0)), 3.0)) * (0.6 + 0.4 * ruido(vec2(ang * 6.0, 1.0)));
-      if (d.y < altP) {
-        vec3 predio = mix(vec3(0.03, 0.045, 0.08), vec3(0.3, 0.34, 0.4), 1.0 - uNoite);
-        float jan = step(0.8, hash(vec2(floor(ang * 420.0), floor(d.y * 900.0))));
-        cor = predio + vec3(1.0, 0.75, 0.42) * jan * uNoite * 0.7;
-      }
+      // brilho quente da cidade junto ao horizonte (o skyline em si é 3D, em Entorno.tsx)
+      cor += vec3(1.0, 0.7, 0.4) * 0.16 * uNoite * smoothstep(0.1, 0.0, d.y);
     }
 
     gl_FragColor = vec4(cor, 1.0);

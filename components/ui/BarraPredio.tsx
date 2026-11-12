@@ -7,12 +7,14 @@ import { filtroAtivo, useExp } from "@/lib/store";
 import { ControleSol } from "./ControleSol";
 import { Filtros } from "./Filtros";
 import { Gaveta } from "./Gaveta";
-import { IcoCamadas, IcoFechar, IcoFiltro, IcoLazer, IcoSol } from "./Icones";
+import { SeletorAndar } from "./SeletorAndar";
+import { IcoCamadas, IcoFechar, IcoFiltro, IcoLazer, IcoPredio, IcoSol } from "./Icones";
 
 /** Controles da vista do prédio: filtros, camada de status, estudo de sol e lazer. */
 export function BarraPredio() {
   const [filtros, setFiltros] = useState(false);
   const [sol, setSol] = useState(false);
+  const [andares, setAndares] = useState(false);
   const mostrarStatus = useExp((s) => s.mostrarStatus);
   const ativo = useExp((s) => filtroAtivo(s.filtros));
   const set = useExp((s) => s.set);
@@ -20,8 +22,11 @@ export function BarraPredio() {
 
   return (
     <>
-      <div className={`pointer-events-auto absolute bottom-5 left-1/2 z-10 flex w-max max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 sm:bottom-7 ${filtros ? "max-md:hidden" : ""}`} data-testid="barra-predio">
-        <button type="button" onClick={() => { setFiltros((v) => !v); setSol(false); }} aria-expanded={filtros} className={`btn btn-linha ${filtros || ativo ? "btn-ativo" : ""}`} data-testid="abrir-filtros">
+      <div className={`pointer-events-auto absolute bottom-5 left-1/2 z-10 flex w-max max-w-[calc(100%-1.5rem)] -translate-x-1/2 flex-wrap items-center justify-center gap-2 sm:bottom-7 ${filtros || andares ? "max-md:hidden" : ""}`} data-testid="barra-predio">
+        <button type="button" onClick={() => { setAndares((v) => !v); setFiltros(false); setSol(false); }} aria-expanded={andares} className={`btn btn-ambar ${andares ? "ring-2 ring-ambar-claro" : ""}`} data-testid="abrir-andares">
+          <IcoPredio /> Andares
+        </button>
+        <button type="button" onClick={() => { setFiltros((v) => !v); setSol(false); setAndares(false); }} aria-expanded={filtros} className={`btn btn-linha ${filtros || ativo ? "btn-ativo" : ""}`} data-testid="abrir-filtros">
           <IcoFiltro /> Filtros
         </button>
         <button type="button" onClick={() => set({ mostrarStatus: !mostrarStatus })} aria-pressed={mostrarStatus} className={`btn btn-linha ${mostrarStatus ? "btn-ativo" : ""}`} data-testid="ver-status">
@@ -52,6 +57,11 @@ export function BarraPredio() {
       )}
 
       <AnimatePresence>
+        {andares && (
+          <Gaveta key="andares" rotulo="Escolha o andar" lado="esquerda" testId="gaveta-andares" cabecalho={null}>
+            <SeletorAndar fechar={() => setAndares(false)} />
+          </Gaveta>
+        )}
         {filtros && (
           <Gaveta
             key="filtros"

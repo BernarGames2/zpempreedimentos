@@ -4,7 +4,7 @@ import { Canvas } from "@react-three/fiber";
 import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { poseIntro } from "@/lib/poses";
-import { linkInicial, useExp } from "@/lib/store";
+import { linkInicial, poseCamera, useExp } from "@/lib/store";
 import type { Manifesto } from "@/lib/types";
 import { Cena } from "./Cena";
 
@@ -24,7 +24,7 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
     linkInicial.comodo = p.get("comodo");
     const q = p.get("q");
     // Gancho de depuração e dos testes automatizados: /?debug=1 expõe o estado.
-    if (p.get("debug") === "1") (window as unknown as { __zp?: typeof useExp }).__zp = useExp;
+    if (p.get("debug") === "1") Object.assign(window, { __zp: useExp, __pose: poseCamera });
     const reduzido = window.matchMedia("(prefers-reduced-motion: reduce)");
     const movel = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 760;
     setCelular(movel);

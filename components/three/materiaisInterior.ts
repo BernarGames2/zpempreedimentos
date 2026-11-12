@@ -46,6 +46,8 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       veludo: tex(ladrilho(texBoucle("veludo", ["#a07d45", "#b38f58"]), 2.5), { roughness: 0.62, normalScale: new THREE.Vector2(0.08, 0.08) }),
       tecidoBranco: std({ color: "#f3f1ec", roughness: 0.95 }),
       tecidoCinza: std({ color: "#a7a6a2", roughness: 0.95 }),
+      tecidoVerde: std({ color: "#7d8f6a", roughness: 0.95 }),
+      laqueado: std({ color: "#e8e3da", roughness: 0.55 }),
       palhinha: tex(ladrilho(texPalhinha(), 0.12), { roughness: 0.8 }),
       cromo: std({ color: "#d6d9dc", roughness: 0.12, metalness: 1 }),
       bronze: std({ color: "#8a6a48", roughness: 0.32, metalness: 0.9 }),

@@ -23,8 +23,9 @@ export function BotaoFoto({ u }: { u: Unidade }) {
       s.setFoto({ aberta: false });
       return;
     }
-    // volta ao enquadramento; a foto abre sozinha quando a câmera chega
+    // volta ao enquadramento da foto e a abre quando a câmera chega
     s.irComodo(c.id);
+    s.set({ fotoAoChegar: true });
     registrar("abriu_foto_decorado", { unidade: u.numero, comodo: c.id });
   };
   return (

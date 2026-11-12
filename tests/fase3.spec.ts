@@ -1,13 +1,20 @@
 import { expect, test } from "@playwright/test";
 import { abrir, capturar, esperarEstado, estado, semErros, vigiarConsole } from "./apoio";
 
-test("fase 3: entrada pela varanda, maquete, passeio com abas e minimapa", async ({ page }, info) => {
+test("fase 3: entrar leva direto ao passeio 3D; maquete, abas e minimapa", async ({ page }, info) => {
   const erros = vigiarConsole(page);
   await abrir(page, "unidade=1202");
   await esperarEstado(page, "UNIDADE");
-  await page.getByTestId("entrar").click();
+  await page.getByTestId("entrar").dispatchEvent("click");
+  await esperarEstado(page, "PASSEIO");
+  const s0 = await estado(page);
+  expect(s0.cena).toBe("interior");
+  expect(s0.comodoAtual).toBe("sala");
+  expect((s0.foto as { aberta: boolean }).aberta).toBe(false); // o 3D navegável é o padrão, não a foto
+  await expect(page.getByTestId("dica-passeio")).toBeVisible();
+  await capturar(page, "f3-entrada", info.project.name);
+  await page.getByTestId("ir-maquete").dispatchEvent("click");
   await esperarEstado(page, "MAQUETE");
-  expect((await estado(page)).cena).toBe("interior");
   await capturar(page, "f3-maquete", info.project.name);
   await page.getByTestId("mostrar-medidas").click();
   expect((await estado(page)).medidas).toBe(true);
@@ -23,14 +30,14 @@ test("fase 3: entrada pela varanda, maquete, passeio com abas e minimapa", async
   await capturar(page, "f3-quarto", info.project.name);
 
   // abas: a câmera desliza até o cômodo
-  await page.getByTestId("aba-sala").click();
+  await page.getByTestId("aba-sala").dispatchEvent("click");
   await page.waitForFunction(() => window.location.search.includes("comodo=sala"), null, { timeout: 60_000 });
   await page.waitForTimeout(6000);
   await capturar(page, "f3-sala", info.project.name);
 
-  await page.getByTestId("ir-maquete").click();
+  await page.getByTestId("ir-maquete").dispatchEvent("click");
   await esperarEstado(page, "MAQUETE");
-  await page.getByTestId("voltar-predio").click();
+  await page.getByTestId("voltar-predio").first().dispatchEvent("click");
   await esperarEstado(page, "PREDIO");
   expect((await estado(page)).cena).toBe("exterior");
   semErros(erros);

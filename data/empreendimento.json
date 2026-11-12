@@ -365,10 +365,666 @@
       "quartos": 3,
       "vagas": null,
       "mobiliado": false,
-      "interior3d": false,
-      "comodos": [],
-      "portas": [],
-      "janelas": []
+      "comodos": [
+        {
+          "id": "living",
+          "nome": "Living",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              2.4,
+              5.6
+            ],
+            [
+              8.63,
+              5.6
+            ],
+            [
+              8.63,
+              10.15
+            ],
+            [
+              7.41,
+              10.15
+            ],
+            [
+              7.41,
+              8.55
+            ],
+            [
+              2.4,
+              8.55
+            ]
+          ],
+          "area": 20.33,
+          "enquadramento": {
+            "posicao": [
+              8.05,
+              1.6,
+              8.2
+            ],
+            "olhar": [
+              2.6,
+              1.1,
+              7.3
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "cozinha",
+          "nome": "Cozinha",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              2.4,
+              8.55
+            ],
+            [
+              7.41,
+              8.55
+            ],
+            [
+              7.41,
+              10.15
+            ],
+            [
+              2.4,
+              10.15
+            ]
+          ],
+          "area": 8.02,
+          "enquadramento": {
+            "posicao": [
+              3,
+              1.6,
+              9
+            ],
+            "olhar": [
+              7,
+              1,
+              9.9
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "varanda",
+          "nome": "Varanda gourmet",
+          "piso": "externo",
+          "poligono": [
+            [
+              0,
+              5.6
+            ],
+            [
+              2.4,
+              5.6
+            ],
+            [
+              2.4,
+              10.15
+            ],
+            [
+              0,
+              10.15
+            ]
+          ],
+          "area": 10.92,
+          "enquadramento": {
+            "posicao": [
+              2.05,
+              1.6,
+              6.75
+            ],
+            "olhar": [
+              0.5,
+              0.9,
+              9.8
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite",
+          "nome": "Suíte master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              5.115,
+              2.77
+            ],
+            [
+              6.54,
+              2.77
+            ],
+            [
+              6.54,
+              0.79
+            ],
+            [
+              8.63,
+              0.79
+            ],
+            [
+              8.63,
+              5.6
+            ],
+            [
+              5.115,
+              5.6
+            ]
+          ],
+          "area": 14.09,
+          "enquadramento": {
+            "posicao": [
+              7.55,
+              1.6,
+              2.55
+            ],
+            "olhar": [
+              6.3,
+              0.8,
+              4.9
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "bmaster",
+          "nome": "Banho master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              5.44,
+              0
+            ],
+            [
+              6.54,
+              0
+            ],
+            [
+              6.54,
+              2.77
+            ],
+            [
+              5.115,
+              2.77
+            ],
+            [
+              5.115,
+              0.85
+            ],
+            [
+              5.44,
+              0.85
+            ]
+          ],
+          "area": 3.67,
+          "enquadramento": {
+            "posicao": [
+              6.15,
+              1.6,
+              2.35
+            ],
+            "olhar": [
+              5.5,
+              1.1,
+              0.7
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "dorm1",
+          "nome": "Dorm. 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              0.78,
+              3.04
+            ],
+            [
+              4.05,
+              3.04
+            ],
+            [
+              4.05,
+              5.6
+            ],
+            [
+              0.78,
+              5.6
+            ]
+          ],
+          "area": 8.37,
+          "enquadramento": {
+            "posicao": [
+              3.65,
+              1.6,
+              3.95
+            ],
+            "olhar": [
+              1.3,
+              0.9,
+              5
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "dorm2",
+          "nome": "Dorm. 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              0.78,
+              0
+            ],
+            [
+              3.33,
+              0
+            ],
+            [
+              3.33,
+              1.97
+            ],
+            [
+              4.05,
+              1.97
+            ],
+            [
+              4.05,
+              3.04
+            ],
+            [
+              0.78,
+              3.04
+            ]
+          ],
+          "area": 8.52,
+          "enquadramento": {
+            "posicao": [
+              3.7,
+              1.6,
+              2.5
+            ],
+            "olhar": [
+              1.4,
+              0.9,
+              0.7
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho",
+          "nome": "Banho",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.33,
+              0
+            ],
+            [
+              5.115,
+              0
+            ],
+            [
+              5.115,
+              1.97
+            ],
+            [
+              3.33,
+              1.97
+            ]
+          ],
+          "area": 3.52,
+          "enquadramento": {
+            "posicao": [
+              4.75,
+              1.6,
+              1.6
+            ],
+            "olhar": [
+              3.8,
+              1.1,
+              0.4
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.05,
+              1.97
+            ],
+            [
+              5.115,
+              1.97
+            ],
+            [
+              5.115,
+              5.6
+            ],
+            [
+              4.05,
+              5.6
+            ]
+          ],
+          "area": 3.87,
+          "enquadramento": {
+            "posicao": [
+              4.6,
+              1.6,
+              5.3
+            ],
+            "olhar": [
+              4.6,
+              1.4,
+              2.3
+            ]
+          },
+          "semRender": true
+        }
+      ],
+      "portas": [
+        {
+          "id": "entrada",
+          "tipo": "porta",
+          "p1": [
+            8.63,
+            9.1
+          ],
+          "p2": [
+            8.63,
+            10.05
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "hall"
+          ]
+        },
+        {
+          "id": "living-varanda",
+          "tipo": "vao",
+          "p1": [
+            2.4,
+            6.01
+          ],
+          "p2": [
+            2.4,
+            8.55
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "varanda"
+          ]
+        },
+        {
+          "id": "cozinha-varanda",
+          "tipo": "vao",
+          "p1": [
+            2.4,
+            8.55
+          ],
+          "p2": [
+            2.4,
+            9.49
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "cozinha",
+            "varanda"
+          ]
+        },
+        {
+          "id": "living-cozinha",
+          "tipo": "vao",
+          "p1": [
+            2.46,
+            8.55
+          ],
+          "p2": [
+            5.73,
+            8.55
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "cozinha"
+          ]
+        },
+        {
+          "id": "living-circ",
+          "tipo": "vao",
+          "p1": [
+            4.12,
+            5.6
+          ],
+          "p2": [
+            5.05,
+            5.6
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "circ"
+          ]
+        },
+        {
+          "id": "circ-banho",
+          "tipo": "porta",
+          "p1": [
+            4.34,
+            1.97
+          ],
+          "p2": [
+            5,
+            1.97
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "banho"
+          ]
+        },
+        {
+          "id": "circ-dorm2",
+          "tipo": "porta",
+          "p1": [
+            4.05,
+            2.13
+          ],
+          "p2": [
+            4.05,
+            2.93
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "dorm2"
+          ]
+        },
+        {
+          "id": "circ-dorm1",
+          "tipo": "porta",
+          "p1": [
+            4.05,
+            3.15
+          ],
+          "p2": [
+            4.05,
+            3.95
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "dorm1"
+          ]
+        },
+        {
+          "id": "circ-suite",
+          "tipo": "porta",
+          "p1": [
+            5.115,
+            2.92
+          ],
+          "p2": [
+            5.115,
+            3.66
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite"
+          ]
+        },
+        {
+          "id": "suite-bmaster",
+          "tipo": "porta",
+          "p1": [
+            6.54,
+            1.95
+          ],
+          "p2": [
+            6.54,
+            2.68
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite",
+            "bmaster"
+          ]
+        }
+      ],
+      "janelas": [
+        {
+          "id": "janela-dorm2",
+          "tipo": "janela",
+          "p1": [
+            0.78,
+            0.93
+          ],
+          "p2": [
+            0.78,
+            2.09
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "dorm2",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-dorm1",
+          "tipo": "janela",
+          "p1": [
+            0.78,
+            3.85
+          ],
+          "p2": [
+            0.78,
+            5.02
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "dorm1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-suite",
+          "tipo": "janela",
+          "p1": [
+            6.68,
+            0.79
+          ],
+          "p2": [
+            7.92,
+            0.79
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho",
+          "tipo": "janela",
+          "p1": [
+            3.55,
+            0
+          ],
+          "p2": [
+            4,
+            0
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-bmaster",
+          "tipo": "janela",
+          "p1": [
+            5.68,
+            0
+          ],
+          "p2": [
+            6.12,
+            0
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "bmaster",
+            "exterior"
+          ]
+        },
+        {
+          "id": "guarda-corpo",
+          "tipo": "guarda-corpo",
+          "p1": [
+            0,
+            5.6
+          ],
+          "p2": [
+            0,
+            10.15
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "varanda",
+            "exterior"
+          ]
+        }
+      ],
+      "giroPlanta": 1.57
     },
     {
       "id": "final-02",
@@ -1167,10 +1823,574 @@
       "quartos": 2,
       "vagas": null,
       "mobiliado": false,
-      "interior3d": false,
-      "comodos": [],
-      "portas": [],
-      "janelas": []
+      "comodos": [
+        {
+          "id": "living",
+          "nome": "Living",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.01,
+              0
+            ],
+            [
+              11.55,
+              0
+            ],
+            [
+              11.55,
+              6.14
+            ],
+            [
+              9.87,
+              6.14
+            ],
+            [
+              9.87,
+              4.38
+            ],
+            [
+              7.01,
+              4.38
+            ]
+          ],
+          "area": 22.84,
+          "enquadramento": {
+            "posicao": [
+              9.3,
+              1.6,
+              4.1
+            ],
+            "olhar": [
+              7.8,
+              1,
+              0.8
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "varanda",
+          "nome": "Varanda gourmet",
+          "piso": "externo",
+          "poligono": [
+            [
+              7.01,
+              4.38
+            ],
+            [
+              9.87,
+              4.38
+            ],
+            [
+              9.87,
+              6.14
+            ],
+            [
+              7.01,
+              6.14
+            ]
+          ],
+          "area": 5.03,
+          "enquadramento": {
+            "posicao": [
+              8.6,
+              1.6,
+              4.65
+            ],
+            "olhar": [
+              7.3,
+              0.9,
+              6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite",
+          "nome": "Suíte master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              0,
+              0
+            ],
+            [
+              4.25,
+              0
+            ],
+            [
+              4.25,
+              1.04
+            ],
+            [
+              2.74,
+              1.04
+            ],
+            [
+              2.74,
+              5.39
+            ],
+            [
+              0,
+              5.39
+            ]
+          ],
+          "area": 16.34,
+          "enquadramento": {
+            "posicao": [
+              2.3,
+              1.6,
+              0.8
+            ],
+            "olhar": [
+              0.8,
+              0.8,
+              4
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "bmaster",
+          "nome": "Banho master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              2.74,
+              3.6
+            ],
+            [
+              4.25,
+              3.6
+            ],
+            [
+              4.25,
+              5.18
+            ],
+            [
+              3.86,
+              5.18
+            ],
+            [
+              3.86,
+              6.14
+            ],
+            [
+              2.74,
+              6.14
+            ]
+          ],
+          "area": 3.46,
+          "enquadramento": {
+            "posicao": [
+              3,
+              1.6,
+              4
+            ],
+            "olhar": [
+              4,
+              1,
+              5.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite1",
+          "nome": "Suíte 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.25,
+              1.04
+            ],
+            [
+              5.37,
+              1.04
+            ],
+            [
+              5.37,
+              2.51
+            ],
+            [
+              7.01,
+              2.51
+            ],
+            [
+              7.01,
+              6.14
+            ],
+            [
+              4.25,
+              6.14
+            ]
+          ],
+          "area": 11.67,
+          "enquadramento": {
+            "posicao": [
+              4.8,
+              1.6,
+              2
+            ],
+            "olhar": [
+              6,
+              0.8,
+              5.5
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho1",
+          "nome": "Banho 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              2.74,
+              1.04
+            ],
+            [
+              4.25,
+              1.04
+            ],
+            [
+              4.25,
+              3.6
+            ],
+            [
+              2.74,
+              3.6
+            ]
+          ],
+          "area": 3.87,
+          "enquadramento": {
+            "posicao": [
+              3.9,
+              1.6,
+              1.5
+            ],
+            "olhar": [
+              3,
+              1,
+              2.9
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "lavabo",
+          "nome": "Lavabo",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              5.37,
+              1.04
+            ],
+            [
+              7.01,
+              1.04
+            ],
+            [
+              7.01,
+              2.51
+            ],
+            [
+              5.37,
+              2.51
+            ]
+          ],
+          "area": 2.41,
+          "enquadramento": {
+            "posicao": [
+              6.6,
+              1.6,
+              1.35
+            ],
+            "olhar": [
+              5.8,
+              1,
+              2.25
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.25,
+              0
+            ],
+            [
+              7.01,
+              0
+            ],
+            [
+              7.01,
+              1.04
+            ],
+            [
+              4.25,
+              1.04
+            ]
+          ],
+          "area": 2.87,
+          "enquadramento": {
+            "posicao": [
+              6.6,
+              1.6,
+              0.5
+            ],
+            "olhar": [
+              4,
+              1.4,
+              0.5
+            ]
+          },
+          "semRender": true
+        }
+      ],
+      "portas": [
+        {
+          "id": "entrada",
+          "tipo": "porta",
+          "p1": [
+            10.5,
+            0
+          ],
+          "p2": [
+            11.5,
+            0
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "hall"
+          ]
+        },
+        {
+          "id": "circ-living",
+          "tipo": "vao",
+          "p1": [
+            7.01,
+            0.02
+          ],
+          "p2": [
+            7.01,
+            1
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "living"
+          ]
+        },
+        {
+          "id": "living-varanda",
+          "tipo": "vao",
+          "p1": [
+            7.05,
+            4.38
+          ],
+          "p2": [
+            9.83,
+            4.38
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "varanda"
+          ]
+        },
+        {
+          "id": "circ-suite",
+          "tipo": "porta",
+          "p1": [
+            4.25,
+            0.08
+          ],
+          "p2": [
+            4.25,
+            0.92
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite"
+          ]
+        },
+        {
+          "id": "circ-suite1",
+          "tipo": "porta",
+          "p1": [
+            4.42,
+            1.04
+          ],
+          "p2": [
+            5.18,
+            1.04
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite1"
+          ]
+        },
+        {
+          "id": "circ-lavabo",
+          "tipo": "porta",
+          "p1": [
+            6.14,
+            1.04
+          ],
+          "p2": [
+            6.92,
+            1.04
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "lavabo"
+          ]
+        },
+        {
+          "id": "suite1-banho1",
+          "tipo": "porta",
+          "p1": [
+            4.25,
+            1.15
+          ],
+          "p2": [
+            4.25,
+            1.85
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite1",
+            "banho1"
+          ]
+        },
+        {
+          "id": "suite-bmaster",
+          "tipo": "porta",
+          "p1": [
+            2.74,
+            3.77
+          ],
+          "p2": [
+            2.74,
+            4.4
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite",
+            "bmaster"
+          ]
+        }
+      ],
+      "janelas": [
+        {
+          "id": "janela-suite",
+          "tipo": "janela",
+          "p1": [
+            0.66,
+            5.39
+          ],
+          "p2": [
+            2.12,
+            5.39
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-suite1",
+          "tipo": "janela",
+          "p1": [
+            5.06,
+            6.14
+          ],
+          "p2": [
+            6.22,
+            6.14
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-bmaster",
+          "tipo": "janela",
+          "p1": [
+            3.1,
+            6.14
+          ],
+          "p2": [
+            3.5,
+            6.14
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "bmaster",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-servico",
+          "tipo": "janela",
+          "p1": [
+            10.05,
+            6.14
+          ],
+          "p2": [
+            11.25,
+            6.14
+          ],
+          "altura": 1.2,
+          "peitoril": 1,
+          "liga": [
+            "living",
+            "exterior"
+          ]
+        },
+        {
+          "id": "guarda-corpo",
+          "tipo": "guarda-corpo",
+          "p1": [
+            7.33,
+            6.14
+          ],
+          "p2": [
+            9.78,
+            6.14
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "varanda",
+            "exterior"
+          ]
+        }
+      ]
     },
     {
       "id": "final-04",
@@ -1967,10 +3187,667 @@
       "quartos": 3,
       "vagas": null,
       "mobiliado": false,
-      "interior3d": false,
-      "comodos": [],
-      "portas": [],
-      "janelas": []
+      "espelhoDe": "final-01",
+      "giroPlanta": -1.57,
+      "comodos": [
+        {
+          "id": "living",
+          "nome": "Living",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6.23,
+              8.55
+            ],
+            [
+              1.22,
+              8.55
+            ],
+            [
+              1.22,
+              10.15
+            ],
+            [
+              0,
+              10.15
+            ],
+            [
+              0,
+              5.6
+            ],
+            [
+              6.23,
+              5.6
+            ]
+          ],
+          "area": 20.33,
+          "enquadramento": {
+            "posicao": [
+              0.58,
+              1.6,
+              8.2
+            ],
+            "olhar": [
+              6.03,
+              1.1,
+              7.3
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "cozinha",
+          "nome": "Cozinha",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6.23,
+              10.15
+            ],
+            [
+              1.22,
+              10.15
+            ],
+            [
+              1.22,
+              8.55
+            ],
+            [
+              6.23,
+              8.55
+            ]
+          ],
+          "area": 8.02,
+          "enquadramento": {
+            "posicao": [
+              5.63,
+              1.6,
+              9
+            ],
+            "olhar": [
+              1.63,
+              1,
+              9.9
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "varanda",
+          "nome": "Varanda gourmet",
+          "piso": "externo",
+          "poligono": [
+            [
+              8.63,
+              10.15
+            ],
+            [
+              6.23,
+              10.15
+            ],
+            [
+              6.23,
+              5.6
+            ],
+            [
+              8.63,
+              5.6
+            ]
+          ],
+          "area": 10.92,
+          "enquadramento": {
+            "posicao": [
+              6.58,
+              1.6,
+              6.75
+            ],
+            "olhar": [
+              8.13,
+              0.9,
+              9.8
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite",
+          "nome": "Suíte master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.52,
+              5.6
+            ],
+            [
+              0,
+              5.6
+            ],
+            [
+              0,
+              0.79
+            ],
+            [
+              2.09,
+              0.79
+            ],
+            [
+              2.09,
+              2.77
+            ],
+            [
+              3.52,
+              2.77
+            ]
+          ],
+          "area": 14.09,
+          "enquadramento": {
+            "posicao": [
+              1.08,
+              1.6,
+              2.55
+            ],
+            "olhar": [
+              2.33,
+              0.8,
+              4.9
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "bmaster",
+          "nome": "Banho master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.19,
+              0.85
+            ],
+            [
+              3.52,
+              0.85
+            ],
+            [
+              3.52,
+              2.77
+            ],
+            [
+              2.09,
+              2.77
+            ],
+            [
+              2.09,
+              0
+            ],
+            [
+              3.19,
+              0
+            ]
+          ],
+          "area": 3.67,
+          "enquadramento": {
+            "posicao": [
+              2.48,
+              1.6,
+              2.35
+            ],
+            "olhar": [
+              3.13,
+              1.1,
+              0.7
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "dorm1",
+          "nome": "Dorm. 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.85,
+              5.6
+            ],
+            [
+              4.58,
+              5.6
+            ],
+            [
+              4.58,
+              3.04
+            ],
+            [
+              7.85,
+              3.04
+            ]
+          ],
+          "area": 8.37,
+          "enquadramento": {
+            "posicao": [
+              4.98,
+              1.6,
+              3.95
+            ],
+            "olhar": [
+              7.33,
+              0.9,
+              5
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "dorm2",
+          "nome": "Dorm. 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.85,
+              3.04
+            ],
+            [
+              4.58,
+              3.04
+            ],
+            [
+              4.58,
+              1.97
+            ],
+            [
+              5.3,
+              1.97
+            ],
+            [
+              5.3,
+              0
+            ],
+            [
+              7.85,
+              0
+            ]
+          ],
+          "area": 8.52,
+          "enquadramento": {
+            "posicao": [
+              4.93,
+              1.6,
+              2.5
+            ],
+            "olhar": [
+              7.23,
+              0.9,
+              0.7
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho",
+          "nome": "Banho",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              5.3,
+              1.97
+            ],
+            [
+              3.52,
+              1.97
+            ],
+            [
+              3.52,
+              0
+            ],
+            [
+              5.3,
+              0
+            ]
+          ],
+          "area": 3.52,
+          "enquadramento": {
+            "posicao": [
+              3.88,
+              1.6,
+              1.6
+            ],
+            "olhar": [
+              4.83,
+              1.1,
+              0.4
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.58,
+              5.6
+            ],
+            [
+              3.52,
+              5.6
+            ],
+            [
+              3.52,
+              1.97
+            ],
+            [
+              4.58,
+              1.97
+            ]
+          ],
+          "area": 3.87,
+          "enquadramento": {
+            "posicao": [
+              4.03,
+              1.6,
+              5.3
+            ],
+            "olhar": [
+              4.03,
+              1.4,
+              2.3
+            ]
+          },
+          "semRender": true
+        }
+      ],
+      "portas": [
+        {
+          "id": "entrada",
+          "tipo": "porta",
+          "p1": [
+            0,
+            9.1
+          ],
+          "p2": [
+            0,
+            10.05
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "hall"
+          ]
+        },
+        {
+          "id": "living-varanda",
+          "tipo": "vao",
+          "p1": [
+            6.23,
+            6.01
+          ],
+          "p2": [
+            6.23,
+            8.55
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "varanda"
+          ]
+        },
+        {
+          "id": "cozinha-varanda",
+          "tipo": "vao",
+          "p1": [
+            6.23,
+            8.55
+          ],
+          "p2": [
+            6.23,
+            9.49
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "cozinha",
+            "varanda"
+          ]
+        },
+        {
+          "id": "living-cozinha",
+          "tipo": "vao",
+          "p1": [
+            6.17,
+            8.55
+          ],
+          "p2": [
+            2.9,
+            8.55
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "cozinha"
+          ]
+        },
+        {
+          "id": "living-circ",
+          "tipo": "vao",
+          "p1": [
+            4.51,
+            5.6
+          ],
+          "p2": [
+            3.58,
+            5.6
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "circ"
+          ]
+        },
+        {
+          "id": "circ-banho",
+          "tipo": "porta",
+          "p1": [
+            4.29,
+            1.97
+          ],
+          "p2": [
+            3.63,
+            1.97
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "banho"
+          ]
+        },
+        {
+          "id": "circ-dorm2",
+          "tipo": "porta",
+          "p1": [
+            4.58,
+            2.13
+          ],
+          "p2": [
+            4.58,
+            2.93
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "dorm2"
+          ]
+        },
+        {
+          "id": "circ-dorm1",
+          "tipo": "porta",
+          "p1": [
+            4.58,
+            3.15
+          ],
+          "p2": [
+            4.58,
+            3.95
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "dorm1"
+          ]
+        },
+        {
+          "id": "circ-suite",
+          "tipo": "porta",
+          "p1": [
+            3.52,
+            2.92
+          ],
+          "p2": [
+            3.52,
+            3.66
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite"
+          ]
+        },
+        {
+          "id": "suite-bmaster",
+          "tipo": "porta",
+          "p1": [
+            2.09,
+            1.95
+          ],
+          "p2": [
+            2.09,
+            2.68
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite",
+            "bmaster"
+          ]
+        }
+      ],
+      "janelas": [
+        {
+          "id": "janela-dorm2",
+          "tipo": "janela",
+          "p1": [
+            7.85,
+            0.93
+          ],
+          "p2": [
+            7.85,
+            2.09
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "dorm2",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-dorm1",
+          "tipo": "janela",
+          "p1": [
+            7.85,
+            3.85
+          ],
+          "p2": [
+            7.85,
+            5.02
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "dorm1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-suite",
+          "tipo": "janela",
+          "p1": [
+            1.95,
+            0.79
+          ],
+          "p2": [
+            0.71,
+            0.79
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho",
+          "tipo": "janela",
+          "p1": [
+            5.08,
+            0
+          ],
+          "p2": [
+            4.63,
+            0
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-bmaster",
+          "tipo": "janela",
+          "p1": [
+            2.95,
+            0
+          ],
+          "p2": [
+            2.51,
+            0
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "bmaster",
+            "exterior"
+          ]
+        },
+        {
+          "id": "guarda-corpo",
+          "tipo": "guarda-corpo",
+          "p1": [
+            8.63,
+            5.6
+          ],
+          "p2": [
+            8.63,
+            10.15
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "varanda",
+            "exterior"
+          ]
+        }
+      ]
     },
     {
       "id": "final-06",
@@ -1981,10 +3858,575 @@
       "quartos": 2,
       "vagas": null,
       "mobiliado": false,
-      "interior3d": false,
-      "comodos": [],
-      "portas": [],
-      "janelas": []
+      "comodos": [
+        {
+          "id": "living",
+          "nome": "Living",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              0,
+              0
+            ],
+            [
+              1.69,
+              0
+            ],
+            [
+              1.69,
+              1.77
+            ],
+            [
+              4.54,
+              1.77
+            ],
+            [
+              4.54,
+              6.08
+            ],
+            [
+              0,
+              6.08
+            ]
+          ],
+          "area": 22.56,
+          "enquadramento": {
+            "posicao": [
+              0.7,
+              1.6,
+              5.6
+            ],
+            "olhar": [
+              3.6,
+              1,
+              2.4
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "varanda",
+          "nome": "Varanda gourmet",
+          "piso": "externo",
+          "poligono": [
+            [
+              1.69,
+              0
+            ],
+            [
+              4.54,
+              0
+            ],
+            [
+              4.54,
+              1.77
+            ],
+            [
+              1.69,
+              1.77
+            ]
+          ],
+          "area": 5.04,
+          "enquadramento": {
+            "posicao": [
+              3,
+              1.6,
+              1.45
+            ],
+            "olhar": [
+              1.9,
+              0.9,
+              0.2
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite",
+          "nome": "Suíte master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              8.82,
+              0.7
+            ],
+            [
+              11.55,
+              0.7
+            ],
+            [
+              11.55,
+              6.08
+            ],
+            [
+              7.3,
+              6.08
+            ],
+            [
+              7.3,
+              5.04
+            ],
+            [
+              8.82,
+              5.04
+            ]
+          ],
+          "area": 16.27,
+          "enquadramento": {
+            "posicao": [
+              9.3,
+              1.6,
+              5.2
+            ],
+            "olhar": [
+              10.6,
+              0.8,
+              2
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "bmaster",
+          "nome": "Banho master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.78,
+              0
+            ],
+            [
+              8.82,
+              0
+            ],
+            [
+              8.82,
+              2.48
+            ],
+            [
+              7.3,
+              2.48
+            ],
+            [
+              7.3,
+              0.9
+            ],
+            [
+              7.78,
+              0.9
+            ]
+          ],
+          "area": 3.34,
+          "enquadramento": {
+            "posicao": [
+              8.4,
+              1.6,
+              2.1
+            ],
+            "olhar": [
+              8,
+              1,
+              0.5
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite1",
+          "nome": "Suíte 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.54,
+              0
+            ],
+            [
+              7.3,
+              0
+            ],
+            [
+              7.3,
+              5.04
+            ],
+            [
+              6.18,
+              5.04
+            ],
+            [
+              6.18,
+              3.57
+            ],
+            [
+              4.54,
+              3.57
+            ]
+          ],
+          "area": 11.5,
+          "enquadramento": {
+            "posicao": [
+              6.9,
+              1.6,
+              2.6
+            ],
+            "olhar": [
+              5,
+              0.8,
+              1
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho1",
+          "nome": "Banho 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.3,
+              2.48
+            ],
+            [
+              8.82,
+              2.48
+            ],
+            [
+              8.82,
+              5.04
+            ],
+            [
+              7.3,
+              5.04
+            ]
+          ],
+          "area": 3.89,
+          "enquadramento": {
+            "posicao": [
+              7.75,
+              1.6,
+              4.75
+            ],
+            "olhar": [
+              8.5,
+              1,
+              3.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "lavabo",
+          "nome": "Lavabo",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.54,
+              3.57
+            ],
+            [
+              6.18,
+              3.57
+            ],
+            [
+              6.18,
+              5.04
+            ],
+            [
+              4.54,
+              5.04
+            ]
+          ],
+          "area": 2.41,
+          "enquadramento": {
+            "posicao": [
+              5,
+              1.6,
+              4.7
+            ],
+            "olhar": [
+              5.6,
+              1,
+              3.8
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.54,
+              5.04
+            ],
+            [
+              7.3,
+              5.04
+            ],
+            [
+              7.3,
+              6.08
+            ],
+            [
+              4.54,
+              6.08
+            ]
+          ],
+          "area": 2.87,
+          "enquadramento": {
+            "posicao": [
+              5,
+              1.6,
+              5.6
+            ],
+            "olhar": [
+              7.2,
+              1.4,
+              5.6
+            ]
+          },
+          "semRender": true
+        }
+      ],
+      "portas": [
+        {
+          "id": "entrada",
+          "tipo": "porta",
+          "p1": [
+            0.2,
+            6.08
+          ],
+          "p2": [
+            1.15,
+            6.08
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "hall"
+          ]
+        },
+        {
+          "id": "living-varanda",
+          "tipo": "vao",
+          "p1": [
+            1.73,
+            1.77
+          ],
+          "p2": [
+            4.5,
+            1.77
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "varanda"
+          ]
+        },
+        {
+          "id": "living-circ",
+          "tipo": "vao",
+          "p1": [
+            4.54,
+            5.06
+          ],
+          "p2": [
+            4.54,
+            6.06
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "living",
+            "circ"
+          ]
+        },
+        {
+          "id": "circ-lavabo",
+          "tipo": "porta",
+          "p1": [
+            4.64,
+            5.04
+          ],
+          "p2": [
+            5.42,
+            5.04
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "lavabo"
+          ]
+        },
+        {
+          "id": "circ-suite1",
+          "tipo": "porta",
+          "p1": [
+            6.37,
+            5.04
+          ],
+          "p2": [
+            7.13,
+            5.04
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite1"
+          ]
+        },
+        {
+          "id": "suite1-banho1",
+          "tipo": "porta",
+          "p1": [
+            7.3,
+            4.2
+          ],
+          "p2": [
+            7.3,
+            4.92
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite1",
+            "banho1"
+          ]
+        },
+        {
+          "id": "circ-suite",
+          "tipo": "porta",
+          "p1": [
+            7.3,
+            5.1
+          ],
+          "p2": [
+            7.3,
+            6.02
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite"
+          ]
+        },
+        {
+          "id": "suite-bmaster",
+          "tipo": "porta",
+          "p1": [
+            8.82,
+            1.65
+          ],
+          "p2": [
+            8.82,
+            2.31
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite",
+            "bmaster"
+          ]
+        }
+      ],
+      "janelas": [
+        {
+          "id": "janela-servico",
+          "tipo": "janela",
+          "p1": [
+            0.1,
+            0
+          ],
+          "p2": [
+            1.55,
+            0
+          ],
+          "altura": 1.2,
+          "peitoril": 1,
+          "liga": [
+            "living",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-suite1",
+          "tipo": "janela",
+          "p1": [
+            5.36,
+            0
+          ],
+          "p2": [
+            6.5,
+            0
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-bmaster",
+          "tipo": "janela",
+          "p1": [
+            8.05,
+            0
+          ],
+          "p2": [
+            8.45,
+            0
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "bmaster",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-suite",
+          "tipo": "janela",
+          "p1": [
+            9.44,
+            0.7
+          ],
+          "p2": [
+            10.9,
+            0.7
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite",
+            "exterior"
+          ]
+        },
+        {
+          "id": "guarda-corpo",
+          "tipo": "guarda-corpo",
+          "p1": [
+            1.77,
+            0
+          ],
+          "p2": [
+            4.2,
+            0
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "varanda",
+            "exterior"
+          ]
+        }
+      ],
+      "giroPlanta": 3.14
     },
     {
       "id": "garden",
