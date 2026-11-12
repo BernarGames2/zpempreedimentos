@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { sorteio } from "./canvas";
 import { P, meioD, meioW } from "./predio";
+import { TERRACO, medidasPiscina } from "./lazer";
 import { Construtor, type Face, type Pecas } from "./torre";
 
 export interface PainelSitio {
@@ -54,7 +55,13 @@ function working(c: Construtor, f: Face, u0: number, u1: number, r: () => number
 }
 
 /** Borda do pavimento de lazer: gradil de bronze e floreira com árvores. */
-function lazer(c: Construtor, f: Face, u0: number, u1: number, r: () => number, arvores: Sitio["arvores"]): void {
+/** Borda do lazer numa face; o trecho `livre` (em u) fica sem guarda-corpo, floreira e árvores: ali entra o vidro da piscina (Lazer.tsx). */
+function lazer(c: Construtor, f: Face, u0: number, u1: number, r: () => number, arvores: Sitio["arvores"], livre?: [number, number]): void {
+  const trechos: [number, number][] = livre ? [[u0, livre[0]], [livre[1], u1]] : [[u0, u1]];
+  for (const [a, b] of trechos) if (b - a > 0.8) lazerTrecho(c, f, a, b, r, arvores);
+}
+
+function lazerTrecho(c: Construtor, f: Face, u0: number, u1: number, r: () => number, arvores: Sitio["arvores"]): void {
   const y = P.podio + 0.35;
   c.planoF(f, "grade", (u0 + u1) / 2, y + 0.55, 0.62, u1 - u0, 1.05);
   c.caixaF(f, "bronze", u0, u1, y + 1.06, y + 1.11, 0.58, 0.64);
@@ -98,7 +105,8 @@ export function construirSitio(): Sitio {
   working(c, PE, z0, z1, r);
   lazer(c, PF, x0, x1, r, arvores);
   lazer(c, PD, -z1, -z0, r, arvores);
-  lazer(c, PT, -x1, -x0, r, arvores);
+  const pc = medidasPiscina();
+  lazer(c, PT, -x1, -x0, r, arvores, pc ? [-pc.vidro.x1, -pc.vidro.x0] : undefined); // fundos: u = −x
   lazer(c, PE, z0, z1, r, arvores);
   // piso do lazer (deck) e pano de vidro dos ambientes fechados, sob a torre
   c.caixa("deck", x0 + 0.3, x1 - 0.3, P.podio + 0.3, P.podio + 0.36, z0 + 0.3, z1 - 0.3);
@@ -107,9 +115,15 @@ export function construirSitio(): Sitio {
   const rx = meioW - 0.5;
   const rz = meioD - 0.5;
   c.plano("janelaAcesa", 0, yv + hv / 2, rz, 2 * rx, hv, 0);
-  c.plano("janelaAcesa", 0, yv + hv / 2, -rz, 2 * rx, hv, Math.PI);
+  // fundos: o lounge recua até TERRACO.zVidro e abre o terraço coberto para a piscina (planta oficial)
+  const { zVidro: zb, xFim: xs } = TERRACO;
+  c.plano("janelaAcesa", (xs - rx) / 2, yv + hv / 2, zb, xs + rx, hv, Math.PI);
+  c.plano("janelaAcesa", (xs + rx) / 2, yv + hv / 2, -rz, rx - xs, hv, Math.PI);
+  c.plano("janelaAcesa", xs, yv + hv / 2, (zb - rz) / 2, rz + zb, hv, -Math.PI / 2);
+  c.caixa("concretoClaro", -meioW, meioW, P.base - 0.05, P.base, -meioD, zb); // forro do terraço
+  for (const px of TERRACO.pilares) c.caixa("concreto", px - 0.22, px + 0.22, yv, P.base, -meioD + 0.1, -meioD + 0.42);
   c.plano("janelaAcesa", rx, yv + hv / 2, 0, 2 * rz, hv, Math.PI / 2);
-  c.plano("janelaAcesa", -rx, yv + hv / 2, 0, 2 * rz, hv, -Math.PI / 2);
+  c.plano("janelaAcesa", -rx, yv + hv / 2, (zb + rz) / 2, rz - zb, hv, -Math.PI / 2);
   for (const [px, pz] of [[-rx, -rz], [rx, -rz], [-rx, rz], [rx, rz]] as const) c.caixa("concreto", px - 0.25, px + 0.25, yv, P.base, pz - 0.25, pz + 0.25);
 
   // o entorno (ruas, quadras, árvores de rua e skyline) fica em lib/procedural/entorno.ts

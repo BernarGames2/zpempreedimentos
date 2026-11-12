@@ -147,7 +147,7 @@ export function materiaisSitio(fonte: string, nome: string): MateriaisSitio {
     const perfurado = new THREE.MeshStandardMaterial({ map: texPerfurado(false), emissive: "#ffffff", emissiveMap: texPerfurado(true), emissiveIntensity: 0.4, roughness: 0.55, metalness: 0.35 });
     const letreiro = new THREE.MeshStandardMaterial({ map: texLetreiro(fonte, nome), transparent: true, alphaTest: 0.3, emissive: "#fff3e0", emissiveMap: texLetreiro(fonte, nome), emissiveIntensity: 0.25, roughness: 0.4 });
     const copa = new THREE.MeshStandardMaterial({ color: "#3d5f34", roughness: 0.95, flatShading: true });
-    const arbusto = new THREE.MeshStandardMaterial({ color: "#4f7a3c", roughness: 0.9, flatShading: true });
+    const arbusto = new THREE.MeshStandardMaterial({ color: "#4f7a3c", roughness: 0.9 });
     const pendente = new THREE.MeshStandardMaterial({ map: texPendente(), alphaTest: 0.4, side: THREE.DoubleSide, roughness: 0.8, color: "#d8e6c8" });
     const ajustarLuz = (a: number) => {
       vitrine.emissiveIntensity = 0.12 + 1.1 * a;

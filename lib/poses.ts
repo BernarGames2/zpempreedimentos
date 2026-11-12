@@ -85,9 +85,23 @@ export function poseComodo(u: Unidade, comodoId: string | null): Pose {
 }
 
 /** Vista aérea que mostra os pontos de lazer do térreo e da cobertura. */
+const CAM_LAZER: Record<string, { pos: [number, number, number]; alvo: [number, number, number] }> = {
+  piscina: { pos: [8.2, 22.6, -24.6], alvo: [-6.5, 19.1, -15.6] },
+  quadra: { pos: [24.5, 25.5, -25.5], alvo: [13.6, 18.9, -11.8] },
+  playground: { pos: [21.5, 23.6, 19.0], alvo: [12.7, 19.0, 10.7] },
+};
+
 export function poseLazer(id: string | null, aspecto: number): Pose {
   const l = lazeres().find((x) => x.id === id);
-  if (l) return { pos: v(...l.camera.posicao), alvo: v(...l.camera.olhar), fov: 45 };
+  if (l) {
+    // enquadramentos de apresentação: mais perto e mais baixo que o padrão "de fora", de onde o espaço rende mais;
+    // no celular em pé a câmera recua para caber o espaço inteiro
+    const c = CAM_LAZER[l.id];
+    if (!c) return { pos: v(...l.camera.posicao), alvo: v(...l.camera.olhar), fov: 45 };
+    const alvo = v(...c.alvo);
+    const pos = alvo.clone().add(v(...c.pos).sub(alvo).multiplyScalar(aspecto < 0.9 ? 1.65 : 1));
+    return { pos, alvo, fov: 45 };
+  }
   const k = aspecto < 0.9 ? 1.45 : 1;
   return { pos: v(62 * k, 52 * k + 12, -58 * k), alvo: v(3, P.podio, -2), fov: FOV_PREDIO };
 }

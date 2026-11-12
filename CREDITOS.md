@@ -43,3 +43,11 @@ e [okoume_veneer](https://polyhaven.com/a/okoume_veneer), Poly Haven, CC0.
 
 Revestimento de porcelanato claro nas paredes dos banhos, sentido de abertura das portas, puxadores e
 juntas da marcenaria, manta e almofadas das camas, e a decoração em geral nas plantas sem render oficial.
+Nos interiores também são estimados os espelhos de interruptor ao lado das portas, os perfis do box e o
+chuveiro de teto, e a divisão dos armários das cozinhas dos finais 03 e 06.
+
+Área de lazer: a posição e o tamanho de cada espaço seguem a planta oficial do pavimento; o resto é
+estimativa feita a partir das imagens oficiais de divulgação — profundidade da piscina (1,40 m na raia e
+0,22 m na prainha), pedra do deque, espreguiçadeiras de imersão, pufe, luminárias embutidas no forro do
+terraço, linha do vidro do lounge sob o terraço, coberturas de ripas e montes do playground. A quadra usa
+as medidas oficiais do esporte (pickleball, 6,10 × 13,41 m), não um projeto da Maxi.

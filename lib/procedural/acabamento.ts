@@ -80,6 +80,12 @@ export function acabamentos(t: TipoPlanta, planta: Planta, mob: Mobilia): Prim[]
       const p1 = c + s * (meia + larg);
       folhas.push(ret(ha, ha + esp, p0, p1));
       cx("porta", ha, ha + esp, 0.01, h - 0.03, p0, p1);
+      // interruptor junto ao batente do lado da fechadura, na face para onde a porta abre (ESTIMADO: sem projeto elétrico)
+      const fech = ha < (a0 + a1) / 2 ? a1 + 0.16 : a0 - 0.16;
+      const naParede = paredes.some((b) =>
+        emX ? b.x0 <= c + 0.01 && b.x1 >= c - 0.01 && b.z0 <= fech - 0.05 && b.z1 >= fech + 0.05 : b.z0 <= c + 0.01 && b.z1 >= c - 0.01 && b.x0 <= fech - 0.05 && b.x1 >= fech + 0.05,
+      );
+      if (naParede) cx("louca", fech - 0.04, fech + 0.04, 1.04, 1.16, c + s * meia, c + s * (meia + 0.012));
       for (const [l0, l1] of [[ha - 0.045, ha], [ha + esp, ha + esp + 0.045]] as const) {
         cx("cromo", l0, l1, 0.985, 1.015, p1 - s * 0.09, p1 - s * 0.06);
         cx("cromo", l0 < ha ? l0 : l1 - 0.015, l0 < ha ? l0 + 0.015 : l1, 0.99, 1.01, p1 - s * 0.2, p1 - s * 0.06);

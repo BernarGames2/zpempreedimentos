@@ -1,0 +1,17 @@
+import { chromium } from "playwright";
+const [base, unidade, nome] = process.argv.slice(2);
+const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+const page = await (await browser.newContext({ viewport: { width: 1280, height: 800 } })).newPage();
+await page.goto(`${base}/?debug=1&q=medio&unidade=${unidade}`);
+await page.waitForFunction(() => window.__zp?.getState().pronto === true, null, { timeout: 150000 });
+await page.evaluate(() => window.__zp.getState().pularIntro());
+await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "UNIDADE" && !s.emVoo; }, null, { timeout: 120000 });
+await page.evaluate(() => window.__zp.getState().entrar());
+await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "PASSEIO" && !s.emVoo && !s.veu; }, null, { timeout: 120000 });
+await page.waitForTimeout(2500);
+await page.evaluate(() => window.__zp.getState().maquete());
+await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "MAQUETE" && !s.emVoo; }, null, { timeout: 120000 });
+await page.waitForTimeout(4000);
+await page.screenshot({ path: `/home/claude/capturas/${nome}.jpg`, type: "jpeg", quality: 85 });
+console.log(nome, "ok");
+await browser.close();

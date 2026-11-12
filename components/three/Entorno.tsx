@@ -268,11 +268,22 @@ function tufo(det: number, sx: number, sy: number, sz: number, x: number, y: num
   g = mergeVertices(g);
   const p = g.attributes.position as THREE.BufferAttribute;
   const r = gerador(semente);
+  // normal do elipsoide liso guardada antes dos calombos: a folhagem fica com sombreamento macio, sem facetas
+  const lisa = new Float32Array(p.count * 3);
   for (let i = 0; i < p.count; i++) {
+    const [ux, uy, uz] = [p.getX(i) / sx, p.getY(i) / sy, p.getZ(i) / sz];
+    const l = Math.hypot(ux, uy, uz) || 1;
+    lisa.set([ux / l, uy / l, uz / l], i * 3);
     const k = 0.8 + r() * 0.4;
     p.setXYZ(i, p.getX(i) * sx * k, p.getY(i) * sy * k, p.getZ(i) * sz * k);
   }
   g.computeVertexNormals();
+  const n = g.attributes.normal as THREE.BufferAttribute;
+  for (let i = 0; i < n.count; i++) {
+    const [ax, ay, az] = [0.3 * n.getX(i) + 0.7 * lisa[i * 3]!, 0.3 * n.getY(i) + 0.7 * lisa[i * 3 + 1]!, 0.3 * n.getZ(i) + 0.7 * lisa[i * 3 + 2]!];
+    const l = Math.hypot(ax, ay, az) || 1;
+    n.setXYZ(i, ax / l, ay / l, az / l);
+  }
   g.translate(x, y, z);
   pintar(g, new THREE.Color(cor), y - sy, sy * 2, 0.55, semente + 1);
   return g;
@@ -316,7 +327,7 @@ function folhaPalmeira(giro: number, y: number, comp: number, semente: number): 
   return g;
 }
 
-function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
+export function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
   const d = perto ? 1 : 0;
   const partes: THREE.BufferGeometry[] = [];
   const marrom = "#5b4736";

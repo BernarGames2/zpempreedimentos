@@ -204,10 +204,49 @@ class M {
   }
   /** Box de vidro com chuveiro de teto. */
   box(x0: number, x1: number, z0: number, z1: number, vidro: "x" | "z", c: number): void {
+    const perfil = (a0: number, a1: number, y0: number, y1: number) =>
+      vidro === "x" ? this.cx("cromo", c - 0.012, c + 0.012, y0, y1, a0, a1, "parede") : this.cx("cromo", a0, a1, y0, y1, c - 0.012, c + 0.012, "parede");
+    const [a0, a1] = vidro === "x" ? [z0, z1] : [x0, x1];
     if (vidro === "x") this.cx("vidro", c - 0.005, c + 0.005, 0, 2.05, z0, z1, "parede");
     else this.cx("vidro", x0, x1, 0, 2.05, c - 0.005, c + 0.005, "parede");
-    this.cil("cromo", (x0 + x1) / 2, PE_LIVRE - 0.04, (z0 + z1) / 2, 0.12, 0.012, "alto");
+    // perfis cromados: trilho superior e montantes nas pontas do vidro
+    perfil(a0, a1, 2.03, 2.07);
+    perfil(a0, a0 + 0.025, 0, 2.07);
+    perfil(a1 - 0.025, a1, 0, 2.07);
+    // chuveiro de teto quadrado (30 × 30 cm) com haste
+    const [cx, cz] = [(x0 + x1) / 2, (z0 + z1) / 2];
+    this.cx("cromo", cx - 0.15, cx + 0.15, PE_LIVRE - 0.1, PE_LIVRE - 0.088, cz - 0.15, cz + 0.15, "alto");
+    this.cil("cromo", cx, PE_LIVRE - 0.09, cz, 0.012, 0.09, "alto");
     this.cx("pedraBranca", x0, x1, 0, 0.012, z0, z1);
+  }
+  /**
+   * Bancada de cozinha encostada na parede `parede` (face em `w`), de `a0` a `a1` ao longo dela, com cuba e cooktop
+   * centrados em `cuba` e `cooktop`. Com modelos: cuba de embutir e cooktop reais, tampo de pedra recortado.
+   */
+  bancadaCozinha(parede: "x0" | "x1", w: number, a0: number, a1: number, cuba: number, cooktop: number): void {
+    const s = parede === "x1" ? -1 : 1; // sentido da frente
+    const cxP = (mat: MatInt, d0: number, d1: number, y0: number, y1: number, b0: number, b1: number, camada: Camada = "movel") =>
+      this.cx(mat, w + s * d0, w + s * d1, y0, y1, b0, b1, camada);
+    cxP("pretoFosco", 0, 0.56, 0, 0.1, a0, a1); // rodapé recuado
+    cxP("pedraBranca", 0, 0.02, 0.9, 1.5, a0, a1, "alto"); // frontão
+    if (this.gl) {
+      const rotY = parede === "x1" ? -Math.PI / 2 : Math.PI / 2;
+      cxP("laqueado", 0, 0.6, 0.1, 0.86, a0, cuba - 0.21);
+      cxP("laqueado", 0, 0.6, 0.1, 0.86, cuba + 0.21, a1);
+      cxP("laqueado", 0.58, 0.6, 0.1, 0.86, cuba - 0.21, cuba + 0.21);
+      cxP("pedraBranca", 0, 0.62, 0.86, 0.9, a0, cuba - 0.175);
+      cxP("pedraBranca", 0, 0.62, 0.86, 0.9, cuba + 0.175, a1);
+      cxP("pedraBranca", 0, 0.215, 0.86, 0.9, cuba - 0.175, cuba + 0.175);
+      cxP("pedraBranca", 0.49, 0.62, 0.86, 0.9, cuba - 0.175, cuba + 0.175);
+      this.modelos.push({ id: "cuba-cozinha", pos: [w + s * 0.235, 0.948, cuba], rotY, escala: [0.01, 0.01, 0.01] });
+      this.modelos.push({ id: "cooktop", pos: [w + s * 0.3, 0.926, cooktop], rotY, escala: [0.1876, 0.2, 0.269] });
+    } else {
+      cxP("laqueado", 0, 0.6, 0.1, 0.86, a0, a1);
+      cxP("pedraBranca", 0, 0.62, 0.86, 0.9, a0, a1);
+      cxP("inox", 0.12, 0.5, 0.88, 0.905, cuba - 0.25, cuba + 0.25);
+      this.cil("cromo", w + s * 0.06, 0.9, cuba, 0.012, 0.32);
+      cxP("pretoFosco", 0.06, 0.54, 0.9, 0.912, cooktop - 0.28, cooktop + 0.28);
+    }
   }
   /** Cama: base estofada, colchão, edredom, travesseiros e cabeceira, no lado `cabeceira` da pegada. */
   cama(x0: number, x1: number, z0: number, z1: number, cabeceira: "z0" | "z1" | "x0" | "x1", base: MatInt, cab: MatInt): void {
@@ -566,12 +605,7 @@ function mobiliaFinal03(m: M): void {
     const x1 = 11.55 - e;
     m.eletro("geladeira", x1 - 0.66, x1, 1.26, 1.94, "x0", () => m.cx("pretoFosco", x1 - 0.66, x1, 0, 1.85, 1.3, 1.92));
     m.obst(x1 - 0.7, 11.55, 1.28, 1.95);
-    m.cx("laqueado", x1 - 0.6, x1, 0.1, 0.86, 1.95, 4.3);
-    m.cx("pedraBranca", x1 - 0.62, x1, 0.86, 0.9, 1.95, 4.3);
-    m.cx("pedraBranca", x1 - 0.02, x1, 0.9, 1.5, 1.95, 4.3, "alto");
-    m.cx("inox", x1 - 0.5, x1 - 0.12, 0.88, 0.905, 2.55, 3.05); // cuba
-    m.cil("cromo", x1 - 0.06, 0.9, 2.8, 0.012, 0.32);
-    m.cx("pretoFosco", x1 - 0.54, x1 - 0.06, 0.9, 0.912, 3.45, 4.0); // cooktop
+    m.bancadaCozinha("x1", x1, 1.95, 4.3, 2.8, 3.725); // cuba e cooktop nas posições da planta
     m.obst(x1 - 0.62, 11.55, 1.95, 4.3);
     m.cx("parede", 11.32, 11.55, 0, H, 4.31, 5.17, "parede"); // shaft da área de serviço (X na planta)
     m.cx("louca", 10.9, 11.3, 0.62, 0.86, 4.45, 5.05); // tanque
@@ -665,12 +699,7 @@ function mobiliaFinal06(m: M): void {
   m.cx("metalBranco", e + 0.02, 0.46, 0, 0.62, 1.08, 1.5);
   m.obst(0, 0.7, 0, 1.55);
   m.cx("parede", 0, 0.23, 0, H, 0.87, 1.77, "parede"); // shaft (X na planta)
-  m.cx("laqueado", e, 0.65, 0.1, 0.86, 1.8, 4.08);
-  m.cx("pedraBranca", e, 0.67, 0.86, 0.9, 1.8, 4.08);
-  m.cx("pedraBranca", e, e + 0.02, 0.9, 1.5, 1.8, 4.08, "alto");
-  m.cx("pretoFosco", e + 0.06, 0.6, 0.9, 0.912, 2.16, 2.72); // cooktop
-  m.cx("inox", e + 0.12, 0.5, 0.88, 0.905, 3.05, 3.53); // cuba
-  m.cil("cromo", e + 0.06, 0.9, 3.29, 0.012, 0.32);
+  m.bancadaCozinha("x0", e, 1.8, 4.08, 3.29, 2.44); // cooktop e cuba nas posições da planta
   m.eletro("geladeira", e, 0.68, 4.12, 4.8, "x1", () => m.cx("pretoFosco", e, 0.68, 0, 1.85, 4.12, 4.8)); // geladeira
   m.obst(0, 0.7, 1.8, 4.82);
   // ═══ LIVING: painel com TV e mesa de mármore com quatro cadeiras; sofá encostado na suíte 1, tapete e mesa de centro ═══
