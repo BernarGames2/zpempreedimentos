@@ -79,8 +79,8 @@ export function Camera() {
     const s = useExp.getState();
     if (e === "PREDIO") {
       o.target.copy(ALVO_PREDIO);
-      o.minDistance = 36;
-      o.maxDistance = 125;
+      o.minDistance = 60;
+      o.maxDistance = 230;
       o.minPolarAngle = 0.32;
       o.maxPolarAngle = 1.9;
       o.autoRotate = false;

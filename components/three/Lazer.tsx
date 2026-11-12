@@ -7,19 +7,27 @@ import { lazeres } from "@/lib/dados";
 import { useExp } from "@/lib/store";
 
 /**
- * Pontos de lazer do térreo e da cobertura. Sem modelo real, cada espaço aparece como um
- * volume envidraçado com luz quente (o cartão avisa: "Imagem ilustrativa").
+ * Espaços de lazer do 5º pavimento, nas posições da planta oficial. Só os espaços abertos
+ * ganham volume (água da piscina, quadra e piso do playground); os fechados aparecem como
+ * pontos clicáveis, e o cartão mostra a imagem oficial de cada um.
  */
 export function Lazer({ artificial }: { artificial: number }) {
   const estado = useExp((s) => s.estado);
   const sel = useExp((s) => s.lazerSel);
   const emVoo = useExp((s) => s.emVoo);
   const abrir = useExp((s) => s.abrirLazer);
-  const itens = useMemo(() => lazeres(), []);
-  const vidro = useMemo(() => new THREE.MeshStandardMaterial({ color: "#ffd9a6", emissive: "#ffb866", emissiveIntensity: 0.5, transparent: true, opacity: 0.3, roughness: 0.1, metalness: 0.2, depthWrite: false }), []);
-  const agua = useMemo(() => new THREE.MeshStandardMaterial({ color: "#2fb8d8", emissive: "#1c9fc4", emissiveIntensity: 0.9, roughness: 0.08, metalness: 0.2 }), []);
-  const arestas = useMemo(() => new THREE.EdgesGeometry(new THREE.BoxGeometry(1, 1, 1)), []);
-  vidro.emissiveIntensity = 0.15 + 0.55 * artificial;
+  const itens = useMemo(() => lazeres().filter((l) => !l.sem3d), []);
+  const mats = useMemo(
+    () => ({
+      agua: new THREE.MeshStandardMaterial({ color: "#3cb6d0", emissive: "#1c9fc4", emissiveIntensity: 0.6, roughness: 0.06, metalness: 0.2 }),
+      quadra: new THREE.MeshStandardMaterial({ color: "#3b5d8c", roughness: 0.85 }),
+      quadraBorda: new THREE.MeshStandardMaterial({ color: "#3f7a52", roughness: 0.9 }),
+      playground: new THREE.MeshStandardMaterial({ color: "#d9a35f", roughness: 0.95 }),
+      linha: new THREE.MeshBasicMaterial({ color: "#f3f1ec" }),
+    }),
+    [],
+  );
+  mats.agua.emissiveIntensity = 0.25 + 0.6 * artificial;
   const visivel = estado === "PREDIO" || estado === "LAZER";
 
   return (
@@ -27,22 +35,34 @@ export function Lazer({ artificial }: { artificial: number }) {
       {itens.map((l) => {
         const [x, y, z] = l.posicao;
         const [w, h, d] = l.tamanho;
-        const piscina = l.id.includes("piscina");
         const ativo = sel === l.id;
         return (
-          <group key={l.id} name={`lazer_${l.id}`} position={[x, y + h / 2, z]}>
-            {l.local === "cobertura" || l.id !== "coffee-living" ? (
+          <group key={l.id} name={`lazer_${l.id}`} position={[x, y, z]}>
+            {l.id === "piscina" && (
+              <mesh position={[0, 0.38, 0]} material={mats.agua} receiveShadow>
+                <boxGeometry args={[w, 0.06, d]} />
+              </mesh>
+            )}
+            {l.id === "quadra" && (
               <>
-                <mesh scale={[w, h, d]} material={piscina ? agua : vidro} renderOrder={4}>
-                  <boxGeometry />
+                <mesh position={[0, 0.39, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mats.quadraBorda} receiveShadow>
+                  <planeGeometry args={[w + 1, d + 1]} />
                 </mesh>
-                <lineSegments geometry={arestas} scale={[w, h, d]}>
-                  <lineBasicMaterial color={ativo ? "#ffe2b0" : "#1b1c20"} />
-                </lineSegments>
+                <mesh position={[0, 0.4, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mats.quadra} receiveShadow>
+                  <planeGeometry args={[w * 0.82, d * 0.9]} />
+                </mesh>
+                <mesh position={[0, 0.41, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mats.linha}>
+                  <planeGeometry args={[w * 0.82, 0.06]} />
+                </mesh>
               </>
-            ) : null}
+            )}
+            {l.id === "playground" && (
+              <mesh position={[0, 0.39, 0]} rotation={[-Math.PI / 2, 0, 0]} material={mats.playground} receiveShadow>
+                <planeGeometry args={[w, d]} />
+              </mesh>
+            )}
             {visivel && (
-              <Html position={[0, h / 2 + 0.6, 0]} center zIndexRange={[15, 5]}>
+              <Html position={[0, Math.max(h, 0.5) + 0.9, 0]} center zIndexRange={[15, 5]}>
                 <button
                   type="button"
                   disabled={emVoo}

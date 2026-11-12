@@ -51,10 +51,10 @@ export function Formulario() {
         </div>
         <div>
           <label htmlFor="f-unidade" className="rotulo mb-1.5 block">Unidade de interesse</label>
-          <input id="f-unidade" name="unidade" inputMode="numeric" value={un} onChange={(e) => setUn(e.target.value.replace(/\D/g, "").slice(0, 5))} className={campo} placeholder="Ex.: 1201 (opcional)" />
+          <input id="f-unidade" name="unidade" inputMode="numeric" value={un} onChange={(e) => setUn(e.target.value.replace(/\D/g, "").slice(0, 5))} className={campo} placeholder="Ex.: 1202 (opcional)" />
         </div>
       </div>
-      <fieldset>
+      <fieldset className={emp.modo === "ambos" ? "" : "hidden"}>
         <legend className="rotulo mb-1.5">Interesse</legend>
         <div className="grid grid-cols-2 gap-2">
           {(["comprar", "alugar"] as const).map((k) => (

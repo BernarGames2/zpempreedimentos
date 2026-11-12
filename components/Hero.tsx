@@ -41,8 +41,8 @@ export function Hero({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   return (
     <section id="experiencia" aria-label={`Experiência 3D do ${emp.nome}`} className="relative h-[100svh] min-h-[560px] w-full overflow-hidden bg-fundo">
       <Image
-        src="/referencias/01-fachada-esquina.png"
-        alt={`Fachada do ${emp.nome} vista da esquina, à noite`}
+        src="/referencias/fachada-diagonal.jpg"
+        alt={`Fachada do ${emp.nome} vista em diagonal`}
         fill
         priority
         sizes="100vw"

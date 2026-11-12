@@ -5,6 +5,10 @@ import { validarEmpreendimento } from "./validate";
 /** Dados do empreendimento, validados uma única vez na inicialização. */
 export const emp: Empreendimento = validarEmpreendimento(bruto);
 
+/** Primeiro e último andares da torre (numeração real do prédio). */
+export const PRIMEIRO_ANDAR = emp.primeiroAndar ?? 1;
+export const ULTIMO_ANDAR = PRIMEIRO_ANDAR + emp.andares - 1;
+
 const porNumero = new Map(emp.unidades.map((u) => [u.numero, u]));
 const porTipo = new Map(emp.tipos.map((t) => [t.id, t]));
 
@@ -16,6 +20,22 @@ export function tipoDe(u: Unidade): TipoPlanta {
   const t = porTipo.get(u.tipo);
   if (!t) throw new Error(`Tipo de planta "${u.tipo}" não existe.`);
   return t;
+}
+
+/** O tipo tem interior 3D navegável? (senão o painel mostra só a planta oficial) */
+export function temInterior(t: TipoPlanta): boolean {
+  return t.interior3d !== false && t.comodos.length > 0;
+}
+
+/** Rótulo usado para agrupar os tipos no filtro. */
+export function grupoDe(t: TipoPlanta): string {
+  return t.grupo ?? t.nome;
+}
+
+export const GRUPOS: string[] = [...new Set(emp.tipos.map(grupoDe))];
+
+export function tipoPorId(id: string): TipoPlanta | undefined {
+  return porTipo.get(id);
 }
 
 export function comodoDe(t: TipoPlanta, id: string | null | undefined): Comodo | undefined {

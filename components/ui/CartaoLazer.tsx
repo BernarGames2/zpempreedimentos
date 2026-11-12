@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { emp, lazeres } from "@/lib/dados";
 import { linkWhatsApp } from "@/lib/formato";
 import { registrar } from "@/lib/metricas";
@@ -20,7 +21,7 @@ export function CartaoLazer() {
         <button type="button" onClick={voltarPredio} className="btn !min-h-11 shrink-0 !px-3.5 text-texto/90" data-testid="lazer-voltar">
           <IcoPredio /> Prédio
         </button>
-        {todos.map((x) => (
+        {todos.filter((x) => !x.sem3d).map((x) => (
           <button key={x.id} type="button" onClick={() => abrirLazer(x.id)} aria-current={sel === x.id ? "true" : undefined} className={`btn !min-h-11 shrink-0 !px-3.5 ${sel === x.id ? "bg-ambar text-[#1a1408]" : "text-texto/90 hover:text-ambar-claro"}`}>
             {x.nome}
           </button>
@@ -36,9 +37,14 @@ export function CartaoLazer() {
           data-testid="cartao-lazer"
           aria-label={l.nome}
         >
+          {l.imagem && (
+            <div className="-mx-5 -mt-5 mb-4 overflow-hidden rounded-t-3xl">
+              <Image src={l.imagem} alt={`${l.nome} do ${emp.nome} (imagem oficial)`} width={1080} height={692} sizes="380px" className="h-auto w-full" />
+            </div>
+          )}
           <p className="rotulo !text-ambar-claro">{l.etiqueta}</p>
           <h2 className="mt-1 font-titulo text-3xl font-light">{l.nome}</h2>
-          <ul className="mt-3 flex flex-wrap gap-1.5">
+          <ul className={`mt-3 flex flex-wrap gap-1.5 ${l.destaques.length ? "" : "hidden"}`}>
             {l.destaques.map((d) => (
               <li key={d} className="rounded-full border border-white/12 bg-white/[0.05] px-2.5 py-1 text-xs">{d}</li>
             ))}
@@ -49,7 +55,7 @@ export function CartaoLazer() {
               <li key={i} className="flex items-start gap-2"><IcoCheck width={16} height={16} className="mt-0.5 shrink-0 text-ambar" /> {i}</li>
             ))}
           </ul>
-          {!l.modelo && <p className="mt-3 text-[11px] text-cinza" data-testid="lazer-ilustrativo">Imagem ilustrativa</p>}
+          <p className="mt-3 text-[11px] text-cinza" data-testid="lazer-ilustrativo">{l.imagem ? "Imagem oficial de divulgação. No 3D, a posição segue a planta do pavimento de lazer." : "Imagem ilustrativa"}</p>
           <div className="mt-4 grid grid-cols-2 gap-2">
             <button type="button" onClick={voltarPredio} className="btn btn-linha"><IcoPredio /> Voltar ao prédio</button>
             <a href={linkWhatsApp(emp, `Olá! Gostaria de agendar uma visita ao ${emp.nome} e conhecer o espaço ${l.nome}.`)} target="_blank" rel="noopener noreferrer" onClick={() => registrar("clicou_whatsapp", { origem: "lazer", lazer: l.id })} className="btn btn-ambar">

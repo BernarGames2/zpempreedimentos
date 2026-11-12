@@ -1,36 +1,69 @@
 import type { Empreendimento, Unidade, Vec3 } from "../types";
 
 /**
- * Medidas da torre procedural (metros), tiradas dos renders 01 e 02.
- * Mundo: fachada da frente em +Z, fachada lateral (sacadas corridas) em +X.
+ * Medidas da torre procedural do Liwo (metros), tiradas das plantas oficiais
+ * (pavimento-tipo e pavimento de lazer) e dos renders de fachada.
+ * Mundo: fachada da frente (finais 01 e 02) em +Z; lateral direita (final 03) em +X.
  */
 export const P = {
-  /** Largura da frente (eixo X) e profundidade da lateral (eixo Z). */
-  W: 13.6,
-  D: 19.2,
-  /** Altura do embasamento. */
-  podio: 5.2,
-  /** Planta do embasamento e chanfro da esquina. */
-  lote: { x0: -11.5, x1: 10.4, z0: -12.4, z1: 13.4, chanfro: 5.6 },
-  /** Frente: faixa branca | faixa areia com caixas grafite e vãos de sacada | pilar de esquina. */
-  frente: { branco: -3.7, caixa: [-3.7, -0.7] as const, vao: [2.3, 5.3] as const, pilar: 5.9, balanco: 1.55 },
-  /** Lateral: faixa branca com janelas até `sacadas[0]`; sacadas corridas até o fundo. */
-  lateral: { sacadas: [3.2, -9.6] as const, faixa: [-2.6, -3.8] as const, balanco: 1.4 },
-  /** Fundos: dois vãos de sacada recuados. */
-  fundos: { vaos: [[-4.4, -1.6], [0.6, 3.4]] as const },
+  /** Largura da frente (eixo X) e comprimento da lateral (eixo Z) da torre. */
+  W: 21.6,
+  D: 30.8,
+  /** Térreo com pé-direito duplo (vitrine + painel perfurado) e os quatro pavimentos de salas comerciais. */
+  terreo: 6.0,
+  vitrine: 3.6,
+  working: 3.1,
+  /** Piso do 5º pavimento (lazer), sobre o embasamento. */
+  podio: 18.4,
+  /** Piso do primeiro andar-tipo (6º). */
+  base: 22.0,
+  /** Pé-direito do pavimento das coberturas e altura da platibanda. */
+  coberturaH: 3.4,
   coroamento: 1.5,
+  /** Planta do embasamento (planta oficial do pavimento de lazer: avança 6 m à direita e para os fundos). */
+  lote: { x0: -11.6, x1: 17.0, z0: -19.8, z1: 16.0 },
+  /**
+   * Frente e fundos: pilar do dormitório | vão de varandas (final 01) | coluna central |
+   * vão de varandas (final 02) | pilar dos banhos. As lajes das varandas têm borda em onda.
+   */
+  frente: { pilarEsq: -7.9, centro: [-0.6, -0.3] as const, pilarDir: 7.2, guarda: 1.25, lajeMin: 1.35, lajeMax: 2.35, aba: 2.55, borda: 0.35 },
+  /** Laterais: terço central (finais 03 e 06) entre z = ±terco; o do lado esquerdo é recuado. */
+  lateral: { terco: 5.5, recuo: 1.8 },
 } as const;
 
 export const meioW = P.W / 2;
 export const meioD = P.D / 2;
 
-/** Cota do piso de um andar (1 = primeiro andar tipo). */
-export function cotaAndar(andar: number, peDireito: number): number {
-  return P.podio + (andar - 1) * peDireito;
+export function primeiroAndar(e: Empreendimento): number {
+  return e.primeiroAndar ?? 1;
 }
 
+/** Número do último andar (o das coberturas). */
+export function ultimoAndar(e: Empreendimento): number {
+  return primeiroAndar(e) + e.andares - 1;
+}
+
+/** Cota do piso de um andar (numeração real do prédio). */
+export function cotaAndar(andar: number, e: Empreendimento): number {
+  return P.base + (andar - primeiroAndar(e)) * e.peDireito;
+}
+
+export function alturaAndar(andar: number, e: Empreendimento): number {
+  return andar === ultimoAndar(e) ? P.coberturaH : e.peDireito;
+}
+
+/** Topo da laje de cobertura. */
 export function alturaTorre(e: Empreendimento): number {
-  return P.podio + e.andares * e.peDireito;
+  return cotaAndar(ultimoAndar(e), e) + P.coberturaH;
+}
+
+/** Avanço da laje da varanda (m) no ponto t (0 a 1) do vão; alterna a cada andar, formando a onda. */
+export function ondaLaje(t: number, andarIdx: number, espelhado: boolean): number {
+  const { lajeMin, lajeMax } = P.frente;
+  const meio = (lajeMin + lajeMax) / 2;
+  const amp = (lajeMax - lajeMin) / 2;
+  const tt = espelhado ? 1 - t : t;
+  return meio + amp * Math.cos(Math.PI * tt + andarIdx * Math.PI);
 }
 
 export interface Caixa {
@@ -74,70 +107,87 @@ function envolver(cs: Caixa[]): Caixa {
 /** Unidades lidas de um modelo real (malhas `unidade_1201`). Têm prioridade sobre o procedural. */
 export const geosReais = new Map<string, GeoUnidade>();
 
-/** Onde cada unidade fica na fachada. As seis posições do andar seguem a planta do pavimento-tipo. */
+/** Divisa entre os dois apartamentos da frente (e dos fundos). */
+const DIVISA = (P.frente.centro[0] + P.frente.centro[1]) / 2;
+
+/**
+ * Onde cada unidade fica na fachada. Pavimento-tipo: finais 01 e 02 na frente, 03 na lateral
+ * direita, 04 e 05 nos fundos e 06 na lateral esquerda (recuada). Coberturas: 01 na frente,
+ * 02 nos fundos à direita e 03 nos fundos à esquerda, como na planta oficial do 24º pavimento.
+ */
 export function geoUnidade(u: Unidade, e: Empreendimento): GeoUnidade {
   const real = geosReais.get(u.numero);
   if (real) return real;
-  const y0 = cotaAndar(u.andar, e.peDireito) + 0.04;
-  const y1 = y0 + e.peDireito - 0.08;
+  const y0 = cotaAndar(u.andar, e) + 0.04;
+  const y1 = y0 + alturaAndar(u.andar, e) - 0.08;
   const ym = y0 + 1.25;
-  const f = 0.06; // folga à frente da fachada
+  const f = 0.08; // folga à frente da fachada
+  const g = P.frente.guarda;
   const zF = meioD;
   const xL = meioW;
+  const T = P.lateral.terco;
   let caixas: Caixa[];
   let sacada: Vec3;
   let normal: Vec3;
   let rotY: number;
 
+  if (u.andar === ultimoAndar(e) && u.tipo.startsWith("cobertura")) {
+    if (u.posicao === 1) {
+      caixas = [caixa(-xL, xL, y0, y1, zF, zF + g + f), caixa(xL, xL + f, y0, y1, 0, zF), caixa(-xL - f, -xL, y0, y1, 0, zF)];
+      sacada = [-4, ym, zF + g];
+      normal = [0, 0, 1];
+      rotY = 0;
+    } else if (u.posicao === 2) {
+      caixas = [caixa(DIVISA, xL, y0, y1, -zF - g - f, -zF), caixa(xL, xL + f, y0, y1, -zF, 0)];
+      sacada = [5, ym, -zF - g];
+      normal = [0, 0, -1];
+      rotY = Math.PI;
+    } else {
+      caixas = [caixa(-xL, DIVISA, y0, y1, -zF - g - f, -zF), caixa(-xL - f, -xL, y0, y1, -zF, 0)];
+      sacada = [-5, ym, -zF - g];
+      normal = [0, 0, -1];
+      rotY = Math.PI;
+    }
+    return { numero: u.numero, caixas, sacada, normal, rotY, envolvente: envolver(caixas) };
+  }
+
   switch (u.posicao) {
-    case 1: {
-      const [a, b] = P.frente.caixa;
-      caixas = [caixa(-meioW, 0, y0, y1, zF, zF + f), caixa(a - 0.05, b + 0.05, y0, y1, zF, zF + P.frente.balanco + f)];
-      sacada = [(a + b) / 2, ym, zF + P.frente.balanco];
+    case 1:
+      caixas = [caixa(-xL, DIVISA, y0, y1, zF, zF + g + f), caixa(-xL - f, -xL, y0, y1, T, zF)];
+      sacada = [-2.7, ym, zF + g];
       normal = [0, 0, 1];
       rotY = 0;
       break;
-    }
-    case 2: {
-      const [a, b] = P.frente.vao;
-      caixas = [caixa(0, meioW + f, y0, y1, zF, zF + f), caixa(xL, xL + f, y0, y1, P.lateral.sacadas[0], zF)];
-      sacada = [(a + b) / 2, ym, zF];
+    case 2:
+      caixas = [caixa(DIVISA, xL, y0, y1, zF, zF + g + f), caixa(xL, xL + f, y0, y1, T, zF)];
+      sacada = [2.05, ym, zF + g];
       normal = [0, 0, 1];
       rotY = 0;
       break;
-    }
-    case 3: {
-      const z0 = P.lateral.faixa[0];
-      const z1 = P.lateral.sacadas[0];
-      caixas = [caixa(xL, xL + P.lateral.balanco + f, y0, y1, z0, z1)];
-      sacada = [xL + P.lateral.balanco, ym, (z0 + z1) / 2];
+    case 3:
+      caixas = [caixa(xL, xL + f, y0, y1, -T, T)];
+      sacada = [xL, ym, -2.75];
       normal = [1, 0, 0];
       rotY = Math.PI / 2;
       break;
-    }
-    case 4: {
-      const z0 = -meioD - P.lateral.balanco;
-      const z1 = P.lateral.faixa[1];
-      caixas = [caixa(xL, xL + P.lateral.balanco + f, y0, y1, z0, z1), caixa(4.6, xL, y0, y1, z0 - f, -meioD)];
-      sacada = [xL + P.lateral.balanco, ym, (-meioD + z1) / 2];
-      normal = [1, 0, 0];
-      rotY = Math.PI / 2;
-      break;
-    }
-    case 5: {
-      const [a, b] = P.fundos.vaos[1];
-      caixas = [caixa(0, 4.6, y0, y1, -meioD - f, -meioD)];
-      sacada = [(a + b) / 2, ym, -meioD];
+    case 4:
+      caixas = [caixa(DIVISA, xL, y0, y1, -zF - g - f, -zF), caixa(xL, xL + f, y0, y1, -zF, -T)];
+      sacada = [2.05, ym, -zF - g];
       normal = [0, 0, -1];
       rotY = Math.PI;
       break;
-    }
+    case 5:
+      caixas = [caixa(-xL, DIVISA, y0, y1, -zF - g - f, -zF), caixa(-xL - f, -xL, y0, y1, -zF, -T)];
+      sacada = [-2.7, ym, -zF - g];
+      normal = [0, 0, -1];
+      rotY = Math.PI;
+      break;
     default: {
-      const [a, b] = P.fundos.vaos[0];
-      caixas = [caixa(-meioW - f, 0, y0, y1, -meioD - f, -meioD), caixa(-meioW - f, -meioW, y0, y1, -meioD, -2)];
-      sacada = [(a + b) / 2, ym, -meioD];
-      normal = [0, 0, -1];
-      rotY = Math.PI;
+      const xr = -xL + P.lateral.recuo;
+      caixas = [caixa(xr - f, xr, y0, y1, -T, T)];
+      sacada = [xr, ym, 2.5];
+      normal = [-1, 0, 0];
+      rotY = -Math.PI / 2;
       break;
     }
   }

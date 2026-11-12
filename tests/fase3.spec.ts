@@ -38,10 +38,10 @@ test("fase 3: entrada pela varanda, maquete, passeio com abas e minimapa", async
 
 test("fase 3: link direto de cômodo abre o passeio no lugar certo", async ({ page }) => {
   const erros = vigiarConsole(page);
-  await abrir(page, "unidade=1201&comodo=banheiro");
+  await abrir(page, "unidade=1804&comodo=banheiro");
   await esperarEstado(page, "PASSEIO");
   const s = await estado(page);
-  expect(s.unidadeSel).toBe("1201");
+  expect(s.unidadeSel).toBe("1804");
   expect(s.comodoAtual).toBe("banheiro");
   await expect(page.getByTestId("aba-banheiro")).toHaveAttribute("aria-current", "true");
   semErros(erros);

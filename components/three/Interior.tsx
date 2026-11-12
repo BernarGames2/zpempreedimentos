@@ -15,7 +15,7 @@ import type { Comodo, TipoPlanta } from "@/lib/types";
 import { matGrade } from "./materiais";
 import { COR_LUZ_QUENTE, materiaisInterior } from "./materiaisInterior";
 
-const SEM_UV: MatInt[] = ["tv", "quadro"];
+const SEM_UV: MatInt[] = ["tv", "quadroDegrade", "quadroFormas", "livros"];
 
 /** Caixa com UV em metros, para as texturas não esticarem. */
 function caixaUV(w: number, h: number, d: number, emMetros: boolean): THREE.BufferGeometry {
@@ -151,7 +151,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
     () => new THREE.MeshStandardMaterial({ map: texCartaoFolhas(), color: "#8a9c7a", alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 }),
     [],
   );
-  const grade = useMemo(() => matGrade(), []);
+  const grade = useMemo(() => matGrade("#5a4129"), []);
 
   useEffect(() => m.ajustar(artificial), [m, artificial]);
   useEffect(
@@ -176,7 +176,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
   return (
     <group name="interior" visible={!oculto}>
       {(Object.keys(geos) as MatInt[]).map((k) => (
-        <mesh key={k} geometry={geos[k]} material={m.mats[k]} castShadow={k !== "led" && k !== "lampada" && k !== "vidro" && k !== "vidroFume"} receiveShadow />
+        <mesh key={k} geometry={geos[k]} material={m.mats[k]} castShadow={k !== "led" && k !== "lampada" && k !== "vidro" && k !== "vidroFosco" && k !== "espelhoFume"} receiveShadow />
       ))}
       {pisos.map(({ c, g }) => (
         <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
@@ -191,11 +191,15 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
           </mesh>
         );
       })}
-      {janelas.map((a) => (
-        <mesh key={a.id} position={[(a.p1[0] + a.p2[0]) / 2, a.peitoril + a.altura / 2, a.p1[1]]} material={m.mats.vidro}>
-          <planeGeometry args={[Math.abs(a.p2[0] - a.p1[0]), a.altura]} />
-        </mesh>
-      ))}
+      {janelas.map((a) => {
+        // janelas em paredes de x constante ficam giradas 90°
+        const emX = Math.abs(a.p1[0] - a.p2[0]) < 1e-4;
+        return (
+          <mesh key={a.id} position={[(a.p1[0] + a.p2[0]) / 2, a.peitoril + a.altura / 2, (a.p1[1] + a.p2[1]) / 2]} rotation={[0, emX ? Math.PI / 2 : 0, 0]} material={m.mats.vidro}>
+            <planeGeometry args={[emX ? Math.abs(a.p2[1] - a.p1[1]) : Math.abs(a.p2[0] - a.p1[0]), a.altura]} />
+          </mesh>
+        );
+      })}
       {luzes.map((l, i) => (
         <pointLight key={i} position={l.pos} color={COR_LUZ_QUENTE} intensity={l.forca * (1 + 7 * artificial)} distance={l.alcance * 1.4} decay={1.5} />
       ))}

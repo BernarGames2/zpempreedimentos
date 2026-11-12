@@ -17,9 +17,9 @@ function dadosEstruturados() {
     name: emp.nome,
     description: emp.textos.conceitoTexto,
     url: SITE,
-    image: `${SITE}/referencias/01-fachada-esquina.png`,
+    image: `${SITE}/referencias/fachada-diagonal.jpg`,
     numberOfAccommodationUnits: emp.unidades.length,
-    address: { "@type": "PostalAddress", addressLocality: emp.localizacao.cidade, addressRegion: emp.localizacao.uf, addressCountry: "BR", streetAddress: emp.localizacao.bairro },
+    address: { "@type": "PostalAddress", addressLocality: emp.localizacao.cidade, addressRegion: emp.localizacao.uf, addressCountry: "BR", streetAddress: emp.endereco },
     amenityFeature: [...emp.terreo, ...emp.cobertura].map((l) => ({ "@type": "LocationFeatureSpecification", name: l.nome, value: true })),
     brand: { "@type": "Organization", name: emp.incorporadora },
     // Preços só entram nos dados estruturados quando deixarem de ser de demonstração.

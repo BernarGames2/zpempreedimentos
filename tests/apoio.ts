@@ -18,6 +18,15 @@ export async function abrir(page: Page, consulta = ""): Promise<void> {
   await page.waitForFunction(() => (window as never as { __zp?: { getState: () => { pronto: boolean } } }).__zp?.getState().pronto === true, null, { timeout: 150_000 });
 }
 
+/**
+ * Pula a introdução. Com GPU por software, a compilação dos shaders no primeiro quadro pode durar
+ * mais que o voo inteiro da introdução: nesse caso ela já terminou e não há botão para clicar.
+ */
+export async function pularIntro(page: Page): Promise<void> {
+  const botao = page.getByTestId("pular-intro");
+  if (await botao.isVisible().catch(() => false)) await botao.click().catch(() => undefined);
+}
+
 export async function estado(page: Page): Promise<Record<string, unknown>> {
   return page.evaluate(() => {
     const s = (window as never as { __zp: { getState: () => Record<string, unknown> } }).__zp.getState();

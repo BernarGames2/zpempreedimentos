@@ -48,7 +48,7 @@ export function FotoDecorado({ u }: { u: Unidade }) {
       <Image src={c.fotoDecorado} alt={`Foto oficial do decorado: ${c.nome}`} fill sizes="100vw" className="object-contain" style={{ opacity: foto.mix }} />
       {foto.aberta && (
         <>
-          <p className="vidro absolute left-1/2 top-[4.4rem] -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs text-texto sm:top-20" data-testid="aviso-foto">
+          <p className="vidro absolute bottom-[11.8rem] left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs text-texto sm:bottom-auto sm:top-20" data-testid="aviso-foto">
             Foto oficial do decorado · arraste para explorar em 3D
           </p>
           <div className="vidro pointer-events-auto absolute inset-x-3 bottom-[8.2rem] mx-auto flex max-w-md items-center gap-3 rounded-full px-4 sm:bottom-24">

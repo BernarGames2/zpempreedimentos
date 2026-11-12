@@ -6,8 +6,9 @@ import { emp } from "@/lib/dados";
 
 const LINKS = [
   { href: "#experiencia", rotulo: "Unidades" },
-  { href: "#decorado", rotulo: "Decorado" },
+  { href: "#plantas", rotulo: "Plantas" },
   { href: "#lazer", rotulo: "Lazer" },
+  { href: "#obra", rotulo: "Obra" },
   { href: "#localizacao", rotulo: "Localização" },
 ];
 
@@ -29,8 +30,8 @@ export function Header({ logo }: { logo?: string }) {
             <Image src={logo} alt={emp.incorporadora} width={120} height={36} className="h-8 w-auto" />
           ) : (
             <>
-              <span className="font-titulo text-2xl font-extralight tracking-[0.14em]">ZP</span>
-              <span className="rotulo hidden !tracking-[0.3em] sm:inline">Empreendimentos</span>
+              <span className="font-titulo text-2xl font-light tracking-[0.2em]">{emp.nome.toUpperCase()}</span>
+              <span className="rotulo hidden !tracking-[0.3em] sm:inline">por Maxi</span>
             </>
           )}
         </a>
@@ -45,7 +46,7 @@ export function Header({ logo }: { logo?: string }) {
             ))}
           </ul>
           <a href="#contato" className="btn btn-ambar ml-2 !min-h-10 !px-4">
-            Agendar visita
+            Falar com a Maxi
           </a>
         </nav>
       </div>

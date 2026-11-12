@@ -1,7 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
-import { emp, tipoDe, vizinha } from "@/lib/dados";
+import { emp, temInterior, tipoDe, vizinha } from "@/lib/dados";
 import { COR_STATUS, ROTULO_STATUS, area, linkWhatsApp, mensagemUnidade, reais } from "@/lib/formato";
 import { registrar } from "@/lib/metricas";
 import { useExp } from "@/lib/store";
@@ -24,7 +25,9 @@ export function PainelUnidade({ u }: { u: Unidade }) {
   const { selecionar, entrar, verVista, voltarPredio } = useExp.getState();
   const emVoo = useExp((s) => s.emVoo);
   const [copiado, setCopiado] = useState(false);
+  const [plantaAberta, setPlantaAberta] = useState(false);
   const t = tipoDe(u);
+  const com3d = temInterior(t);
   const vende = emp.modo !== "locacao";
   const aluga = emp.modo !== "venda";
 
@@ -79,17 +82,37 @@ export function PainelUnidade({ u }: { u: Unidade }) {
     >
       <dl>
         <Linha rotulo="Área privativa" valor={area(u.areaPrivativa)} />
-        <Linha rotulo="Mobiliado" valor={t.mobiliado ? "Sim" : "Não"} />
-        <Linha rotulo="Vagas" valor={String(t.vagas)} />
+        {t.descricao && <Linha rotulo="Planta" valor={t.descricao} />}
+        {t.mobiliado && <Linha rotulo="Mobiliado" valor="Sim" />}
+        <Linha rotulo="Vagas" valor={t.vagas === null ? "1 a 3 (consulte)" : String(t.vagas)} />
         {vende && <Linha rotulo="Preço" valor={reais(u.preco)} />}
         {aluga && <Linha rotulo="Aluguel" valor={u.aluguel === null ? "Consulte" : `${reais(u.aluguel)}/mês`} />}
         {u.vista && <Linha rotulo="Vista" valor={u.vista} />}
       </dl>
+      {t.plantaImagem && (
+        <div className="mt-3">
+          <button type="button" onClick={() => setPlantaAberta((v) => !v)} aria-expanded={plantaAberta} className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-white/[0.04] p-2 text-left text-sm hover:border-ambar" data-testid="ver-planta">
+            <Image src={t.plantaImagem} alt="" width={64} height={64} className="h-14 w-14 rounded-lg bg-[#f4f1ea] object-contain" />
+            <span><span className="block font-medium">Planta oficial</span><span className="text-xs text-cinza">{plantaAberta ? "Toque para fechar" : "Toque para ampliar"}</span></span>
+          </button>
+          {plantaAberta && (
+            <a href={t.plantaImagem} target="_blank" rel="noopener noreferrer" className="mt-2 block overflow-hidden rounded-xl bg-[#f4f1ea]" data-testid="planta-ampliada">
+              <Image src={t.plantaImagem} alt={`Planta oficial: ${t.descricao ?? t.nome}, ${area(u.areaPrivativa)}`} width={1080} height={1080} sizes="380px" className="h-auto w-full" />
+            </a>
+          )}
+        </div>
+      )}
       <div className="mt-3"><ControleSol /></div>
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <button type="button" onClick={entrar} disabled={emVoo} className="btn btn-ambar col-span-2" data-testid="entrar">
-          <IcoPorta /> Entrar no apartamento
-        </button>
+        {com3d ? (
+          <button type="button" onClick={entrar} disabled={emVoo} className="btn btn-ambar col-span-2" data-testid="entrar">
+            <IcoPorta /> Entrar no apartamento
+          </button>
+        ) : (
+          <p className="col-span-2 rounded-xl bg-white/[0.05] px-3 py-2 text-xs leading-relaxed text-cinza" data-testid="sem-interior">
+            O passeio 3D por dentro está pronto para o apartamento de 102 m² (finais 02 e 04). Para esta planta, use a planta oficial acima.
+          </p>
+        )}
         <button type="button" onClick={verVista} disabled={emVoo} className="btn btn-linha" data-testid="ver-vista">
           <IcoOlho /> Ver a vista
         </button>

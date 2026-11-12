@@ -18,9 +18,9 @@ export function Alternativa2D() {
     <div className="mx-auto grid max-w-6xl gap-6 px-4 pb-10 pt-20 sm:px-6 lg:grid-cols-[minmax(0,360px)_1fr]" data-testid="alternativa-2d">
       <div>
         <div className="overflow-hidden rounded-2xl">
-          <Image src="/referencias/01-fachada-esquina.png" alt={`Fachada do ${emp.nome}`} width={1280} height={1600} priority sizes="(min-width: 1024px) 360px, 100vw" className="h-auto w-full" />
+          <Image src="/referencias/fachada-diagonal.jpg" alt={`Fachada do ${emp.nome}`} width={860} height={1080} priority sizes="(min-width: 1024px) 360px, 100vw" className="h-auto w-full" />
         </div>
-        <p className="mt-3 text-xs text-cinza">Seu navegador não tem 3D (WebGL) disponível. Você vê aqui a versão simplificada, com as mesmas unidades e filtros. <a href="#decorado" className="text-ambar-claro underline">Ver a galeria do decorado</a>.</p>
+        <p className="mt-3 text-xs text-cinza">Seu navegador não tem 3D (WebGL) disponível. Você vê aqui a versão simplificada, com as mesmas unidades e filtros. <a href="#plantas" className="text-ambar-claro underline">Ver as plantas oficiais</a>.</p>
       </div>
       <div className="min-w-0">
         <div className="mb-3 flex items-center justify-between gap-3">

@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { emp, lazeres, tipoDe } from "./dados";
 import { limitesPlanta } from "./procedural/planta";
-import { P, geoUnidade } from "./procedural/predio";
+import { P, alturaTorre, geoUnidade } from "./procedural/predio";
 import type { Unidade } from "./types";
 
 export interface Pose {
@@ -13,21 +13,21 @@ export interface Pose {
 export const FOV_PREDIO = 50;
 export const FOV_PASSEIO = 70;
 export const ALTURA_OLHO = 1.6;
-/** Rumo da vista inicial: o ângulo de esquina do render 01. */
-export const AZIMUTE_01 = THREE.MathUtils.degToRad(42);
-export const ALVO_PREDIO = new THREE.Vector3(0.6, 20.5, 0);
+/** Rumo da vista inicial: o ângulo diagonal do render oficial "fachada diagonal". */
+export const AZIMUTE_01 = THREE.MathUtils.degToRad(-28);
+export const ALVO_PREDIO = new THREE.Vector3(1.5, alturaTorre(emp) * 0.47, 0);
 
 const v = (x: number, y: number, z: number) => new THREE.Vector3(x, y, z);
 
-/** Enquadramento da portaria (render 02), onde a introdução começa. */
+/** Da calçada em frente ao térreo, olhando a torre de baixo para cima (render "embasamento"). */
 export function poseIntro(): Pose {
-  return { pos: v(-6.4, 1.5, P.lote.z1 + 9.8), alvo: v(-4.6, 15, 6), fov: 58 };
+  return { pos: v(4, 1.6, P.lote.z1 + 22), alvo: v(2, 30, 4), fov: 60 };
 }
 
 /** Vista de esquina da torre inteira (render 01), no azimute pedido. */
 export function posePredio(aspecto: number, azimute = AZIMUTE_01): Pose {
-  const dist = aspecto < 0.8 ? 88 : aspecto < 1.2 ? 74 : 64;
-  const y = 2.4;
+  const dist = aspecto < 0.8 ? 175 : aspecto < 1.2 ? 140 : 118;
+  const y = 26;
   const r = Math.sqrt(dist * dist - (ALVO_PREDIO.y - y) ** 2);
   return { pos: v(Math.sin(azimute) * r, y, Math.cos(azimute) * r), alvo: ALVO_PREDIO.clone(), fov: FOV_PREDIO };
 }
@@ -39,8 +39,8 @@ export function poseUnidade(u: Unidade, aspecto: number): Pose {
   const lado = v(n.z, 0, -n.x); // direita de quem olha para a fachada
   const centro = v(...g.sacada);
   const retrato = aspecto < 0.9;
-  const d = retrato ? 30 : 21;
-  const alvo = retrato ? centro.clone().add(v(0, -5.5, 0)) : centro.clone().addScaledVector(lado, 4.6);
+  const d = retrato ? 40 : 27;
+  const alvo = retrato ? centro.clone().add(v(0, -6.5, 0)) : centro.clone().addScaledVector(lado, 5.5);
   const pos = centro.clone().addScaledVector(n, d).addScaledVector(lado, retrato ? -4 : -3.5).add(v(0, retrato ? -1 : 1.4, 0));
   pos.y = Math.max(pos.y, 2);
   return { pos, alvo, fov: 42 };
@@ -71,7 +71,7 @@ export function poseVista(u: Unidade): Pose {
 /** Vista isométrica de cima, do lado da fachada. */
 export function poseMaquete(u: Unidade, aspecto: number): Pose {
   const l = limitesPlanta(tipoDe(u));
-  const k = aspecto < 0.9 ? 1.75 : 1;
+  const k = (aspecto < 0.9 ? 1.75 : 1) * Math.max(1, Math.max(l.x1 - l.x0, l.z1 - l.z0) / 7);
   return { pos: v(l.cx - 4.6 * k, 8.6 * k, l.cz + 8.4 * k), alvo: v(l.cx, 0.3, l.cz - (aspecto < 0.9 ? 1.2 : 0)), fov: 40 };
 }
 
@@ -89,5 +89,5 @@ export function poseLazer(id: string | null, aspecto: number): Pose {
   const l = lazeres().find((x) => x.id === id);
   if (l) return { pos: v(...l.camera.posicao), alvo: v(...l.camera.olhar), fov: 45 };
   const k = aspecto < 0.9 ? 1.45 : 1;
-  return { pos: v(-50 * k, 46 * k + 6, 60 * k), alvo: v(-1, 23, 0), fov: FOV_PREDIO };
+  return { pos: v(62 * k, 52 * k + 12, -58 * k), alvo: v(3, P.podio, -2), fov: FOV_PREDIO };
 }

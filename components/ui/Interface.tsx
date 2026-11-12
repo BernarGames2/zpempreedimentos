@@ -41,6 +41,7 @@ export function Interface() {
       <div className="pointer-events-none absolute left-4 top-[4.25rem] z-[24] flex items-center gap-2 sm:left-6 sm:top-20">
         {estado !== "INTRO" && <MenuQualidade />}
         <SeloDemo />
+        {emp.proposta && <span className="vidro hidden rounded-full px-3 py-1 text-[11px] text-cinza sm:inline" data-testid="selo-proposta">{emp.proposta.aviso}</span>}
       </div>
       {estado === "PREDIO" && <BarraPredio />}
       <AnimatePresence>{estado === "UNIDADE" && u && <PainelUnidade key="unidade" u={u} />}</AnimatePresence>

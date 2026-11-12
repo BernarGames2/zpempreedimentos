@@ -1,5 +1,5 @@
 /**
- * Métricas para a ZP. Ficam desligadas até existir NEXT_PUBLIC_GA_ID e/ou
+ * Métricas para a incorporadora. Ficam desligadas até existir NEXT_PUBLIC_GA_ID e/ou
  * NEXT_PUBLIC_META_PIXEL_ID no ambiente (ver components/Metricas.tsx).
  */
 export type Evento =

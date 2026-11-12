@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { emp } from "@/lib/dados";
+import { GRUPOS, PRIMEIRO_ANDAR, emp } from "@/lib/dados";
 import { reais } from "@/lib/formato";
 import { filtroAtivo, passaFiltro, useExp } from "@/lib/store";
 
@@ -20,14 +20,16 @@ export function Filtros() {
   const [min, max] = useMemo(() => faixa(f.negocio), [f.negocio]);
   const passo = f.negocio === "venda" ? 5000 : 50;
   const n = useMemo(() => emp.unidades.filter((u) => passaFiltro(u, f)).length, [f]);
-  const andares = Array.from({ length: emp.andares }, (_, i) => i + 1);
+  const andares = Array.from({ length: emp.andares }, (_, i) => i + PRIMEIRO_ANDAR);
+  const temValores = max > 0;
 
   return (
     <div className="space-y-5" data-testid="filtros">
       <fieldset>
         <legend className="rotulo mb-2">Tipo</legend>
         <div className="flex flex-wrap gap-2">
-          {emp.tipos.map((t) => {
+          {GRUPOS.map((g) => {
+            const t = { id: g, nome: g };
             const on = f.tipos.includes(t.id);
             return (
               <button
@@ -59,7 +61,7 @@ export function Filtros() {
         </div>
       </fieldset>
 
-      <fieldset>
+      {temValores && <fieldset>
         <legend className="rotulo mb-2">{f.negocio === "venda" ? "Preço até" : "Aluguel até"}</legend>
         {emp.modo === "ambos" && (
           <div className="mb-2 flex gap-2" role="group" aria-label="Tipo de negócio">
@@ -76,7 +78,7 @@ export function Filtros() {
           <span>{reais(min)}</span>
           <span className="text-texto">{f.valorMax === null ? "Sem limite" : reais(f.valorMax)}</span>
         </div>
-      </fieldset>
+      </fieldset>}
 
       <label className="flex min-h-11 cursor-pointer items-center justify-between gap-3 text-sm">
         Só disponíveis

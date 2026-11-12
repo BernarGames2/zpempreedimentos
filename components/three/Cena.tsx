@@ -5,8 +5,9 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as THREE from "three";
 import { ambiente } from "@/lib/ambiente";
-import { tipoDe, unidade } from "@/lib/dados";
-import { geoUnidade } from "@/lib/procedural/predio";
+import { temInterior, tipoDe, unidade } from "@/lib/dados";
+import { limitesPlanta } from "@/lib/procedural/planta";
+import { alturaTorre, geoUnidade } from "@/lib/procedural/predio";
 import { emp } from "@/lib/dados";
 import { resolverTodos, splatsDoTipo } from "@/lib/splats";
 import { useExp } from "@/lib/store";
@@ -37,6 +38,12 @@ function escolherHdri(m: Manifesto): { noite?: string; dia?: string } {
     noite: achar(/night|noite|dusk|evening/i) ?? m.hdri[0],
     dia: achar(/dawn|day|dia|sunset|sunrise|tarde/i),
   };
+}
+
+function focoInterior(t: Parameters<typeof limitesPlanta>[0]): [number, number, number] {
+  if (t.comodos.length === 0) return [0, 0, 0];
+  const l = limitesPlanta(t);
+  return [l.cx, 0, l.cz];
 }
 
 /** Avisa o carregador quando a cena já desenhou os primeiros quadros. */
@@ -112,6 +119,8 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   return (
     <>
       <Camera />
+      {/* Perspectiva aérea: o entorno some aos poucos no horizonte, como nos renders */}
+      {!interior && <fog attach="fog" args={[amb.noite > 0.5 ? "#2a3a62" : "#c3d2de", 170, 1150]} />}
       {/* Dentro de um splat o céu procedural sai de cena: o mundo capturado já traz o próprio fundo. */}
       {!comSplat && (!pano || !(interior || estado === "VISTA")) && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} />}
       {pano && !comSplat && (interior || estado === "VISTA") && (
@@ -137,8 +146,8 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
           amb={amb}
           qualidade={qualidade}
           hdri={hdri}
-          foco={interior ? [3.7, 0, 2.8] : [0, 22, 0]}
-          raio={interior ? 9 : 40}
+          foco={interior && tipo ? focoInterior(tipo) : [2, alturaTorre(emp) * 0.42, -1]}
+          raio={interior ? 10 : 62}
           giro={giro}
           interior={interior}
         />
@@ -151,7 +160,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
         </group>
         <Pronto />
       </Suspense>
-      {tipo && (
+      {tipo && temInterior(tipo) && (
         <Suspense fallback={null}>
           <group visible={interior}>
             {aptoReal ? (

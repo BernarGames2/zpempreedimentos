@@ -26,8 +26,8 @@ export function Carregador() {
             role="status"
             aria-live="polite"
           >
-            <div className="font-titulo text-6xl font-extralight tracking-[0.18em] text-texto sm:text-7xl">ZP</div>
-            <div className="rotulo mt-1 !tracking-[0.42em]">Empreendimentos</div>
+            <div className="font-titulo text-6xl font-extralight tracking-[0.18em] text-texto sm:text-7xl">MAXI</div>
+            <div className="rotulo mt-1 !tracking-[0.42em]">Construtora e Incorporadora</div>
             <div className="mt-8 font-titulo text-2xl font-light tracking-wide sm:text-3xl">{emp.nome}</div>
             <div
               className="mt-6 h-[3px] w-56 overflow-hidden rounded-full bg-white/15"
@@ -40,6 +40,7 @@ export function Carregador() {
               <div className="h-full rounded-full bg-ambar transition-[width] duration-300 ease-out" style={{ width: `${pct}%` }} />
             </div>
             <div className="mt-3 text-xs tabular-nums text-cinza">{pct}%</div>
+            {emp.proposta && <div className="mt-6 text-[11px] text-cinza">{emp.proposta.aviso}</div>}
           </motion.div>
         )}
       </AnimatePresence>

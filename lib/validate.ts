@@ -72,7 +72,7 @@ function validarLazer(v: unknown, c: string): void {
   const l = obj(v, c);
   for (const k of ["id", "nome", "etiqueta", "descricao"]) str(l, k, c);
   const d = lista(l, "destaques", c);
-  if (d.length !== 3 || d.some((x) => typeof x !== "string")) throw new ErroDeDados(`${c}.destaques`, "três textos", d);
+  if (d.length > 3 || d.some((x) => typeof x !== "string")) throw new ErroDeDados(`${c}.destaques`, "até três textos", d);
   lista(l, "itens", c).forEach((x, i) => {
     if (typeof x !== "string") throw new ErroDeDados(`${c}.itens[${i}]`, "um texto", x);
   });
@@ -99,10 +99,10 @@ export function validarEmpreendimento(bruto: unknown): Empreendimento {
     idsTipo.add(str(tipo, "id", c));
     str(tipo, "nome", c);
     num(tipo, "quartos", c);
-    num(tipo, "vagas", c);
+    numOuNulo(tipo, "vagas", c);
     bool(tipo, "mobiliado", c);
     const comodos = lista(tipo, "comodos", c);
-    if (comodos.length === 0) throw new ErroDeDados(`${c}.comodos`, "ao menos um cômodo", comodos);
+    if (comodos.length === 0 && tipo.interior3d !== false) throw new ErroDeDados(`${c}.comodos`, "ao menos um cômodo (ou interior3d: false)", comodos);
     comodos.forEach((cm, j) => {
       const cc = `${c}.comodos[${j}]`;
       const comodo = obj(cm, cc);
@@ -145,12 +145,14 @@ export function validarEmpreendimento(bruto: unknown): Empreendimento {
     if (numeros.has(numero)) throw new ErroDeDados(`${c}.numero`, "um número único", numero);
     numeros.add(numero);
     const andar = num(un, "andar", c);
-    if (andar < 1 || andar > (e.andares as number)) throw new ErroDeDados(`${c}.andar`, `entre 1 e ${String(e.andares)}`, andar);
+    const primeiro = typeof e.primeiroAndar === "number" ? e.primeiroAndar : 1;
+    const ultimo = primeiro + (e.andares as number) - 1;
+    if (andar < primeiro || andar > ultimo) throw new ErroDeDados(`${c}.andar`, `entre ${primeiro} e ${ultimo}`, andar);
     const pos = num(un, "posicao", c);
     if (!Number.isInteger(pos) || pos < 1 || pos > 6) throw new ErroDeDados(`${c}.posicao`, "um inteiro de 1 a 6", pos);
     const tipo = str(un, "tipo", c);
     if (!idsTipo.has(tipo)) throw new ErroDeDados(`${c}.tipo`, `um id de "tipos" (${[...idsTipo].join(", ")})`, tipo);
-    umDe(un, "fachada", ["frente", "lateral"], c);
+    umDe(un, "fachada", ["frente", "lateral", "fundos"], c);
     num(un, "areaPrivativa", c);
     numOuNulo(un, "preco", c);
     numOuNulo(un, "aluguel", c);

@@ -51,7 +51,7 @@ const FRAG = /* glsl */ `
     vec3 cor = mix(uHorizonte, uTopo, pow(h, 0.55));
 
     // nuvens ralas, mais visíveis perto do horizonte
-    vec2 uvN = d.xz / (d.y + 0.35) * 1.6;
+    vec2 uvN = d.xz / max(d.y + 0.35, 0.05) * 1.6; // evita divisão por zero (NaN apaga a tela no bloom)
     float nuv = smoothstep(0.52, 0.85, fbm(uvN + 3.7)) * smoothstep(0.02, 0.3, d.y) * (1.0 - h * 0.6);
     cor = mix(cor, mix(uHorizonte * 1.25 + 0.06, vec3(1.0), 0.25 * (1.0 - uNoite)), nuv * 0.42);
 

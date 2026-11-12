@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { emp, tipoDe, unidade } from "./dados";
+import { PRIMEIRO_ANDAR, ULTIMO_ANDAR, emp, grupoDe, temInterior, tipoDe, unidade } from "./dados";
 import { registrar } from "./metricas";
 import type { Unidade } from "./types";
 
@@ -32,15 +32,15 @@ export interface Filtros {
 
 export const filtrosIniciais = (): Filtros => ({
   tipos: [],
-  andarMin: 1,
-  andarMax: emp.andares,
+  andarMin: PRIMEIRO_ANDAR,
+  andarMax: ULTIMO_ANDAR,
   negocio: emp.modo === "locacao" ? "locacao" : "venda",
   valorMax: null,
   soDisponiveis: false,
 });
 
 export function passaFiltro(u: Unidade, f: Filtros): boolean {
-  if (f.tipos.length > 0 && !f.tipos.includes(u.tipo)) return false;
+  if (f.tipos.length > 0 && !f.tipos.includes(grupoDe(tipoDe(u)))) return false;
   if (u.andar < f.andarMin || u.andar > f.andarMax) return false;
   if (f.soDisponiveis && u.status !== "disponivel") return false;
   if (f.valorMax !== null) {
@@ -51,7 +51,7 @@ export function passaFiltro(u: Unidade, f: Filtros): boolean {
 }
 
 export function filtroAtivo(f: Filtros): boolean {
-  return f.tipos.length > 0 || f.andarMin > 1 || f.andarMax < emp.andares || f.valorMax !== null || f.soDisponiveis;
+  return f.tipos.length > 0 || f.andarMin > PRIMEIRO_ANDAR || f.andarMax < ULTIMO_ANDAR || f.valorMax !== null || f.soDisponiveis;
 }
 
 interface Experiencia {
@@ -158,7 +158,7 @@ export const useExp = create<Experiencia>((set, get) => ({
       s.transicionar("PREDIO");
       return;
     }
-    const c = tipoDe(u).comodos.find((x) => x.id === linkInicial.comodo);
+    const c = temInterior(tipoDe(u)) ? tipoDe(u).comodos.find((x) => x.id === linkInicial.comodo) : undefined;
     if (c) {
       set({ unidadeSel: u.numero, comodo: c.id, comodoAtual: c.id });
       s.transicionar("PASSEIO");
@@ -193,6 +193,8 @@ export const useExp = create<Experiencia>((set, get) => ({
   entrar: () => {
     const s = get();
     if (s.estado !== "UNIDADE" || !s.unidadeSel) return;
+    const alvo = unidade(s.unidadeSel);
+    if (!alvo || !temInterior(tipoDe(alvo))) return;
     if (s.transicionar("ENTRANDO")) registrar("entrou_no_apartamento", { unidade: s.unidadeSel, origem: "painel" });
   },
 

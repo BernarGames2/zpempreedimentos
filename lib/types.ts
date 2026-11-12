@@ -16,7 +16,10 @@ export interface Empreendimento {
   longitude: number;
   /** Muda os textos e o que o painel mostra. */
   modo: Modo;
+  /** Quantidade de andares clicáveis da torre (andares-tipo + cobertura). */
   andares: number;
+  /** Número do primeiro andar da torre (6 quando os pavimentos 1 a 5 são embasamento). Padrão: 1. */
+  primeiroAndar?: number;
   peDireito: number;
   terreo: Lazer[];
   cobertura: Lazer[];
@@ -26,6 +29,23 @@ export interface Empreendimento {
   localizacao: Localizacao;
   /** Enquanto `ativo` for verdadeiro o site mostra o selo "Dados de demonstração". */
   demonstracao: { ativo: boolean; campos: string[] };
+  /** Conteúdo das seções, sempre de fonte oficial (site da incorporadora). */
+  fonte?: { nome: string; url: string; consultadoEm: string };
+  galeria?: Foto[];
+  comercial?: { titulo: string; texto: string; itens: string[]; fotos: Foto[] };
+  obra?: { geral: number; etapas: { nome: string; pct: number }[]; conclusao: string };
+  ficha?: { rotulo: string; valor: string }[];
+  historico?: { ano: string; nomes: string }[];
+  /** Aviso de protótipo: o site é uma proposta, não o site oficial. */
+  proposta?: { autor: string; aviso: string };
+}
+
+export interface Foto {
+  src: string;
+  alt: string;
+  larg: number;
+  alt2: number;
+  rotulo?: string;
 }
 
 export interface Unidade {
@@ -35,7 +55,7 @@ export interface Unidade {
   posicao: number;
   tipo: string;
   /** A lateral tem as sacadas corridas. */
-  fachada: "frente" | "lateral";
+  fachada: "frente" | "lateral" | "fundos";
   areaPrivativa: number;
   preco: number | null;
   aluguel: number | null;
@@ -46,8 +66,18 @@ export interface Unidade {
 export interface TipoPlanta {
   id: string;
   nome: string;
+  /** Agrupa tipos no filtro (ex.: "3 suítes"). */
+  grupo?: string;
+  /** Descrição oficial da planta (ex.: "3 quartos, sendo 1 suíte"). */
+  descricao?: string;
+  /** Imagem da planta oficial. */
+  plantaImagem?: string;
+  /** false = ainda sem interior 3D (mostra só a planta oficial; nada é inventado). */
+  interior3d?: boolean;
+  /** Planta espelhada de outro tipo: a mobília é a do tipo-base, espelhada no eixo x. */
+  espelhoDe?: string;
   quartos: number;
-  vagas: number;
+  vagas: number | null;
   mobiliado: boolean;
   comodos: Comodo[];
   portas: Abertura[];
@@ -97,6 +127,8 @@ export interface Comodo {
   poligono: Vec2[];
   piso: "porcelanato-cinza" | "externo";
   area: number;
+  /** Sem render oficial deste cômodo: mobília segue só a planta ilustrada. */
+  semRender?: boolean;
   fotoDecorado?: string;
   /** Câmera que reproduz o enquadramento da foto oficial (coordenadas da planta). */
   enquadramento: Enquadramento;
@@ -109,13 +141,17 @@ export interface Lazer {
   id: string;
   nome: string;
   etiqueta: string;
-  destaques: [string, string, string];
+  destaques: string[];
+  /** Imagem oficial do espaço. */
+  imagem?: string;
   descricao: string;
   itens: string[];
   /** Centro do volume no prédio (metros; y é a base). */
   posicao: Vec3;
   tamanho: Vec3;
   camera: Enquadramento;
+  /** Sem posição conhecida no prédio: aparece só na lista, não no 3D. */
+  sem3d?: boolean;
   /** GLB opcional em /public/models; sem ele o site mostra um volume ilustrativo. */
   modelo?: string;
 }

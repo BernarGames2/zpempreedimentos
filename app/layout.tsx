@@ -18,10 +18,11 @@ export const metadata: Metadata = {
     siteName: emp.nome,
     title: `${emp.nome} — ${emp.textos.h1 ?? ""}`,
     description: descricao,
-    images: [{ url: "/referencias/01-fachada-esquina.png", width: 1280, height: 1600, alt: `Fachada do ${emp.nome} vista da esquina` }],
+    images: [{ url: "/referencias/fachada-diagonal.jpg", width: 860, height: 1080, alt: `Fachada do ${emp.nome}` }],
   },
-  twitter: { card: "summary_large_image", title: emp.nome, description: descricao, images: ["/referencias/01-fachada-esquina.png"] },
-  robots: { index: true, follow: true },
+  twitter: { card: "summary_large_image", title: emp.nome, description: descricao, images: ["/referencias/fachada-diagonal.jpg"] },
+  // protótipo de proposta: fora dos buscadores até a incorporadora aprovar
+  robots: { index: false, follow: false },
 };
 
 export const viewport: Viewport = { themeColor: "#141824", width: "device-width", initialScale: 1, viewportFit: "cover" };

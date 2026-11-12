@@ -1,331 +1,429 @@
 {
-  "nome": "Live ZP Connect",
-  "incorporadora": "ZP Empreendimentos",
-  "endereco": "Bairro Saraiva / Santa Maria, Uberlândia – MG (endereço a confirmar)",
-  "whatsapp": "(34) 99898-5445",
-  "orientacaoNorteGraus": 45,
-  "latitude": -18.9,
-  "longitude": -48.28,
-  "modo": "ambos",
-  "andares": 13,
-  "peDireito": 2.88,
+  "nome": "Liwo",
+  "incorporadora": "Maxi Construtora e Incorporadora",
+  "endereco": "Rua João Severiano Rodrigues da Cunha, 1855 – Parque Sul Karaíba, Uberlândia – MG",
+  "whatsapp": "(34) 99684-4424",
+  "orientacaoNorteGraus": 90,
+  "latitude": -18.957,
+  "longitude": -48.287,
+  "modo": "venda",
+  "andares": 19,
+  "primeiroAndar": 6,
+  "peDireito": 3.06,
   "terreo": [
     {
-      "id": "coffee-living",
-      "nome": "Coffee living",
-      "etiqueta": "Térreo · Convivência",
-      "destaques": [
-        "Pé-direito duplo",
-        "Café e estar",
-        "Wi-fi"
-      ],
-      "descricao": "Um lounge logo na chegada para receber visitas, tomar um café e esperar a carona.",
-      "itens": [
-        "Sofás e poltronas",
-        "Bancada de café",
-        "Vista para o jardim da portaria"
-      ],
+      "id": "piscina",
+      "nome": "Piscina com deck",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Piscina com deck no pavimento de lazer, ao lado da sauna.",
+      "itens": [],
+      "imagem": "/referencias/lazer/piscina.jpg",
       "posicao": [
-        -7.5,
-        0,
-        12.2
+        -2.6,
+        18.4,
+        -17.6
       ],
       "tamanho": [
-        4.2,
-        6.4,
-        2.6
+        13.8,
+        0.4,
+        3.1
       ],
       "camera": {
         "posicao": [
-          -9.5,
-          2.2,
-          24
+          -8.61,
+          33.4,
+          -46.99
         ],
         "olhar": [
-          -7.5,
-          3.2,
-          12.2
+          -2.6,
+          19.4,
+          -17.6
+        ]
+      }
+    },
+    {
+      "id": "sauna",
+      "nome": "Sauna",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Sauna com deck e acesso à piscina.",
+      "itens": [],
+      "imagem": "/referencias/lazer/sauna.jpg",
+      "posicao": [
+        8.2,
+        18.4,
+        -12.9
+      ],
+      "tamanho": [
+        2,
+        2.6,
+        3.8
+      ],
+      "camera": {
+        "posicao": [
+          22.82,
+          33.4,
+          -39.1
+        ],
+        "olhar": [
+          8.2,
+          19.4,
+          -12.9
+        ]
+      }
+    },
+    {
+      "id": "salao-de-eventos",
+      "nome": "Salão de eventos",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Salão de eventos com copa de apoio.",
+      "itens": [],
+      "imagem": "/referencias/lazer/salao-de-eventos.jpg",
+      "posicao": [
+        -6.6,
+        18.4,
+        5.4
+      ],
+      "tamanho": [
+        8.3,
+        3,
+        14.7
+      ],
+      "camera": {
+        "posicao": [
+          -31.06,
+          33.4,
+          22.78
+        ],
+        "olhar": [
+          -6.6,
+          19.4,
+          5.4
+        ]
+      }
+    },
+    {
+      "id": "gourmet",
+      "nome": "Espaço gourmet",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Espaço gourmet ao lado do salão de eventos.",
+      "itens": [],
+      "imagem": "/referencias/lazer/gourmet.jpg",
+      "posicao": [
+        -6.3,
+        18.4,
+        -4.2
+      ],
+      "tamanho": [
+        7.8,
+        3,
+        4.2
+      ],
+      "camera": {
+        "posicao": [
+          -32.3,
+          33.4,
+          -19.16
+        ],
+        "olhar": [
+          -6.3,
+          19.4,
+          -4.2
+        ]
+      }
+    },
+    {
+      "id": "academia",
+      "nome": "Academia",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Academia no pavimento de lazer.",
+      "itens": [],
+      "imagem": "/referencias/lazer/academia.jpg",
+      "posicao": [
+        4.9,
+        18.4,
+        10.3
+      ],
+      "tamanho": [
+        10.5,
+        3,
+        6.7
+      ],
+      "camera": {
+        "posicao": [
+          15.52,
+          33.4,
+          38.36
+        ],
+        "olhar": [
+          4.9,
+          19.4,
+          10.3
         ]
       }
     },
     {
       "id": "coworking",
       "nome": "Coworking",
-      "etiqueta": "Térreo · Trabalho",
-      "destaques": [
-        "Mesas compartilhadas",
-        "Internet rápida",
-        "Sala de reunião"
-      ],
-      "descricao": "Um espaço para trabalhar ou estudar sem sair do prédio.",
-      "itens": [
-        "Bancadas com tomadas",
-        "Cabine para chamadas",
-        "Climatização"
-      ],
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Coworking para os moradores.",
+      "itens": [],
+      "imagem": "/referencias/lazer/coworking.jpg",
       "posicao": [
-        -8.6,
-        5.2,
-        3
+        7.8,
+        18.4,
+        0.9
       ],
       "tamanho": [
-        4.2,
+        3.3,
         3,
+        4
+      ],
+      "camera": {
+        "posicao": [
+          37.54,
+          33.4,
+          4.84
+        ],
+        "olhar": [
+          7.8,
+          19.4,
+          0.9
+        ]
+      }
+    },
+    {
+      "id": "jogos",
+      "nome": "Lounge de jogos",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Lounge de jogos ao lado da piscina.",
+      "itens": [],
+      "imagem": "/referencias/lazer/jogos.jpg",
+      "posicao": [
+        2,
+        18.4,
+        -8
+      ],
+      "tamanho": [
+        5.8,
+        3,
+        5.6
+      ],
+      "camera": {
+        "posicao": [
+          5.72,
+          33.4,
+          -37.77
+        ],
+        "olhar": [
+          2,
+          19.4,
+          -8
+        ]
+      }
+    },
+    {
+      "id": "playground",
+      "nome": "Playground",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Playground ao ar livre.",
+      "itens": [],
+      "imagem": "/referencias/lazer/playground.jpg",
+      "posicao": [
+        12.7,
+        18.4,
+        10.7
+      ],
+      "tamanho": [
+        4.5,
+        0.25,
+        5.8
+      ],
+      "camera": {
+        "posicao": [
+          34.84,
+          33.4,
+          30.95
+        ],
+        "olhar": [
+          12.7,
+          19.4,
+          10.7
+        ]
+      }
+    },
+    {
+      "id": "brinquedoteca",
+      "nome": "Brinquedoteca",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Brinquedoteca ao lado do playground.",
+      "itens": [],
+      "imagem": "/referencias/lazer/brinquedoteca.jpg",
+      "posicao": [
+        12.7,
+        18.4,
         5.4
       ],
-      "camera": {
-        "posicao": [
-          -24,
-          12,
-          12
-        ],
-        "olhar": [
-          -8.6,
-          6.7,
-          3
-        ]
-      }
-    },
-    {
-      "id": "lavanderia",
-      "nome": "Lavanderia",
-      "etiqueta": "Térreo · Praticidade",
-      "destaques": [
-        "Lava e seca",
-        "Uso compartilhado",
-        "Bancada de apoio"
-      ],
-      "descricao": "Lavanderia coletiva equipada, para o apartamento ficar livre para o que importa.",
-      "itens": [
-        "Máquinas lava e seca",
-        "Bancada para dobrar roupas",
-        "Área de espera"
-      ],
-      "posicao": [
-        -8.6,
-        5.2,
-        -5
-      ],
       "tamanho": [
-        4.2,
+        4.5,
         3,
-        4.4
+        4.6
       ],
       "camera": {
         "posicao": [
-          -24,
-          11,
-          -14
+          39.94,
+          33.4,
+          17.97
         ],
         "olhar": [
-          -8.6,
-          6.7,
-          -5
-        ]
-      }
-    }
-  ],
-  "cobertura": [
-    {
-      "id": "piscina",
-      "nome": "Piscina",
-      "etiqueta": "Cobertura · Exclusivo para moradores",
-      "destaques": [
-        "Vista aberta",
-        "Deck molhado",
-        "Solário"
-      ],
-      "descricao": "Piscina na cobertura com a cidade no horizonte.",
-      "itens": [
-        "Piscina com borda",
-        "Deck com espreguiçadeiras",
-        "Ducha"
-      ],
-      "posicao": [
-        1.2,
-        42.79,
-        4.2
-      ],
-      "tamanho": [
-        7,
-        0.9,
-        6
-      ],
-      "camera": {
-        "posicao": [
-          20,
-          54.64,
-          22
-        ],
-        "olhar": [
-          1.2,
-          43.24,
-          4.2
+          12.7,
+          19.4,
+          5.4
         ]
       }
     },
     {
-      "id": "area-gourmet",
-      "nome": "Área gourmet",
-      "etiqueta": "Cobertura · Exclusivo para moradores",
-      "destaques": [
-        "Churrasqueira",
-        "Bancada gourmet",
-        "Mesa para grupos"
-      ],
-      "descricao": "Para receber amigos com a melhor vista do prédio.",
-      "itens": [
-        "Churrasqueira e cooktop",
-        "Mesa comunitária",
-        "Pergolado"
-      ],
+      "id": "quadra",
+      "nome": "Quadra de pickleball",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Quadra de pickleball descoberta.",
+      "itens": [],
+      "imagem": "/referencias/lazer/quadra.jpg",
       "posicao": [
-        1.6,
-        42.79,
-        -2.6
+        13.6,
+        18.4,
+        -11.8
       ],
       "tamanho": [
-        7,
-        2.9,
-        4.2
+        6.7,
+        0.2,
+        13.7
       ],
       "camera": {
         "posicao": [
-          22,
-          51.64,
-          -4
+          35.5,
+          33.4,
+          -32.31
         ],
         "olhar": [
-          1.6,
-          44.24,
-          -2.6
+          13.6,
+          19.4,
+          -11.8
         ]
       }
     },
     {
-      "id": "salao-de-festas",
-      "nome": "Salão de festas",
-      "etiqueta": "Cobertura · Exclusivo para moradores",
-      "destaques": [
-        "Ambiente fechado",
-        "Copa de apoio",
-        "Integrado ao gourmet"
-      ],
-      "descricao": "Salão envidraçado para comemorações em qualquer clima.",
-      "itens": [
-        "Copa equipada",
-        "Mobiliário solto",
-        "Fechamento em vidro"
-      ],
+      "id": "bicicletario",
+      "nome": "Bicicletário",
+      "etiqueta": "5º pavimento · Lazer",
+      "destaques": [],
+      "descricao": "Bicicletário do empreendimento.",
+      "itens": [],
+      "imagem": "/referencias/lazer/bicicletario.jpg",
       "posicao": [
-        0.6,
-        42.79,
-        -7.2
+        0,
+        18.4,
+        0
       ],
       "tamanho": [
-        8,
-        3.1,
-        3.6
+        1,
+        1,
+        1
       ],
       "camera": {
         "posicao": [
-          16,
-          51.64,
-          -24
+          0,
+          40,
+          60
         ],
         "olhar": [
-          0.6,
-          44.339999999999996,
-          -7.2
+          0,
+          19.4,
+          0
         ]
-      }
+      },
+      "sem3d": true
     }
   ],
+  "cobertura": [],
   "tipos": [
     {
-      "id": "studio",
-      "nome": "Studio",
-      "quartos": 0,
-      "vagas": 1,
-      "mobiliado": true,
+      "id": "final-01",
+      "nome": "3 quartos",
+      "grupo": "3 quartos",
+      "descricao": "3 quartos, sendo 1 suíte",
+      "plantaImagem": "/referencias/plantas/final-01.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "final-02",
+      "nome": "3 suítes",
+      "grupo": "3 suítes",
+      "descricao": "3 suítes",
+      "plantaImagem": "/referencias/plantas/final-02.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
       "comodos": [
         {
           "id": "sala",
-          "nome": "Sala",
+          "nome": "Living",
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              3.1,
+              0,
               0
             ],
             [
-              6.6,
+              4.8,
               0
             ],
             [
-              6.6,
-              1.6
+              4.8,
+              6.26
             ],
             [
-              5.4,
-              1.6
+              1.8,
+              6.26
             ],
             [
-              5.4,
-              3.8
+              1.8,
+              1.15
             ],
             [
-              3.1,
-              3.8
+              0,
+              1.15
             ]
           ],
-          "area": 10.66,
-          "fotoDecorado": "/referencias/03-sala-varanda.png",
+          "area": 20.85,
           "enquadramento": {
             "posicao": [
-              4.95,
+              4.05,
               1.6,
-              1.9
+              1.5
             ],
             "olhar": [
-              3.1,
-              1.48,
-              1.98
+              1.5,
+              1.3,
+              7.6
             ]
           },
-          "splat": {
-            "desktop": "/splats/sala.spz",
-            "mobile": "/splats/sala-500k.spz",
-            "collider": "/splats/sala-collider.glb",
-            "spawn": [
-              4.95,
-              1.6,
-              1.9
-            ],
-            "olhar": [
-              3.1,
-              1.48,
-              1.98
-            ],
-            "areaSegura": {
-              "centro": [
-                4.95,
-                1.6,
-                1.9
-              ],
-              "raio": 1.6
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              4.95,
-              1.6,
-              1.9
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
+          "fotoDecorado": "/referencias/sala-01.jpg"
         },
         {
           "id": "cozinha",
@@ -333,279 +431,384 @@
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              5.4,
-              1.6
+              0,
+              1.15
             ],
             [
-              6.6,
-              1.6
+              1.8,
+              1.15
             ],
             [
-              6.6,
-              3.8
+              1.8,
+              6.26
             ],
             [
-              5.4,
-              3.8
+              0,
+              6.26
             ]
           ],
-          "area": 2.64,
-          "fotoDecorado": "/referencias/07-cozinha.png",
+          "area": 9.2,
           "enquadramento": {
             "posicao": [
-              4.3,
+              1.45,
               1.6,
-              1.9
+              5.95
             ],
             "olhar": [
-              6.6,
-              1.42,
-              2.13
+              2.5,
+              1.2,
+              0.6
             ]
           },
-          "splat": {
-            "desktop": "/splats/sala.spz",
-            "mobile": "/splats/sala-500k.spz",
-            "collider": "/splats/sala-collider.glb",
-            "spawn": [
-              4.3,
+          "fotoDecorado": "/referencias/sala-02.jpg"
+        },
+        {
+          "id": "varanda",
+          "nome": "Varanda gourmet",
+          "piso": "externo",
+          "poligono": [
+            [
+              0,
+              6.26
+            ],
+            [
+              4.8,
+              6.26
+            ],
+            [
+              4.8,
+              8.85
+            ],
+            [
+              0,
+              8.85
+            ]
+          ],
+          "area": 12.43,
+          "enquadramento": {
+            "posicao": [
+              4.1,
               1.6,
-              1.9
+              6.55
             ],
             "olhar": [
-              6.6,
-              1.42,
-              2.13
-            ],
-            "areaSegura": {
-              "centro": [
-                4.3,
-                1.6,
-                1.9
-              ],
-              "raio": 1.6
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              4.95,
-              1.6,
-              1.9
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
+              0.4,
+              0.9,
+              8.2
+            ]
           }
         },
         {
           "id": "quarto",
-          "nome": "Quarto",
+          "nome": "Suíte master",
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              0,
-              2.3
+              4.8,
+              0
             ],
             [
-              3.1,
-              2.3
+              8.9,
+              0
             ],
             [
-              3.1,
-              5.2
+              8.9,
+              2.86
             ],
             [
-              0,
-              5.2
+              7.4,
+              2.86
+            ],
+            [
+              7.4,
+              4.1
+            ],
+            [
+              6.25,
+              4.1
+            ],
+            [
+              6.25,
+              2.86
+            ],
+            [
+              4.8,
+              2.86
             ]
           ],
-          "area": 8.99,
-          "fotoDecorado": "/referencias/05-quarto.png",
+          "area": 13.15,
           "enquadramento": {
             "posicao": [
-              2.75,
+              8.6,
               1.6,
-              3.75
+              2.15
             ],
             "olhar": [
-              0,
+              4.9,
               1.3,
-              3.75
+              1
             ]
           },
-          "splat": {
-            "desktop": "/splats/quarto.spz",
-            "mobile": "/splats/quarto-500k.spz",
-            "collider": "/splats/quarto-collider.glb",
-            "spawn": [
-              2.75,
-              1.6,
-              3.75
-            ],
-            "olhar": [
-              0,
-              1.3,
-              3.75
-            ],
-            "areaSegura": {
-              "centro": [
-                2.75,
-                1.6,
-                3.75
-              ],
-              "raio": 1.2
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              2.75,
-              1.6,
-              3.75
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
+          "fotoDecorado": "/referencias/suite.jpg"
         },
         {
           "id": "banheiro",
-          "nome": "Banheiro",
+          "nome": "Banho master",
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              0.9,
-              0
+              7.4,
+              2.86
             ],
             [
-              3.1,
-              0
+              10.8,
+              2.86
             ],
             [
-              3.1,
-              2.3
+              10.8,
+              4.1
             ],
             [
-              0.9,
-              2.3
+              7.4,
+              4.1
             ]
           ],
-          "area": 5.06,
-          "fotoDecorado": "/referencias/04-banheiro.png",
+          "area": 4.22,
           "enquadramento": {
             "posicao": [
-              2.35,
+              7.75,
               1.6,
-              1.95
+              3.5
             ],
             "olhar": [
-              2.35,
-              1.3,
-              0
+              10.6,
+              1.15,
+              3.5
             ]
           },
-          "splat": {
-            "desktop": "/splats/banheiro.spz",
-            "mobile": "/splats/banheiro-500k.spz",
-            "collider": "/splats/banheiro-collider.glb",
-            "spawn": [
-              2.35,
-              1.6,
-              1.95
-            ],
-            "olhar": [
-              2.35,
-              1.3,
-              0
-            ],
-            "areaSegura": {
-              "centro": [
-                2.35,
-                1.6,
-                1.95
-              ],
-              "raio": 0.9
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              2.35,
-              1.6,
-              1.95
-            ],
-            "rotacaoY": 0,
-            "escala": 1,
-            "rotacaoX": 180
-          }
+          "semRender": true
         },
         {
-          "id": "varanda",
-          "nome": "Varanda",
-          "piso": "externo",
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
           "poligono": [
             [
-              3.1,
-              3.8
+              4.8,
+              4.1
             ],
             [
-              6.6,
-              3.8
+              7.4,
+              4.1
             ],
             [
-              6.6,
-              5.2
+              7.4,
+              5.3
             ],
             [
-              3.1,
-              5.2
+              4.8,
+              5.3
             ]
           ],
-          "area": 4.9,
-          "fotoDecorado": "/referencias/06-varanda.png",
+          "area": 3.12,
           "enquadramento": {
             "posicao": [
-              5.85,
+              5.2,
               1.6,
-              4.5
+              4.7
             ],
             "olhar": [
-              3.1,
-              1.35,
-              4.45
+              7.3,
+              1.4,
+              4.7
             ]
           },
-          "splat": {
-            "desktop": "/splats/varanda.spz",
-            "mobile": "/splats/varanda-500k.spz",
-            "collider": "/splats/varanda-collider.glb",
-            "spawn": [
-              5.85,
+          "semRender": true
+        },
+        {
+          "id": "lavabo",
+          "nome": "Lavabo",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.8,
+              2.86
+            ],
+            [
+              6.25,
+              2.86
+            ],
+            [
+              6.25,
+              4.1
+            ],
+            [
+              4.8,
+              4.1
+            ]
+          ],
+          "area": 1.8,
+          "enquadramento": {
+            "posicao": [
+              5.5,
               1.6,
-              4.5
+              3.85
             ],
             "olhar": [
-              3.1,
-              1.35,
-              4.45
-            ],
-            "areaSegura": {
-              "centro": [
-                5.85,
-                1.6,
-                4.5
-              ],
-              "raio": 1.1
-            }
+              5.5,
+              1.1,
+              2.95
+            ]
           },
-          "splatTransform": {
-            "posicao": [
-              5.85,
-              1.6,
-              4.5
+          "semRender": true
+        },
+        {
+          "id": "suite1",
+          "nome": "Suíte 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              4.8,
+              5.3
             ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
+            [
+              7.4,
+              5.3
+            ],
+            [
+              7.4,
+              8.6
+            ],
+            [
+              4.8,
+              8.6
+            ]
+          ],
+          "area": 8.58,
+          "enquadramento": {
+            "posicao": [
+              7,
+              1.6,
+              5.7
+            ],
+            "olhar": [
+              5,
+              1,
+              7.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho1",
+          "nome": "Banho 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.4,
+              6.9
+            ],
+            [
+              9.1,
+              6.9
+            ],
+            [
+              9.1,
+              9.5
+            ],
+            [
+              7.4,
+              9.5
+            ]
+          ],
+          "area": 4.42,
+          "enquadramento": {
+            "posicao": [
+              8.25,
+              1.6,
+              7.2
+            ],
+            "olhar": [
+              8.25,
+              1.1,
+              9.3
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite2",
+          "nome": "Suíte 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              7.4,
+              4.1
+            ],
+            [
+              10.8,
+              4.1
+            ],
+            [
+              10.8,
+              6.9
+            ],
+            [
+              7.4,
+              6.9
+            ]
+          ],
+          "area": 9.52,
+          "enquadramento": {
+            "posicao": [
+              7.8,
+              1.6,
+              6.5
+            ],
+            "olhar": [
+              10.4,
+              1,
+              4.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho2",
+          "nome": "Banho 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              9.1,
+              6.9
+            ],
+            [
+              10.8,
+              6.9
+            ],
+            [
+              10.8,
+              9.5
+            ],
+            [
+              9.1,
+              9.5
+            ]
+          ],
+          "area": 4.42,
+          "enquadramento": {
+            "posicao": [
+              9.95,
+              1.6,
+              7.2
+            ],
+            "olhar": [
+              9.95,
+              1.1,
+              9.3
+            ]
+          },
+          "semRender": true
         }
       ],
       "portas": [
@@ -613,11 +816,11 @@
           "id": "entrada",
           "tipo": "porta",
           "p1": [
-            5.65,
+            0.15,
             0
           ],
           "p2": [
-            6.5,
+            1.05,
             0
           ],
           "altura": 2.1,
@@ -628,69 +831,15 @@
           ]
         },
         {
-          "id": "sala-quarto",
+          "id": "sala-cozinha",
           "tipo": "vao",
           "p1": [
-            3.1,
-            2.4
+            1.8,
+            2.9
           ],
           "p2": [
-            3.1,
-            3.15
-          ],
-          "altura": 2.1,
-          "peitoril": 0,
-          "liga": [
-            "sala",
-            "quarto"
-          ]
-        },
-        {
-          "id": "quarto-banheiro",
-          "tipo": "porta",
-          "p1": [
-            2.3,
-            2.3
-          ],
-          "p2": [
-            3,
-            2.3
-          ],
-          "altura": 2.1,
-          "peitoril": 0,
-          "liga": [
-            "quarto",
-            "banheiro"
-          ]
-        },
-        {
-          "id": "sala-cozinha-a",
-          "tipo": "vao",
-          "p1": [
-            5.4,
-            1.6
-          ],
-          "p2": [
-            5.4,
-            3.8
-          ],
-          "altura": 2.6,
-          "peitoril": 0,
-          "liga": [
-            "sala",
-            "cozinha"
-          ]
-        },
-        {
-          "id": "sala-cozinha-b",
-          "tipo": "vao",
-          "p1": [
-            5.4,
-            1.6
-          ],
-          "p2": [
-            6.6,
-            1.6
+            1.8,
+            6.26
           ],
           "altura": 2.6,
           "peitoril": 0,
@@ -703,12 +852,12 @@
           "id": "sala-varanda",
           "tipo": "vao",
           "p1": [
-            3.3,
-            3.8
+            1.8,
+            6.26
           ],
           "p2": [
-            5.4,
-            3.8
+            4.5,
+            6.26
           ],
           "altura": 2.4,
           "peitoril": 0,
@@ -721,12 +870,12 @@
           "id": "cozinha-varanda",
           "tipo": "vao",
           "p1": [
-            5.4,
-            3.8
+            0.85,
+            6.26
           ],
           "p2": [
-            6.6,
-            3.8
+            1.8,
+            6.26
           ],
           "altura": 2.4,
           "peitoril": 0,
@@ -734,19 +883,181 @@
             "cozinha",
             "varanda"
           ]
+        },
+        {
+          "id": "sala-circ",
+          "tipo": "vao",
+          "p1": [
+            4.8,
+            4.2
+          ],
+          "p2": [
+            4.8,
+            5.2
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "sala",
+            "circ"
+          ]
+        },
+        {
+          "id": "circ-lavabo",
+          "tipo": "porta",
+          "p1": [
+            5.2,
+            4.1
+          ],
+          "p2": [
+            6.05,
+            4.1
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "lavabo"
+          ]
+        },
+        {
+          "id": "circ-quarto",
+          "tipo": "porta",
+          "p1": [
+            6.4,
+            4.1
+          ],
+          "p2": [
+            7.25,
+            4.1
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "quarto"
+          ]
+        },
+        {
+          "id": "circ-suite1",
+          "tipo": "porta",
+          "p1": [
+            6.45,
+            5.3
+          ],
+          "p2": [
+            7.3,
+            5.3
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite1"
+          ]
+        },
+        {
+          "id": "circ-suite2",
+          "tipo": "porta",
+          "p1": [
+            7.4,
+            4.25
+          ],
+          "p2": [
+            7.4,
+            5.1
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite2"
+          ]
+        },
+        {
+          "id": "quarto-banheiro",
+          "tipo": "porta",
+          "p1": [
+            7.4,
+            3
+          ],
+          "p2": [
+            7.4,
+            3.85
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "quarto",
+            "banheiro"
+          ]
+        },
+        {
+          "id": "suite1-banho1",
+          "tipo": "porta",
+          "p1": [
+            7.4,
+            7.6
+          ],
+          "p2": [
+            7.4,
+            8.4
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite1",
+            "banho1"
+          ]
+        },
+        {
+          "id": "suite2-banho2",
+          "tipo": "porta",
+          "p1": [
+            9.5,
+            6.9
+          ],
+          "p2": [
+            10.3,
+            6.9
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "suite2",
+            "banho2"
+          ]
         }
       ],
       "janelas": [
         {
+          "id": "janela-suite1",
+          "tipo": "janela",
+          "p1": [
+            5.3,
+            8.6
+          ],
+          "p2": [
+            6.9,
+            8.6
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite1",
+            "exterior"
+          ]
+        },
+        {
           "id": "janela-quarto",
           "tipo": "janela",
           "p1": [
-            0.8,
-            5.2
+            8.9,
+            0.5
           ],
           "p2": [
-            2.4,
-            5.2
+            8.9,
+            2
           ],
           "altura": 1.3,
           "peitoril": 1,
@@ -756,15 +1067,87 @@
           ]
         },
         {
+          "id": "janela-suite2",
+          "tipo": "janela",
+          "p1": [
+            10.8,
+            4.9
+          ],
+          "p2": [
+            10.8,
+            6.3
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite2",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banheiro",
+          "tipo": "janela",
+          "p1": [
+            10.8,
+            3.3
+          ],
+          "p2": [
+            10.8,
+            3.9
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banheiro",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho1",
+          "tipo": "janela",
+          "p1": [
+            7.9,
+            9.5
+          ],
+          "p2": [
+            8.6,
+            9.5
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho2",
+          "tipo": "janela",
+          "p1": [
+            9.6,
+            9.5
+          ],
+          "p2": [
+            10.3,
+            9.5
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho2",
+            "exterior"
+          ]
+        },
+        {
           "id": "guarda-corpo",
           "tipo": "guarda-corpo",
           "p1": [
-            3.1,
-            5.2
+            0,
+            8.85
           ],
           "p2": [
-            6.6,
-            5.2
+            4.8,
+            8.85
           ],
           "altura": 2.6,
           "peitoril": 0,
@@ -776,88 +1159,72 @@
       ]
     },
     {
-      "id": "1q",
-      "nome": "1 quarto",
-      "quartos": 1,
-      "vagas": 1,
-      "mobiliado": true,
+      "id": "final-03",
+      "nome": "2 suítes",
+      "grupo": "2 suítes",
+      "descricao": "2 suítes, sendo 1 master",
+      "plantaImagem": "/referencias/plantas/final-03.jpg",
+      "quartos": 2,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "final-04",
+      "nome": "3 suítes",
+      "grupo": "3 suítes",
+      "descricao": "3 suítes",
+      "plantaImagem": "/referencias/plantas/final-04.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
+      "espelhoDe": "final-02",
       "comodos": [
         {
           "id": "sala",
-          "nome": "Sala",
+          "nome": "Living",
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              3.6,
+              10.8,
+              1.15
+            ],
+            [
+              9,
+              1.15
+            ],
+            [
+              9,
+              6.26
+            ],
+            [
+              6,
+              6.26
+            ],
+            [
+              6,
               0
             ],
             [
-              8.1,
+              10.8,
               0
-            ],
-            [
-              8.1,
-              1.8
-            ],
-            [
-              6.9,
-              1.8
-            ],
-            [
-              6.9,
-              4.1
-            ],
-            [
-              3.6,
-              4.1
             ]
           ],
-          "area": 15.69,
-          "fotoDecorado": "/referencias/03-sala-varanda.png",
+          "area": 20.85,
           "enquadramento": {
             "posicao": [
-              6.45,
+              6.75,
               1.6,
-              2.05
+              1.5
             ],
             "olhar": [
-              3.6,
-              1.48,
-              2.13
+              9.3,
+              1.3,
+              7.6
             ]
-          },
-          "splat": {
-            "desktop": "/splats/sala.spz",
-            "mobile": "/splats/sala-500k.spz",
-            "collider": "/splats/sala-collider.glb",
-            "spawn": [
-              6.45,
-              1.6,
-              2.05
-            ],
-            "olhar": [
-              3.6,
-              1.48,
-              2.13
-            ],
-            "areaSegura": {
-              "centro": [
-                6.45,
-                1.6,
-                2.05
-              ],
-              "raio": 1.6
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              6.45,
-              1.6,
-              2.05
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
           }
         },
         {
@@ -866,279 +1233,382 @@
           "piso": "porcelanato-cinza",
           "poligono": [
             [
-              6.9,
-              1.8
+              10.8,
+              6.26
             ],
             [
-              8.1,
-              1.8
+              9,
+              6.26
             ],
             [
-              8.1,
-              4.1
+              9,
+              1.15
             ],
             [
-              6.9,
-              4.1
+              10.8,
+              1.15
             ]
           ],
-          "area": 2.76,
-          "fotoDecorado": "/referencias/07-cozinha.png",
+          "area": 9.2,
           "enquadramento": {
             "posicao": [
-              4.8,
+              9.35,
               1.6,
-              2.05
+              5.95
             ],
             "olhar": [
-              8.1,
-              1.42,
-              2.3
+              8.3,
+              1.2,
+              0.6
             ]
-          },
-          "splat": {
-            "desktop": "/splats/sala.spz",
-            "mobile": "/splats/sala-500k.spz",
-            "collider": "/splats/sala-collider.glb",
-            "spawn": [
-              4.8,
-              1.6,
-              2.05
-            ],
-            "olhar": [
-              8.1,
-              1.42,
-              2.3
-            ],
-            "areaSegura": {
-              "centro": [
-                4.8,
-                1.6,
-                2.05
-              ],
-              "raio": 1.6
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              6.45,
-              1.6,
-              2.05
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
-        },
-        {
-          "id": "quarto",
-          "nome": "Quarto",
-          "piso": "porcelanato-cinza",
-          "poligono": [
-            [
-              0,
-              2.5
-            ],
-            [
-              3.6,
-              2.5
-            ],
-            [
-              3.6,
-              5.6
-            ],
-            [
-              0,
-              5.6
-            ]
-          ],
-          "area": 11.16,
-          "fotoDecorado": "/referencias/05-quarto.png",
-          "enquadramento": {
-            "posicao": [
-              3.25,
-              1.6,
-              4.05
-            ],
-            "olhar": [
-              0,
-              1.3,
-              4.05
-            ]
-          },
-          "splat": {
-            "desktop": "/splats/quarto.spz",
-            "mobile": "/splats/quarto-500k.spz",
-            "collider": "/splats/quarto-collider.glb",
-            "spawn": [
-              3.25,
-              1.6,
-              4.05
-            ],
-            "olhar": [
-              0,
-              1.3,
-              4.05
-            ],
-            "areaSegura": {
-              "centro": [
-                3.25,
-                1.6,
-                4.05
-              ],
-              "raio": 1.2
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              3.25,
-              1.6,
-              4.05
-            ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
-        },
-        {
-          "id": "banheiro",
-          "nome": "Banheiro",
-          "piso": "porcelanato-cinza",
-          "poligono": [
-            [
-              1.1,
-              0
-            ],
-            [
-              3.6,
-              0
-            ],
-            [
-              3.6,
-              2.5
-            ],
-            [
-              1.1,
-              2.5
-            ]
-          ],
-          "area": 6.25,
-          "fotoDecorado": "/referencias/04-banheiro.png",
-          "enquadramento": {
-            "posicao": [
-              2.7,
-              1.6,
-              2.15
-            ],
-            "olhar": [
-              2.7,
-              1.3,
-              0
-            ]
-          },
-          "splat": {
-            "desktop": "/splats/banheiro.spz",
-            "mobile": "/splats/banheiro-500k.spz",
-            "collider": "/splats/banheiro-collider.glb",
-            "spawn": [
-              2.7,
-              1.6,
-              2.15
-            ],
-            "olhar": [
-              2.7,
-              1.3,
-              0
-            ],
-            "areaSegura": {
-              "centro": [
-                2.7,
-                1.6,
-                2.15
-              ],
-              "raio": 0.9
-            }
-          },
-          "splatTransform": {
-            "posicao": [
-              2.7,
-              1.6,
-              2.15
-            ],
-            "rotacaoY": 0,
-            "escala": 1,
-            "rotacaoX": 180
           }
         },
         {
           "id": "varanda",
-          "nome": "Varanda",
+          "nome": "Varanda gourmet",
           "piso": "externo",
           "poligono": [
             [
-              3.6,
-              4.1
+              10.8,
+              8.85
             ],
             [
-              8.1,
-              4.1
+              6,
+              8.85
             ],
             [
-              8.1,
-              5.6
+              6,
+              6.26
             ],
             [
-              3.6,
-              5.6
+              10.8,
+              6.26
             ]
           ],
-          "area": 6.75,
-          "fotoDecorado": "/referencias/06-varanda.png",
+          "area": 12.43,
           "enquadramento": {
             "posicao": [
-              7.35,
+              6.7,
               1.6,
-              4.85
+              6.55
             ],
             "olhar": [
-              3.6,
-              1.35,
-              4.8
+              10.4,
+              0.9,
+              8.2
+            ]
+          }
+        },
+        {
+          "id": "quarto",
+          "nome": "Suíte master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6,
+              2.86
+            ],
+            [
+              4.55,
+              2.86
+            ],
+            [
+              4.55,
+              4.1
+            ],
+            [
+              3.4,
+              4.1
+            ],
+            [
+              3.4,
+              2.86
+            ],
+            [
+              1.9,
+              2.86
+            ],
+            [
+              1.9,
+              0
+            ],
+            [
+              6,
+              0
+            ]
+          ],
+          "area": 13.15,
+          "enquadramento": {
+            "posicao": [
+              2.2,
+              1.6,
+              2.15
+            ],
+            "olhar": [
+              5.9,
+              1.3,
+              1
+            ]
+          }
+        },
+        {
+          "id": "banheiro",
+          "nome": "Banho master",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.4,
+              4.1
+            ],
+            [
+              0,
+              4.1
+            ],
+            [
+              0,
+              2.86
+            ],
+            [
+              3.4,
+              2.86
+            ]
+          ],
+          "area": 4.22,
+          "enquadramento": {
+            "posicao": [
+              3.05,
+              1.6,
+              3.5
+            ],
+            "olhar": [
+              0.2,
+              1.15,
+              3.5
             ]
           },
-          "splat": {
-            "desktop": "/splats/varanda.spz",
-            "mobile": "/splats/varanda-500k.spz",
-            "collider": "/splats/varanda-collider.glb",
-            "spawn": [
-              7.35,
+          "semRender": true
+        },
+        {
+          "id": "circ",
+          "nome": "Circulação",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6,
+              5.3
+            ],
+            [
+              3.4,
+              5.3
+            ],
+            [
+              3.4,
+              4.1
+            ],
+            [
+              6,
+              4.1
+            ]
+          ],
+          "area": 3.12,
+          "enquadramento": {
+            "posicao": [
+              5.6,
               1.6,
-              4.85
+              4.7
             ],
             "olhar": [
-              3.6,
-              1.35,
-              4.8
-            ],
-            "areaSegura": {
-              "centro": [
-                7.35,
-                1.6,
-                4.85
-              ],
-              "raio": 1.1
-            }
+              3.5,
+              1.4,
+              4.7
+            ]
           },
-          "splatTransform": {
-            "posicao": [
-              7.35,
-              1.6,
-              4.85
+          "semRender": true
+        },
+        {
+          "id": "lavabo",
+          "nome": "Lavabo",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6,
+              4.1
             ],
-            "rotacaoY": 90,
-            "escala": 1,
-            "rotacaoX": 180
-          }
+            [
+              4.55,
+              4.1
+            ],
+            [
+              4.55,
+              2.86
+            ],
+            [
+              6,
+              2.86
+            ]
+          ],
+          "area": 1.8,
+          "enquadramento": {
+            "posicao": [
+              5.3,
+              1.6,
+              3.85
+            ],
+            "olhar": [
+              5.3,
+              1.1,
+              2.95
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite1",
+          "nome": "Suíte 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              6,
+              8.6
+            ],
+            [
+              3.4,
+              8.6
+            ],
+            [
+              3.4,
+              5.3
+            ],
+            [
+              6,
+              5.3
+            ]
+          ],
+          "area": 8.58,
+          "enquadramento": {
+            "posicao": [
+              3.8,
+              1.6,
+              5.7
+            ],
+            "olhar": [
+              5.8,
+              1,
+              7.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho1",
+          "nome": "Banho 1",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.4,
+              9.5
+            ],
+            [
+              1.7,
+              9.5
+            ],
+            [
+              1.7,
+              6.9
+            ],
+            [
+              3.4,
+              6.9
+            ]
+          ],
+          "area": 4.42,
+          "enquadramento": {
+            "posicao": [
+              2.55,
+              1.6,
+              7.2
+            ],
+            "olhar": [
+              2.55,
+              1.1,
+              9.3
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "suite2",
+          "nome": "Suíte 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              3.4,
+              6.9
+            ],
+            [
+              0,
+              6.9
+            ],
+            [
+              0,
+              4.1
+            ],
+            [
+              3.4,
+              4.1
+            ]
+          ],
+          "area": 9.52,
+          "enquadramento": {
+            "posicao": [
+              3,
+              1.6,
+              6.5
+            ],
+            "olhar": [
+              0.4,
+              1,
+              4.6
+            ]
+          },
+          "semRender": true
+        },
+        {
+          "id": "banho2",
+          "nome": "Banho 2",
+          "piso": "porcelanato-cinza",
+          "poligono": [
+            [
+              1.7,
+              9.5
+            ],
+            [
+              0,
+              9.5
+            ],
+            [
+              0,
+              6.9
+            ],
+            [
+              1.7,
+              6.9
+            ]
+          ],
+          "area": 4.42,
+          "enquadramento": {
+            "posicao": [
+              0.85,
+              1.6,
+              7.2
+            ],
+            "olhar": [
+              0.85,
+              1.1,
+              9.3
+            ]
+          },
+          "semRender": true
         }
       ],
       "portas": [
@@ -1146,11 +1616,11 @@
           "id": "entrada",
           "tipo": "porta",
           "p1": [
-            7.15,
+            10.65,
             0
           ],
           "p2": [
-            8,
+            9.75,
             0
           ],
           "altura": 2.1,
@@ -1161,33 +1631,159 @@
           ]
         },
         {
-          "id": "sala-quarto",
-          "tipo": "porta-correr",
+          "id": "sala-cozinha",
+          "tipo": "vao",
           "p1": [
-            3.6,
-            2.6
+            9,
+            2.9
           ],
           "p2": [
-            3.6,
-            3.35
+            9,
+            6.26
+          ],
+          "altura": 2.6,
+          "peitoril": 0,
+          "liga": [
+            "sala",
+            "cozinha"
+          ]
+        },
+        {
+          "id": "sala-varanda",
+          "tipo": "vao",
+          "p1": [
+            9,
+            6.26
+          ],
+          "p2": [
+            6.3,
+            6.26
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "sala",
+            "varanda"
+          ]
+        },
+        {
+          "id": "cozinha-varanda",
+          "tipo": "vao",
+          "p1": [
+            9.95,
+            6.26
+          ],
+          "p2": [
+            9,
+            6.26
+          ],
+          "altura": 2.4,
+          "peitoril": 0,
+          "liga": [
+            "cozinha",
+            "varanda"
+          ]
+        },
+        {
+          "id": "sala-circ",
+          "tipo": "vao",
+          "p1": [
+            6,
+            4.2
+          ],
+          "p2": [
+            6,
+            5.2
+          ],
+          "altura": 2.3,
+          "peitoril": 0,
+          "liga": [
+            "sala",
+            "circ"
+          ]
+        },
+        {
+          "id": "circ-lavabo",
+          "tipo": "porta",
+          "p1": [
+            5.6,
+            4.1
+          ],
+          "p2": [
+            4.75,
+            4.1
           ],
           "altura": 2.1,
           "peitoril": 0,
           "liga": [
-            "sala",
+            "circ",
+            "lavabo"
+          ]
+        },
+        {
+          "id": "circ-quarto",
+          "tipo": "porta",
+          "p1": [
+            4.4,
+            4.1
+          ],
+          "p2": [
+            3.55,
+            4.1
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
             "quarto"
           ]
         },
         {
-          "id": "quarto-banheiro",
+          "id": "circ-suite1",
           "tipo": "porta",
           "p1": [
-            2.8,
-            2.5
+            4.35,
+            5.3
           ],
           "p2": [
             3.5,
-            2.5
+            5.3
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite1"
+          ]
+        },
+        {
+          "id": "circ-suite2",
+          "tipo": "porta",
+          "p1": [
+            3.4,
+            4.25
+          ],
+          "p2": [
+            3.4,
+            5.1
+          ],
+          "altura": 2.1,
+          "peitoril": 0,
+          "liga": [
+            "circ",
+            "suite2"
+          ]
+        },
+        {
+          "id": "quarto-banheiro",
+          "tipo": "porta",
+          "p1": [
+            3.4,
+            3
+          ],
+          "p2": [
+            3.4,
+            3.85
           ],
           "altura": 2.1,
           "peitoril": 0,
@@ -1197,89 +1793,71 @@
           ]
         },
         {
-          "id": "sala-cozinha-a",
-          "tipo": "vao",
+          "id": "suite1-banho1",
+          "tipo": "porta",
           "p1": [
-            6.9,
-            1.8
+            3.4,
+            7.6
           ],
           "p2": [
-            6.9,
-            4.1
+            3.4,
+            8.4
           ],
-          "altura": 2.6,
+          "altura": 2.1,
           "peitoril": 0,
           "liga": [
-            "sala",
-            "cozinha"
+            "suite1",
+            "banho1"
           ]
         },
         {
-          "id": "sala-cozinha-b",
-          "tipo": "vao",
+          "id": "suite2-banho2",
+          "tipo": "porta",
           "p1": [
-            6.9,
-            1.8
+            1.3,
+            6.9
           ],
           "p2": [
-            8.1,
-            1.8
+            0.5,
+            6.9
           ],
-          "altura": 2.6,
+          "altura": 2.1,
           "peitoril": 0,
           "liga": [
-            "sala",
-            "cozinha"
-          ]
-        },
-        {
-          "id": "sala-varanda",
-          "tipo": "vao",
-          "p1": [
-            3.8,
-            4.1
-          ],
-          "p2": [
-            6.9,
-            4.1
-          ],
-          "altura": 2.4,
-          "peitoril": 0,
-          "liga": [
-            "sala",
-            "varanda"
-          ]
-        },
-        {
-          "id": "cozinha-varanda",
-          "tipo": "vao",
-          "p1": [
-            6.9,
-            4.1
-          ],
-          "p2": [
-            8.1,
-            4.1
-          ],
-          "altura": 2.4,
-          "peitoril": 0,
-          "liga": [
-            "cozinha",
-            "varanda"
+            "suite2",
+            "banho2"
           ]
         }
       ],
       "janelas": [
         {
+          "id": "janela-suite1",
+          "tipo": "janela",
+          "p1": [
+            5.5,
+            8.6
+          ],
+          "p2": [
+            3.9,
+            8.6
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite1",
+            "exterior"
+          ]
+        },
+        {
           "id": "janela-quarto",
           "tipo": "janela",
           "p1": [
-            0.8,
-            5.6
+            1.9,
+            0.5
           ],
           "p2": [
-            2.4,
-            5.6
+            1.9,
+            2
           ],
           "altura": 1.3,
           "peitoril": 1,
@@ -1289,15 +1867,87 @@
           ]
         },
         {
+          "id": "janela-suite2",
+          "tipo": "janela",
+          "p1": [
+            0,
+            4.9
+          ],
+          "p2": [
+            0,
+            6.3
+          ],
+          "altura": 1.3,
+          "peitoril": 1,
+          "liga": [
+            "suite2",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banheiro",
+          "tipo": "janela",
+          "p1": [
+            0,
+            3.3
+          ],
+          "p2": [
+            0,
+            3.9
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banheiro",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho1",
+          "tipo": "janela",
+          "p1": [
+            2.9,
+            9.5
+          ],
+          "p2": [
+            2.2,
+            9.5
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho1",
+            "exterior"
+          ]
+        },
+        {
+          "id": "janela-banho2",
+          "tipo": "janela",
+          "p1": [
+            1.2,
+            9.5
+          ],
+          "p2": [
+            0.5,
+            9.5
+          ],
+          "altura": 0.6,
+          "peitoril": 1.6,
+          "liga": [
+            "banho2",
+            "exterior"
+          ]
+        },
+        {
           "id": "guarda-corpo",
           "tipo": "guarda-corpo",
           "p1": [
-            3.6,
-            5.6
+            10.8,
+            8.85
           ],
           "p2": [
-            8.1,
-            5.6
+            6,
+            8.85
           ],
           "altura": 2.6,
           "peitoril": 0,
@@ -1307,928 +1957,1519 @@
           ]
         }
       ]
+    },
+    {
+      "id": "final-05",
+      "nome": "3 quartos",
+      "grupo": "3 quartos",
+      "descricao": "3 quartos, sendo 1 suíte",
+      "plantaImagem": "/referencias/plantas/final-05.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "final-06",
+      "nome": "2 suítes",
+      "grupo": "2 suítes",
+      "descricao": "2 suítes, sendo 1 master",
+      "plantaImagem": "/referencias/plantas/final-06.jpg",
+      "quartos": 2,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "garden",
+      "nome": "Garden",
+      "grupo": "Garden",
+      "descricao": "2 suítes, sendo 1 master (unidade Garden)",
+      "plantaImagem": "/referencias/plantas/garden.jpg",
+      "quartos": 2,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "cobertura-01",
+      "nome": "Cobertura",
+      "grupo": "Coberturas",
+      "descricao": "4 suítes, sendo 1 master",
+      "plantaImagem": "/referencias/plantas/cobertura.jpg",
+      "quartos": 4,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "cobertura-02",
+      "nome": "Cobertura",
+      "grupo": "Coberturas",
+      "descricao": "3 suítes, sendo 1 master",
+      "plantaImagem": "/referencias/plantas/cobertura.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
+    },
+    {
+      "id": "cobertura-03",
+      "nome": "Cobertura",
+      "grupo": "Coberturas",
+      "descricao": "3 suítes, sendo 1 master",
+      "plantaImagem": "/referencias/plantas/cobertura.jpg",
+      "quartos": 3,
+      "vagas": null,
+      "mobiliado": false,
+      "interior3d": false,
+      "comodos": [],
+      "portas": [],
+      "janelas": []
     }
   ],
   "unidades": [
     {
-      "numero": "101",
-      "andar": 1,
-      "posicao": 1,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 268000,
-      "aluguel": 1900,
-      "status": "disponivel"
-    },
-    {
-      "numero": "102",
-      "andar": 1,
-      "posicao": 2,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 334000,
-      "aluguel": 2350,
-      "status": "disponivel"
-    },
-    {
-      "numero": "103",
-      "andar": 1,
-      "posicao": 3,
-      "tipo": "studio",
-      "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 274000,
-      "aluguel": 1980,
-      "status": "disponivel"
-    },
-    {
-      "numero": "104",
-      "andar": 1,
-      "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 340000,
-      "aluguel": 2430,
-      "status": "disponivel"
-    },
-    {
-      "numero": "105",
-      "andar": 1,
-      "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 268000,
-      "aluguel": 1900,
-      "status": "reservada"
-    },
-    {
-      "numero": "106",
-      "andar": 1,
-      "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 334000,
-      "aluguel": 2350,
-      "status": "vendida"
-    },
-    {
-      "numero": "201",
-      "andar": 2,
-      "posicao": 1,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 270500,
-      "aluguel": 1930,
-      "status": "disponivel"
-    },
-    {
-      "numero": "202",
-      "andar": 2,
-      "posicao": 2,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 336500,
-      "aluguel": 2380,
-      "status": "reservada"
-    },
-    {
-      "numero": "203",
-      "andar": 2,
-      "posicao": 3,
-      "tipo": "studio",
-      "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 276500,
-      "aluguel": 2010,
-      "status": "vendida"
-    },
-    {
-      "numero": "204",
-      "andar": 2,
-      "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 342500,
-      "aluguel": 2460,
-      "status": "vendida"
-    },
-    {
-      "numero": "205",
-      "andar": 2,
-      "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 270500,
-      "aluguel": 1930,
-      "status": "disponivel"
-    },
-    {
-      "numero": "206",
-      "andar": 2,
-      "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 336500,
-      "aluguel": 2380,
-      "status": "disponivel"
-    },
-    {
-      "numero": "301",
-      "andar": 3,
-      "posicao": 1,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 273000,
-      "aluguel": 1960,
-      "status": "reservada"
-    },
-    {
-      "numero": "302",
-      "andar": 3,
-      "posicao": 2,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 339000,
-      "aluguel": 2410,
-      "status": "disponivel"
-    },
-    {
-      "numero": "303",
-      "andar": 3,
-      "posicao": 3,
-      "tipo": "studio",
-      "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 279000,
-      "aluguel": 2040,
-      "status": "alugada"
-    },
-    {
-      "numero": "304",
-      "andar": 3,
-      "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 345000,
-      "aluguel": 2490,
-      "status": "disponivel"
-    },
-    {
-      "numero": "305",
-      "andar": 3,
-      "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 273000,
-      "aluguel": 1960,
-      "status": "disponivel"
-    },
-    {
-      "numero": "306",
-      "andar": 3,
-      "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 339000,
-      "aluguel": 2410,
-      "status": "disponivel"
-    },
-    {
-      "numero": "401",
-      "andar": 4,
-      "posicao": 1,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 275500,
-      "aluguel": 1990,
-      "status": "alugada"
-    },
-    {
-      "numero": "402",
-      "andar": 4,
-      "posicao": 2,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 341500,
-      "aluguel": 2440,
-      "status": "disponivel"
-    },
-    {
-      "numero": "403",
-      "andar": 4,
-      "posicao": 3,
-      "tipo": "studio",
-      "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 281500,
-      "aluguel": 2070,
-      "status": "alugada"
-    },
-    {
-      "numero": "404",
-      "andar": 4,
-      "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 347500,
-      "aluguel": 2520,
-      "status": "reservada"
-    },
-    {
-      "numero": "405",
-      "andar": 4,
-      "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 275500,
-      "aluguel": 1990,
-      "status": "vendida"
-    },
-    {
-      "numero": "406",
-      "andar": 4,
-      "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 341500,
-      "aluguel": 2440,
-      "status": "reservada"
-    },
-    {
-      "numero": "501",
-      "andar": 5,
-      "posicao": 1,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 278000,
-      "aluguel": 2020,
-      "status": "disponivel"
-    },
-    {
-      "numero": "502",
-      "andar": 5,
-      "posicao": 2,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 344000,
-      "aluguel": 2470,
-      "status": "disponivel"
-    },
-    {
-      "numero": "503",
-      "andar": 5,
-      "posicao": 3,
-      "tipo": "studio",
-      "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 284000,
-      "aluguel": 2100,
-      "status": "disponivel"
-    },
-    {
-      "numero": "504",
-      "andar": 5,
-      "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 350000,
-      "aluguel": 2550,
-      "status": "disponivel"
-    },
-    {
-      "numero": "505",
-      "andar": 5,
-      "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 278000,
-      "aluguel": 2020,
-      "status": "vendida"
-    },
-    {
-      "numero": "506",
-      "andar": 5,
-      "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 344000,
-      "aluguel": 2470,
-      "status": "disponivel"
-    },
-    {
       "numero": "601",
       "andar": 6,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 280500,
-      "aluguel": 2050,
-      "status": "alugada"
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "602",
       "andar": 6,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 346500,
-      "aluguel": 2500,
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "603",
       "andar": 6,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 286500,
-      "aluguel": 2130,
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "604",
       "andar": 6,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 352500,
-      "aluguel": 2580,
-      "status": "reservada"
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "605",
       "andar": 6,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 280500,
-      "aluguel": 2050,
-      "status": "alugada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "606",
       "andar": 6,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 346500,
-      "aluguel": 2500,
-      "status": "reservada"
+      "tipo": "garden",
+      "fachada": "lateral",
+      "areaPrivativa": 97,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "701",
       "andar": 7,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 283000,
-      "aluguel": 2080,
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "702",
       "andar": 7,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 349000,
-      "aluguel": 2530,
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "703",
       "andar": 7,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 289000,
-      "aluguel": 2160,
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "704",
       "andar": 7,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 355000,
-      "aluguel": 2610,
-      "status": "alugada"
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
     },
     {
       "numero": "705",
       "andar": 7,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 283000,
-      "aluguel": 2080,
-      "status": "reservada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "706",
       "andar": 7,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 349000,
-      "aluguel": 2530,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "801",
       "andar": 8,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 285500,
-      "aluguel": 2110,
-      "status": "vendida"
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "802",
       "andar": 8,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 351500,
-      "aluguel": 2560,
-      "status": "reservada"
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "803",
       "andar": 8,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 291500,
-      "aluguel": 2190,
-      "status": "vendida"
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "804",
       "andar": 8,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 357500,
-      "aluguel": 2640,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "805",
       "andar": 8,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 285500,
-      "aluguel": 2110,
-      "status": "reservada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "806",
       "andar": 8,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 351500,
-      "aluguel": 2560,
-      "status": "vendida"
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "901",
       "andar": 9,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 288000,
-      "aluguel": 2140,
-      "status": "reservada"
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "902",
       "andar": 9,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 354000,
-      "aluguel": 2590,
-      "status": "reservada"
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "903",
       "andar": 9,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 294000,
-      "aluguel": 2220,
-      "status": "vendida"
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
     },
     {
       "numero": "904",
       "andar": 9,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 360000,
-      "aluguel": 2670,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "905",
       "andar": 9,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 288000,
-      "aluguel": 2140,
-      "status": "vendida"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "906",
       "andar": 9,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 354000,
-      "aluguel": 2590,
-      "status": "disponivel"
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
     },
     {
       "numero": "1001",
       "andar": 10,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 290500,
-      "aluguel": 2170,
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1002",
       "andar": 10,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 356500,
-      "aluguel": 2620,
-      "status": "vendida"
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
     },
     {
       "numero": "1003",
       "andar": 10,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 296500,
-      "aluguel": 2250,
-      "status": "alugada"
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
     },
     {
       "numero": "1004",
       "andar": 10,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 362500,
-      "aluguel": 2700,
-      "status": "reservada"
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
     },
     {
       "numero": "1005",
       "andar": 10,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 290500,
-      "aluguel": 2170,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1006",
       "andar": 10,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 356500,
-      "aluguel": 2620,
-      "status": "alugada"
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1101",
       "andar": 11,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 293000,
-      "aluguel": 2200,
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1102",
       "andar": 11,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 359000,
-      "aluguel": 2650,
-      "status": "alugada"
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1103",
       "andar": 11,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 299000,
-      "aluguel": 2280,
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1104",
       "andar": 11,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 365000,
-      "aluguel": 2730,
-      "status": "vendida"
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1105",
       "andar": 11,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 293000,
-      "aluguel": 2200,
-      "status": "reservada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1106",
       "andar": 11,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 359000,
-      "aluguel": 2650,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1201",
       "andar": 12,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 295500,
-      "aluguel": 2230,
-      "status": "alugada"
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1202",
       "andar": 12,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 361500,
-      "aluguel": 2680,
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1203",
       "andar": 12,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 301500,
-      "aluguel": 2310,
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1204",
       "andar": 12,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 367500,
-      "aluguel": 2760,
-      "status": "vendida"
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1205",
       "andar": 12,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 295500,
-      "aluguel": 2230,
-      "status": "reservada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
     },
     {
       "numero": "1206",
       "andar": 12,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 361500,
-      "aluguel": 2680,
-      "status": "disponivel"
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
     },
     {
       "numero": "1301",
       "andar": 13,
       "posicao": 1,
-      "tipo": "studio",
+      "tipo": "final-01",
       "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 298000,
-      "aluguel": 2260,
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1302",
       "andar": 13,
       "posicao": 2,
-      "tipo": "1q",
+      "tipo": "final-02",
       "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 364000,
-      "aluguel": 2710,
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1303",
       "andar": 13,
       "posicao": 3,
-      "tipo": "studio",
+      "tipo": "final-03",
       "fachada": "lateral",
-      "areaPrivativa": 32,
-      "preco": 304000,
-      "aluguel": 2340,
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1304",
       "andar": 13,
       "posicao": 4,
-      "tipo": "1q",
-      "fachada": "lateral",
-      "areaPrivativa": 41,
-      "preco": 370000,
-      "aluguel": 2790,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
     },
     {
       "numero": "1305",
       "andar": 13,
       "posicao": 5,
-      "tipo": "studio",
-      "fachada": "frente",
-      "areaPrivativa": 32,
-      "preco": 298000,
-      "aluguel": 2260,
-      "status": "alugada"
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
     },
     {
       "numero": "1306",
       "andar": 13,
       "posicao": 6,
-      "tipo": "1q",
-      "fachada": "frente",
-      "areaPrivativa": 41,
-      "preco": 364000,
-      "aluguel": 2710,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
       "status": "disponivel"
+    },
+    {
+      "numero": "1401",
+      "andar": 14,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1402",
+      "andar": 14,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1403",
+      "andar": 14,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1404",
+      "andar": 14,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1405",
+      "andar": 14,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1406",
+      "andar": 14,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1501",
+      "andar": 15,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1502",
+      "andar": 15,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1503",
+      "andar": 15,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1504",
+      "andar": 15,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1505",
+      "andar": 15,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1506",
+      "andar": 15,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1601",
+      "andar": 16,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1602",
+      "andar": 16,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1603",
+      "andar": 16,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1604",
+      "andar": 16,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1605",
+      "andar": 16,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1606",
+      "andar": 16,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1701",
+      "andar": 17,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "1702",
+      "andar": 17,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1703",
+      "andar": 17,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1704",
+      "andar": 17,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1705",
+      "andar": 17,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1706",
+      "andar": 17,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1801",
+      "andar": 18,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1802",
+      "andar": 18,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "1803",
+      "andar": 18,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1804",
+      "andar": 18,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1805",
+      "andar": 18,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1806",
+      "andar": 18,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1901",
+      "andar": 19,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "1902",
+      "andar": 19,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "1903",
+      "andar": 19,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "1904",
+      "andar": 19,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "1905",
+      "andar": 19,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "1906",
+      "andar": 19,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2001",
+      "andar": 20,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2002",
+      "andar": 20,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2003",
+      "andar": 20,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "2004",
+      "andar": 20,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2005",
+      "andar": 20,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2006",
+      "andar": 20,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2101",
+      "andar": 21,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2102",
+      "andar": 21,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2103",
+      "andar": 21,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2104",
+      "andar": 21,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
+    },
+    {
+      "numero": "2105",
+      "andar": 21,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2106",
+      "andar": 21,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2201",
+      "andar": 22,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2202",
+      "andar": 22,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2203",
+      "andar": 22,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2204",
+      "andar": 22,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2205",
+      "andar": 22,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2206",
+      "andar": 22,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2301",
+      "andar": 23,
+      "posicao": 1,
+      "tipo": "final-01",
+      "fachada": "frente",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2302",
+      "andar": 23,
+      "posicao": 2,
+      "tipo": "final-02",
+      "fachada": "frente",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2303",
+      "andar": 23,
+      "posicao": 3,
+      "tipo": "final-03",
+      "fachada": "lateral",
+      "areaPrivativa": 77,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2304",
+      "andar": 23,
+      "posicao": 4,
+      "tipo": "final-04",
+      "fachada": "fundos",
+      "areaPrivativa": 102,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2305",
+      "andar": 23,
+      "posicao": 5,
+      "tipo": "final-05",
+      "fachada": "fundos",
+      "areaPrivativa": 91,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2306",
+      "andar": 23,
+      "posicao": 6,
+      "tipo": "final-06",
+      "fachada": "lateral",
+      "areaPrivativa": 76,
+      "preco": null,
+      "aluguel": null,
+      "status": "disponivel"
+    },
+    {
+      "numero": "2401",
+      "andar": 24,
+      "posicao": 1,
+      "tipo": "cobertura-01",
+      "fachada": "frente",
+      "areaPrivativa": 193,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2402",
+      "andar": 24,
+      "posicao": 2,
+      "tipo": "cobertura-02",
+      "fachada": "fundos",
+      "areaPrivativa": 177,
+      "preco": null,
+      "aluguel": null,
+      "status": "vendida"
+    },
+    {
+      "numero": "2403",
+      "andar": 24,
+      "posicao": 3,
+      "tipo": "cobertura-03",
+      "fachada": "fundos",
+      "areaPrivativa": 170,
+      "preco": null,
+      "aluguel": null,
+      "status": "reservada"
     }
   ],
   "textos": {
-    "h1": "Studios mobiliados no Saraiva, Uberlândia",
-    "chamada": "Escolha a sua unidade na fachada, entre no apartamento e veja o sol em cada horário.",
-    "conceitoTitulo": "Live Connect: morar conectado",
-    "conceitoTexto": "Apartamentos compactos e entregues mobiliados, com tudo o que o dia a dia pede a poucos passos: trabalho, café, lavanderia e lazer na cobertura.",
-    "conceito1Titulo": "Conectado",
-    "conceito1Texto": "Coworking e coffee living no térreo e a cidade na porta.",
-    "conceito2Titulo": "Prático",
-    "conceito2Texto": "Portaria 24 h, dois elevadores e lavanderia compartilhada.",
-    "conceito3Titulo": "Mobiliado",
-    "conceito3Texto": "Marcenaria, iluminação e eletros prontos para morar ou alugar.",
-    "decoradoTitulo": "O decorado",
-    "decoradoTexto": "Madeira clara em relevo, grafite e luz quente. Estas são as imagens oficiais do projeto de interiores.",
-    "lazerTitulo": "Lazer e serviços",
-    "lazerTexto": "Do térreo à cobertura, espaços para trabalhar, receber e descansar.",
+    "h1": "Apartamentos de 76 a 193 m² no Parque Sul Karaíba, Uberlândia",
+    "chamada": "Escolha a unidade na fachada, veja a planta oficial e entre no apartamento em 3D.",
+    "conceitoTitulo": "Living e Working na mesma torre",
+    "conceitoTexto": "O Liwo é o primeiro empreendimento de uso misto da Maxi em Uberlândia. A torre reúne apartamentos e salas comerciais, com acessos independentes para quem mora e para quem trabalha, e fachada ativa no térreo.",
+    "conceito1Titulo": "Living",
+    "conceito1Texto": "Apartamentos de 76 a 193 m², com 1 a 4 suítes, do 6º ao 24º pavimento.",
+    "conceito2Titulo": "Working",
+    "conceito2Texto": "Salas comerciais de 34 a 78 m², nos pavimentos 1 a 4.",
+    "conceito3Titulo": "Lazer",
+    "conceito3Texto": "921 m² de lazer no 5º pavimento, com piscina, academia, coworking e quadra de pickleball.",
+    "decoradoTitulo": "Interiores",
+    "decoradoTexto": "Imagens oficiais do projeto de interiores, de Aline Borges. No 3D, o apartamento de 102 m² segue a planta oficial e estas imagens.",
+    "lazerTitulo": "Lazer no 5º pavimento",
+    "lazerTexto": "São 921,38 m² de área de lazer. As imagens são as oficiais do empreendimento.",
     "localizacaoTitulo": "Localização",
-    "localizacaoTexto": "Entre o Saraiva e o Santa Maria, perto da UFU e das principais avenidas de Uberlândia.",
-    "incorporadoraTitulo": "ZP Empreendimentos",
-    "incorporadoraTexto": "A ZP Empreendimentos assina o Live ZP Connect. Fale com a equipe comercial para conhecer o projeto, as condições e a disponibilidade.",
-    "contatoTitulo": "Agende uma visita",
-    "contatoTexto": "Deixe seu contato e continue a conversa no WhatsApp.",
-    "avisoLegal": "Imagens meramente ilustrativas. Valores, metragens, plantas e disponibilidade exibidos neste site são de demonstração e dependem de confirmação da incorporadora."
+    "localizacaoTexto": "No Parque Sul Karaíba, uma região cercada por áreas verdes, serviços e conveniências.",
+    "incorporadoraTitulo": "Maxi Construtora e Incorporadora",
+    "incorporadoraTexto": "Fundada em 2010, a Maxi planeja, constrói e gerencia projetos imobiliários de alto padrão em Uberlândia. Faz parte do Grupo Bold.",
+    "contatoTitulo": "Fale com a equipe comercial",
+    "contatoTexto": "Deixe seu contato e continue a conversa no WhatsApp da Maxi.",
+    "avisoLegal": "Protótipo de proposta comercial. Não é o site oficial do empreendimento. Imagens, plantas, metragens, lazer, obra e ficha técnica: divulgação Maxi Construtora (construtoramaxi.com.br, consultado em 11/11/2026). A disponibilidade, a numeração das unidades e a orientação solar são de demonstração e dependem de confirmação da incorporadora. O prédio e o apartamento em 3D são representações aproximadas, feitas a partir das plantas e imagens oficiais."
   },
   "localizacao": {
-    "bairro": "Saraiva / Santa Maria",
+    "bairro": "Parque Sul Karaíba",
     "cidade": "Uberlândia",
     "uf": "MG",
-    "pontos": [
-      {
-        "nome": "UFU – Campus Santa Mônica",
-        "tempo": "a confirmar",
-        "confirmado": false
-      },
-      {
-        "nome": "Center Shopping",
-        "tempo": "a confirmar",
-        "confirmado": false
-      },
-      {
-        "nome": "Av. João Naves de Ávila",
-        "tempo": "a confirmar",
-        "confirmado": false
-      },
-      {
-        "nome": "Av. Rondon Pacheco",
-        "tempo": "a confirmar",
-        "confirmado": false
-      }
-    ]
+    "mapaEmbedUrl": "https://www.google.com/maps?q=Rua+Jo%C3%A3o+Severiano+Rodrigues+da+Cunha,+1855,+Uberl%C3%A2ndia+-+MG&output=embed",
+    "pontos": []
   },
   "demonstracao": {
     "ativo": true,
     "campos": [
-      "endereco",
-      "orientacaoNorteGraus",
-      "andares",
-      "tipos (plantas e metragens)",
-      "unidades (preço, aluguel, status, área)",
-      "terreo e cobertura (lazer)",
-      "localizacao.pontos"
+      "disponibilidade das unidades",
+      "numeração das unidades",
+      "orientação solar da fachada",
+      "preços (não informados)"
     ]
+  },
+  "fonte": {
+    "nome": "Maxi Construtora",
+    "url": "https://construtoramaxi.com.br/projetos/liwo/",
+    "consultadoEm": "11/11/2026"
+  },
+  "galeria": [
+    {
+      "src": "/referencias/fachada-diagonal.jpg",
+      "alt": "Fachada do Liwo vista em diagonal, com as varandas em onda e o embasamento comercial",
+      "larg": 860,
+      "alt2": 1080
+    },
+    {
+      "src": "/referencias/fachada-frontal.jpg",
+      "alt": "Fachada frontal do Liwo, com 24 pavimentos",
+      "larg": 860,
+      "alt2": 1080
+    },
+    {
+      "src": "/referencias/fachada-lazer.jpg",
+      "alt": "Detalhe das varandas e do pavimento de lazer ao anoitecer",
+      "larg": 1080,
+      "alt2": 691
+    },
+    {
+      "src": "/referencias/fachada-embasamento.jpg",
+      "alt": "Embasamento do Liwo: térreo com fachada ativa e quatro pavimentos de salas comerciais",
+      "larg": 1080,
+      "alt2": 691
+    },
+    {
+      "src": "/referencias/aereo.jpg",
+      "alt": "Vista aérea do Liwo no Parque Sul Karaíba, cercado por áreas verdes",
+      "larg": 1080,
+      "alt2": 607
+    }
+  ],
+  "comercial": {
+    "titulo": "Working: salas de 34 a 78 m²",
+    "texto": "Quatro pavimentos de salas comerciais, com lobby e acesso independentes do residencial.",
+    "itens": [
+      "Pavimento 1: salas de 34 a 62 m²",
+      "Pavimentos 2 e 3: salas de 34 a 68 m²",
+      "Pavimento 4: salas de 34 a 78 m²"
+    ],
+    "fotos": [
+      {
+        "src": "/referencias/lazer/lobby-comercial.jpg",
+        "alt": "Lobby comercial do Liwo",
+        "larg": 1080,
+        "alt2": 692,
+        "rotulo": "Lobby comercial"
+      },
+      {
+        "src": "/referencias/lazer/sala-comercial.jpg",
+        "alt": "Sala comercial do Liwo",
+        "larg": 1080,
+        "alt2": 692,
+        "rotulo": "Sala comercial"
+      },
+      {
+        "src": "/referencias/lazer/lobby-residencial.jpg",
+        "alt": "Lobby residencial do Liwo",
+        "larg": 1080,
+        "alt2": 692,
+        "rotulo": "Lobby residencial"
+      }
+    ]
+  },
+  "obra": {
+    "geral": 17,
+    "conclusao": "05/2029",
+    "etapas": [
+      {
+        "nome": "Preparo do terreno",
+        "pct": 100
+      },
+      {
+        "nome": "Fundação",
+        "pct": 100
+      },
+      {
+        "nome": "Estrutura",
+        "pct": 14
+      },
+      {
+        "nome": "Alvenaria",
+        "pct": 2
+      },
+      {
+        "nome": "Instalações",
+        "pct": 0
+      },
+      {
+        "nome": "Acabamento",
+        "pct": 0
+      }
+    ]
+  },
+  "ficha": [
+    {
+      "rotulo": "Arquitetura",
+      "valor": "Crosara Arquitetura"
+    },
+    {
+      "rotulo": "Interiores",
+      "valor": "Aline Borges"
+    },
+    {
+      "rotulo": "Pavimentos",
+      "valor": "24"
+    },
+    {
+      "rotulo": "Área do terreno",
+      "valor": "3.200,58 m²"
+    },
+    {
+      "rotulo": "Área total construída",
+      "valor": "23.237,29 m²"
+    },
+    {
+      "rotulo": "Área de lazer total",
+      "valor": "921,38 m²"
+    },
+    {
+      "rotulo": "Vagas de garagem",
+      "valor": "1 a 3 vagas"
+    },
+    {
+      "rotulo": "Níveis de garagem",
+      "valor": "Subsolo -2, Subsolo -1 e Térreo"
+    }
+  ],
+  "historico": [
+    {
+      "ano": "2017",
+      "nomes": "Vicenza"
+    },
+    {
+      "ano": "2018",
+      "nomes": "Provence"
+    },
+    {
+      "ano": "2020",
+      "nomes": "Absoluto e Concept"
+    },
+    {
+      "ano": "2023",
+      "nomes": "Essenza e Splendor"
+    },
+    {
+      "ano": "2024",
+      "nomes": "You"
+    },
+    {
+      "ano": "2026",
+      "nomes": "Grecco e Garnet"
+    },
+    {
+      "ano": "2027",
+      "nomes": "Leván"
+    }
+  ],
+  "proposta": {
+    "autor": "Bernardo Oliveira",
+    "aviso": "Protótipo de proposta para a Maxi · não é o site oficial"
   }
 }
