@@ -1,7 +1,7 @@
 # Créditos dos modelos 3D de mobiliário
 
 Arquivos em `public/modelos/` (GLB com compressão meshopt e texturas WebP), usados no passeio dos
-apartamentos de planta final 01, 03, 05 e 06. Todos permitem uso comercial.
+apartamentos de todas as plantas-tipo. Todos permitem uso comercial.
 Os modelos do Sketchfab foram obtidos pelo espelho público Objaverse (Allen Institute for AI), sob a licença original de cada autor.
 
 | Arquivo | Modelo original | Autor | Licença | Adaptações |
@@ -25,14 +25,17 @@ Os modelos do Sketchfab foram obtidos pelo espelho público Objaverse (Allen Ins
 | `planta-pequena.glb` | [potted_plant_04](https://polyhaven.com/a/potted_plant_04) | Poly Haven | CC0 | malha simplificada, texturas a 512 px |
 | `vaso-a.glb` | [ceramic_vase_02](https://polyhaven.com/a/ceramic_vase_02) | Poly Haven | CC0 | malha simplificada, texturas a 256 px |
 | `vaso-b.glb` | [ceramic_vase_04](https://polyhaven.com/a/ceramic_vase_04) | Poly Haven | CC0 | malha simplificada, texturas a 256 px |
+| `sofa-bege.glb`, `sofa-cinza.glb` | [GlamVelvetSofa](https://github.com/KhronosGroup/glTF-Sample-Assets/tree/main/Models/GlamVelvetSofa) | © 2022 Wayfair, LLC | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | variantes Champagne e Gray, malha simplificada, texturas a 1024 px; ajustado ao comprimento do sofá de cada planta |
+| `poltrona.glb` | [modern_arm_chair_01](https://polyhaven.com/a/modern_arm_chair_01) | Poly Haven | CC0 | malha simplificada, texturas a 512 px |
+| `poltrona-couro.glb` | [mid_century_lounge_chair](https://polyhaven.com/a/mid_century_lounge_chair) | Poly Haven | CC0 | malha simplificada, texturas a 512 px (preparada, ainda não usada) |
+| `mesa-centro-ret.glb` | [modern_coffee_table_01](https://polyhaven.com/a/modern_coffee_table_01) | Poly Haven | CC0 | malha simplificada, texturas a 512 px (preparada, ainda não usada) |
 
 A CC BY 4.0 exige crédito ao autor e indicação de que houve alterações: o crédito está no rodapé do site.
 O roteiro de preparação está em `scripts/otimizar-modelos.mjs` (usa `@gltf-transform`, `meshoptimizer` e
 `sharp`, instalados à parte; não são dependências do site).
 
 Ainda gerados por código (sem modelo livre aprovado até aqui): armários e marcenaria, bancadas, cooktop,
-cubas e box dos banhos, mesas da varanda, sofás e mesas dos finais 03 e 06, e todo o mobiliário
-dos finais 02 e 04 (que segue os renders oficiais).
+box dos banhos, mesas da varanda e parte do mobiliário dos finais 02 e 04 (que segue os renders oficiais).
 
 ## Texturas
 

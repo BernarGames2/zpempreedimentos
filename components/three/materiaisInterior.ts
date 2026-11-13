@@ -93,7 +93,8 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       // forro bege claro dos renders (recebe só a luz rebatida do piso: mais claro que a cor "real")
       teto: std({ color: "#f0e6d3", roughness: 0.96 }),
       madeiraClara: foto("carvalho", 1.1, { color: "#f1e6d6" }),
-      madeiraNatural: foto("okoume", 1.1, { color: "#c2a07c" }),
+      // nogueira média (a lâmina de okoume com o tom antigo saía alaranjada demais, "de brinquedo")
+      madeiraNatural: foto("okoume", 1.1, { color: "#a8957f" }),
       marmore: tex(ladrilho(texMarmore("branco", ["#e9e7e3", "#f6f5f2"], "#8d8a86"), 1.6), { roughness: 0.18, metalness: 0.02 }),
       marmoreVerde: tex(ladrilho(texMarmore("verde", ["#5f7a62", "#86a088"], "#e3ece2"), 0.9), { roughness: 0.2 }),
       pedraBranca: std({ color: "#f1efea", roughness: 0.3 }),

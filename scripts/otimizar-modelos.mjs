@@ -33,6 +33,12 @@ const lista = [
   { id: "bacia", src: "sf/bacia.glb", tex: 512, razao: 0.6, erro: 0.003 },
   { id: "geladeira", src: "sf/geladeira.glb", tex: 512 },
   { id: "lavadora", src: "sf/lavadora.glb", tex: 512, razao: 0.6, erro: 0.003, metalRough: true },
+  // sala dos finais 02, 03 e 06 (antes, sofás e poltronas gerados por código)
+  { id: "sofa-bege", src: "bruto/GlamVelvetSofa/GlamVelvetSofa.glb", tex: 1024, variante: "Champagne", razao: 0.5, erro: 0.002 },
+  { id: "sofa-cinza", src: "bruto/GlamVelvetSofa/GlamVelvetSofa.glb", tex: 1024, variante: "Gray", tom: 0.8, razao: 0.5, erro: 0.002 },
+  { id: "poltrona", src: "bruto/modern_arm_chair_01/modern_arm_chair_01.gltf", tex: 512, razao: 0.4, erro: 0.003 },
+  { id: "poltrona-couro", src: "bruto/mid_century_lounge_chair/mid_century_lounge_chair.gltf", tex: 512, razao: 0.4, erro: 0.003 },
+  { id: "mesa-centro-ret", src: "bruto/modern_coffee_table_01/modern_coffee_table_01.gltf", tex: 512, razao: 0.5, erro: 0.002 },
 ].filter((m) => !process.env.SO || process.env.SO.split(",").includes(m.id));
 const tri = (doc) => doc.getRoot().listMeshes().flatMap((m) => m.listPrimitives()).reduce((s, p) => s + (p.getIndices()?.getCount() ?? p.getAttribute("POSITION").getCount()) / 3, 0);
 const resumo = fs.existsSync("resumo.json") ? JSON.parse(fs.readFileSync("resumo.json", "utf8")) : {};

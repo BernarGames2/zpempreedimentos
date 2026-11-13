@@ -18,6 +18,10 @@ export interface Casa extends Volume { telhado: 0 | 1 | 2; corTelhado: number }
 export interface Arvore { x: number; z: number; escala: number; especie: Especie; tom: number; giro: number }
 export interface Poste { x: number; z: number; giro: number }
 export interface Piscina { x: number; z: number; larg: number; prof: number }
+/** Muro ou portão de frente de lote (caixa alinhada, `cor` 0–4 muro, 5 portão de metal). */
+export interface Muro { x: number; z: number; larg: number; prof: number; alt: number; cor: number }
+/** Carro parado junto ao meio-fio ou andando na faixa. */
+export interface Carro { x: number; z: number; giro: number; cor: number }
 
 export interface Entorno {
   quadras: Quadra[];
@@ -27,6 +31,8 @@ export interface Entorno {
   arvores: Arvore[];
   postes: Poste[];
   piscinas: Piscina[];
+  muros: Muro[];
+  carros: Carro[];
   /** Metade do lado do quadrado coberto pela textura do chão (m). */
   meioLado: number;
 }
@@ -157,6 +163,8 @@ export function gerarEntorno(): Entorno {
   const casas: Casa[] = [];
   const arvores: Arvore[] = [];
   const piscinas: Piscina[] = [];
+  const muros: Muro[] = [];
+  const carros: Carro[] = [];
   const lote = P.lote;
   const livreDoLiwo = (x: number, z: number, m: number) => !dentro(x, z, lote, m) && !dentro(x, z, LIVRE);
   const arvore = (x: number, z: number, especie: Especie, escala: number, rr: () => number) => {
@@ -178,7 +186,8 @@ export function gerarEntorno(): Entorno {
       const loteL = alto ? 20 : 12;
       const n = Math.floor(W / loteL);
       const sobra = (W - n * loteL) / 2;
-      if (alto && rr() < 0.4) {
+      const condominio = alto && rr() < 0.4;
+      if (condominio) {
         // condomínio horizontal fechado: muro claro em volta da quadra
         const [mx, mz] = [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2];
         predios.push({ x: mx, z: q.z0 + 0.15, larg: W, prof: 0.3, alt: 2.8, giro: 0, cor: 7 }, { x: mx, z: q.z1 - 0.15, larg: W, prof: 0.3, alt: 2.8, giro: 0, cor: 7 });
@@ -197,6 +206,20 @@ export function gerarEntorno(): Entorno {
           const alt = doisAndares ? 6.2 + rr() * 0.8 : 3.1 + rr() * 0.6;
           const tt = rr();
           casas.push({ x: cx + (rr() - 0.5) * 1.2, z: cz, larg, prof, alt, giro: 0, cor: Math.floor(rr() * 6), telhado: tt < 0.38 ? 0 : tt < 0.72 ? 1 : 2, corTelhado: Math.floor(rr() * 3) });
+          // muro e portão na frente do lote (fora dos condomínios), como nas ruas de Uberlândia
+          const zf = lado === 0 ? q.z0 + 0.1 : q.z1 - 0.1;
+          if (!condominio) {
+            const x0 = cx - loteL / 2 + 0.05;
+            const x1 = cx + loteL / 2 - 0.05;
+            const g0 = x1 - 3.6; // portão de garagem (3 m) perto da divisa
+            const altM = 1.9 + rr() * 0.6;
+            const corM = Math.floor(rr() * 5);
+            muros.push({ x: (x0 + g0) / 2, z: zf, larg: g0 - x0, prof: 0.16, alt: altM, cor: corM });
+            muros.push({ x: (g0 + 3 + x1) / 2, z: zf, larg: x1 - g0 - 3, prof: 0.16, alt: altM, cor: corM });
+            muros.push({ x: g0 + 1.5, z: zf, larg: 3, prof: 0.06, alt: altM - 0.1, cor: 5 });
+          }
+          // carro parado na rua, junto ao meio-fio da frente do lote
+          if (rr() < (alto ? 0.3 : 0.4)) carros.push({ x: cx + (rr() - 0.5) * 4, z: lado === 0 ? q.z0 - CALCADA - 1.15 : q.z1 + CALCADA + 1.15, giro: rr() < 0.5 ? 0 : Math.PI, cor: Math.floor(rr() * 7) });
           if (rr() < (alto ? 0.55 : 0.3)) arvore(cx + (rr() < 0.5 ? -loteL * 0.38 : loteL * 0.38), lado === 0 ? q.z0 + 2.2 : q.z1 - 2.2, rr() < 0.4 ? "palmeira" : "copa", 0.7 + rr() * 0.35, rr);
           if (rr() < 0.14) arvore(cx + (rr() - 0.5) * 6, (q.z0 + q.z1) / 2 + (rr() - 0.5) * 8, "copa", 0.8 + rr() * 0.4, rr);
         }
@@ -319,6 +342,25 @@ export function gerarEntorno(): Entorno {
       postes.push({ x: xx, z, giro: lado > 0 ? -Math.PI / 2 : Math.PI / 2 });
     }
   }
+  // carros andando nas ruas perto do Liwo (mão dupla: cada sentido na sua faixa)
+  for (const v of vias) {
+    if (!v.faixa) continue;
+    const comp = v.eixo === "x" ? v.x1 - v.x0 : v.z1 - v.z0;
+    const [mx, mz] = [(v.x0 + v.x1) / 2, (v.z0 + v.z1) / 2];
+    if (Math.hypot(mx, mz) > 420) continue;
+    const n = Math.floor(comp / 45);
+    for (let i = 0; i < n; i++) {
+      if (r() < 0.55) continue;
+      const t = (i + 0.2 + r() * 0.6) / Math.max(n, 1);
+      const lado = r() < 0.5 ? -1 : 1;
+      // o carro é modelado ao longo de x (frente em +x)
+      if (v.eixo === "x") carros.push({ x: v.x0 + comp * t, z: mz + lado * 2.4, giro: lado < 0 ? 0 : Math.PI, cor: Math.floor(r() * 7) });
+      else carros.push({ x: mx + lado * 2.4, z: v.z0 + comp * t, giro: lado < 0 ? -Math.PI / 2 : Math.PI / 2, cor: Math.floor(r() * 7) });
+    }
+  }
+  // nada de carro na frente do Liwo nem em volta da câmera da introdução
+  const carrosLivres = carros.filter((c) => livreDoLiwo(c.x, c.z, 6));
+
   // as quatro árvores de calçada dos renders, em frente ao Liwo
   for (const x of [-16, -4, 8, 22]) arvores.push({ x, z: lote.z1 + 3.2, especie: "copa", escala: 0.55, tom: 0.5, giro: x });
 
@@ -343,5 +385,5 @@ export function gerarEntorno(): Entorno {
     predios.push({ x, z, larg: 16 + r() * 16, prof: 14 + r() * 14, alt: 18 + Math.pow(r(), 2) * 60, giro: r() * Math.PI, cor: CORES_TORRE[Math.floor(r() * CORES_TORRE.length)] as number });
   }
 
-  return { quadras, vias, predios, casas, arvores, postes, piscinas, meioLado: lim };
+  return { quadras, vias, predios, casas, arvores, postes, piscinas, muros, carros: carrosLivres, meioLado: lim };
 }

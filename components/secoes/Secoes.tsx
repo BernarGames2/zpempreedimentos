@@ -235,7 +235,7 @@ export function Secoes() {
             Modelos 3D de mobiliário, adaptados, sob{" "}
             <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">CC BY 4.0</a>
             : sofá de AleixoAlonso, cama de casal de BertO, cama de solteiro de Mifu Saja, cadeira de MaX3Dd, mesa de jantar de ariy400, bacia de HippoStance, geladeira de Glowbox 3D, lavadora de Francesco Coldesina, cooktop de allenbranch, cuba de banho de Andrew.Mischenko e cuba de cozinha de 3DJeff (Sketchfab);
-            luminária © Wayfair, LLC (Khronos glTF Sample Assets). Demais peças de{" "}
+            luminária e sofás curvos © Wayfair, LLC (Khronos glTF Sample Assets). Demais peças de{" "}
             <a href="https://polyhaven.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-ambar-claro">Poly Haven</a> (CC0).
           </p>
         </div>

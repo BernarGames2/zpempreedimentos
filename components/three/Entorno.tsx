@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import * as THREE from "three";
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { toquePrincipal } from "@/lib/controles";
 import { memo, tela, textura } from "@/lib/procedural/canvas";
@@ -333,6 +334,40 @@ function materialMata(): THREE.MeshStandardMaterial {
   };
   return m;
 }
+
+// ───────────────────────── carros e muros ─────────────────────────
+
+/**
+ * Carro de passeio genérico (4,3 × 1,8 m, frente em +x): carroceria arredondada, cabine com vidro escuro e
+ * rodas. Cor por vértice (a carroceria branca recebe a cor de cada instância; vidro e pneus continuam escuros).
+ */
+function geoCarro(): THREE.BufferGeometry {
+  const pintar = (g0: THREE.BufferGeometry, cor: string) => {
+    // todas sem índice (a caixa arredondada não tem; o cilindro tem) para poderem ser fundidas
+    const g = g0.index ? g0.toNonIndexed() : g0;
+    if (g !== g0) g0.dispose();
+    const c = new THREE.Color(cor);
+    const n = g.attributes.position!.count;
+    const a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) a.set([c.r, c.g, c.b], i * 3);
+    g.setAttribute("color", new THREE.BufferAttribute(a, 3));
+    g.deleteAttribute("uv");
+    return g;
+  };
+  const corpo = pintar(new RoundedBoxGeometry(4.3, 0.72, 1.78, 2, 0.16).translate(0, 0.62, 0), "#ffffff");
+  const capo = pintar(new RoundedBoxGeometry(1.2, 0.12, 1.7, 1, 0.05).translate(1.45, 0.98, 0), "#ffffff");
+  const cabine = pintar(new RoundedBoxGeometry(2.3, 0.56, 1.62, 2, 0.14).translate(-0.25, 1.22, 0), "#16191d");
+  const teto = pintar(new RoundedBoxGeometry(1.9, 0.08, 1.56, 1, 0.04).translate(-0.3, 1.48, 0), "#ffffff");
+  const rodas = [-1.38, 1.38].flatMap((x) => [-0.8, 0.8].map((z) => pintar(new THREE.CylinderGeometry(0.33, 0.33, 0.24, 14).rotateX(Math.PI / 2).translate(x, 0.33, z), "#141414")));
+  const g = mergeGeometries([corpo, capo, cabine, teto, ...rodas], false) as THREE.BufferGeometry;
+  [corpo, capo, cabine, teto, ...rodas].forEach((x) => x.dispose());
+  return g;
+}
+
+/** Cores comuns de carro no Brasil (branco, prata, preto e cinza dominam). */
+const CORES_CARRO = ["#f2f2f0", "#c9ccd0", "#1d1f22", "#8a8d91", "#f2f2f0", "#7a1d1d", "#2c3f5a"];
+/** Muros: pintados em tons claros; o último índice é o portão de metal escuro. */
+const CORES_MURO = ["#e8e3d8", "#d9cdb8", "#c8c4bb", "#efe9dc", "#b9ae9c", "#2f2f30"];
 
 // ───────────────────────── materiais ─────────────────────────
 
@@ -871,6 +906,12 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
     g.add(instancias(caixa, fachada, lajes.map((c) => mtx(c.x, c.alt, c.z, c.larg + 0.3, 0.5, c.prof + 0.3)), lajes.map((c) => new THREE.Color(PALETA[c.cor % PALETA.length]))));
     const agua = guardar(new THREE.MeshStandardMaterial({ color: "#3aa2c6", roughness: 0.12, emissive: "#0d6f8f", emissiveIntensity: 0 }));
     g.add(instancias(guardar(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2)), agua, e.piscinas.map((p) => mtx(p.x, 0.02, p.z, p.larg, 1, p.prof))));
+
+    // muros e portões na frente dos lotes; carros parados e andando
+    const matMuro = guardar(new THREE.MeshStandardMaterial({ roughness: 0.9 }));
+    g.add(instancias(caixa, matMuro, e.muros.map((m) => mtx(m.x, 0, m.z, m.larg, m.alt, m.prof)), e.muros.map((m) => new THREE.Color(CORES_MURO[m.cor % CORES_MURO.length])), true));
+    const matCarro = guardar(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.32, metalness: 0.35 }));
+    g.add(instancias(guardar(geoCarro()), matCarro, e.carros.map((c) => mtx(c.x, 0, c.z, 1, 1, 1, c.giro)), e.carros.map((c) => new THREE.Color(CORES_CARRO[c.cor % CORES_CARRO.length])), true));
 
     // árvores por espécie, em dois níveis de detalhe
     const matArvore = guardar(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }));

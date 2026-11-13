@@ -108,7 +108,7 @@ const final01 = {
 // A cozinha e a área de serviço são integradas ao living (a planta não as separa).
 const final03 = {
   comodos: [
-    comodo("living", "Living", [[7.01, 0], [11.55, 0], [11.55, 6.14], [9.87, 6.14], [9.87, 4.38], [7.01, 4.38]], [9.3, 1.6, 4.1], [7.8, 1.0, 0.8], { semRender: true }),
+    comodo("living", "Living", [[7.01, 0], [11.55, 0], [11.55, 6.14], [9.87, 6.14], [9.87, 4.38], [7.01, 4.38]], [9.35, 1.6, 1.8], [7.4, 0.8, 3.6], { semRender: true }),
     comodo("varanda", "Varanda gourmet", ret(7.01, 4.38, 9.87, 6.14), [8.6, 1.6, 4.65], [7.3, 0.9, 6.0], { piso: "externo", semRender: true }),
     comodo("suite", "Suíte master", [[0, 0], [4.25, 0], [4.25, 1.04], [2.74, 1.04], [2.74, 5.39], [0, 5.39]], [2.3, 1.6, 0.8], [0.8, 0.8, 4.0], { semRender: true }),
     comodo("bmaster", "Banho master", [[2.74, 3.6], [4.25, 3.6], [4.25, 5.18], [3.86, 5.18], [3.86, 6.14], [2.74, 6.14]], [3.0, 1.6, 4.0], [4.0, 1.0, 5.6], { semRender: true }),
@@ -140,7 +140,7 @@ const final03 = {
 // comprimento confere). Origem na face interna da parede da esquerda e da de cima (a fachada da varanda).
 const final06 = {
   comodos: [
-    comodo("living", "Living", [[0, 0], [1.69, 0], [1.69, 1.77], [4.54, 1.77], [4.54, 6.08], [0, 6.08]], [0.7, 1.6, 5.6], [3.6, 1.0, 2.4], { semRender: true }),
+    comodo("living", "Living", [[0, 0], [1.69, 0], [1.69, 1.77], [4.54, 1.77], [4.54, 6.08], [0, 6.08]], [4.15, 1.6, 5.7], [2.2, 1.0, 1.0], { semRender: true }),
     comodo("varanda", "Varanda gourmet", ret(1.69, 0, 4.54, 1.77), [3.0, 1.6, 1.45], [1.9, 0.9, 0.2], { piso: "externo", semRender: true }),
     comodo("suite", "Suíte master", [[8.82, 0.7], [11.55, 0.7], [11.55, 6.08], [7.3, 6.08], [7.3, 5.04], [8.82, 5.04]], [9.3, 1.6, 5.2], [10.6, 0.8, 2.0], { semRender: true }),
     comodo("bmaster", "Banho master", [[7.78, 0], [8.82, 0], [8.82, 2.48], [7.3, 2.48], [7.3, 0.9], [7.78, 0.9]], [8.4, 1.6, 2.1], [8.0, 1.0, 0.5], { semRender: true }),

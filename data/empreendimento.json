@@ -1857,14 +1857,14 @@
           "area": 22.84,
           "enquadramento": {
             "posicao": [
-              9.3,
+              9.35,
               1.6,
-              4.1
+              1.8
             ],
             "olhar": [
-              7.8,
-              1,
-              0.8
+              7.4,
+              0.8,
+              3.6
             ]
           },
           "semRender": true
@@ -3892,14 +3892,14 @@
           "area": 22.56,
           "enquadramento": {
             "posicao": [
-              0.7,
+              4.15,
               1.6,
-              5.6
+              5.7
             ],
             "olhar": [
-              3.6,
+              2.2,
               1,
-              2.4
+              1
             ]
           },
           "semRender": true

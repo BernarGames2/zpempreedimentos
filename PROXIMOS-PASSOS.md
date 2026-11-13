@@ -59,22 +59,22 @@ Antes da etapa de desempenho no celular, o último commit publicado era cd26c80)
   Na GPU por software cada shader leva segundos; num iPhone, frações de segundo — o pré-aquecimento deve
   terminar em poucos segundos de ficha aberta. **Ainda não medido em iPhone de verdade.**
 
-- Realismo (13/11, à tarde). Bernardo liberou mudar o que for preciso para ficar mais realista, desde que
-  a planta, os móveis e a vegetação sigam o projeto ("eu explico pra ele depois").
-  - Bug de cor corrigido: `pintar` (lib/procedural/canvas.ts) escrevia no canvas a cor linear do three.js,
-    então toda textura pintada por código saía bem mais escura que o hex escolhido (o bronze virava quase
-    preto, o concreto cinza-escuro). As luzes que compensavam isso foram rebaixadas (`Luzes.tsx`).
-  - Fachada com a paleta dos renders: revestimento greige quente, painéis de bronze, lajes brancas;
-    janelas e portas de vidro de verdade (escuras de frente, espelhadas de lado, persiana/voil ao fundo,
-    luz quente só à noite); janelinhas foscas de dia; moitas das varandas com folhas (fora do nível leve).
-  - Reflexos do lado de fora vêm de um céu em degradê (zênite azul, horizonte claro, chão quente).
-  - Entorno como na foto aérea oficial (`public/referencias/aereo.jpg`): o Liwo encosta numa grande mata
-    densa (copa contínua com as copas em relevo e textura de folhagem, `geoMata` em `Entorno.tsx`), sem
-    ruas cortando a mata; bairro de casas do outro lado; prédios só a partir de ~450 m, em branco/bege/cinza;
-    janelas da cidade escuras de dia; lotes vagos verdes; menos árvores floridas.
-  - Piso do apartamento reflete o próprio cômodo (sonda com projeção em caixa, `lib/reflexoPiso.ts`),
-    refeita ao trocar de cômodo e de dia/noite; desligado no nível leve.
-  - O gradil das varandas continua de montantes de bronze (é o que aparece no render da sala).
+- Realismo (13/11, à tarde e noite). Bernardo liberou mudar o que for preciso para ficar mais realista,
+  desde que a planta, os móveis e a vegetação sigam o projeto. Depois pediu de volta o prédio **como estava**
+  ("a base do prédio é pra ser igual"): a fachada, os vidros, o céu e a luz de fora voltaram à versão f792a66
+  (commit c7a3c71). Interiores e vizinhança podem mudar à vontade.
+  - Bug de cor corrigido: `pintar` (lib/procedural/canvas.ts) escrevia a cor linear no canvas. As texturas
+    do prédio usam hex pré-linearizados para manter o visual antigo.
+  - Plantas "bola" trocadas por vasos 3D de verdade em todos os apartamentos (`m.vasoPlanta`).
+  - Sofás curvos de veludo (bege no final 03 e 02/04, cinza no 06), poltrona no 02/04, mesas de centro reais;
+    madeira natural menos alaranjada. Mapas de luz reassados (`npx tsx scripts/assar-mapa.ts`).
+  - Primeira vista do living dos finais 03 e 06 reenquadrada para mostrar sofá, mesa de centro e a varanda
+    com a vista (`scripts/gerar-dados.mjs`, depois `node scripts/gerar-dados.mjs`). Para testar ângulos sem
+    recompilar: `node scripts/_candidatos.mjs <url> <unidade> <prefixo> '[[x,z,ax,ay,az],...]' [larg] [alt]`.
+  - Vizinhança: mata densa encostada no Liwo (como na foto aérea), muros e portões nas casas, carros
+    estacionados e nas faixas (`lib/procedural/entorno.ts`, `components/three/Entorno.tsx`).
+  - Piso do apartamento reflete o próprio cômodo (`lib/reflexoPiso.ts`); desligado no nível leve.
+  - Tela preta ao entrar (NaN espalhado pelo bloom) corrigida com proteções no relevo da mata e na sonda.
 
 ## Próximas etapas, em ordem
 1. **Espaços internos do lazer** (gourmet, salão, academia, coworking, sauna, lounge, brinquedoteca): no 3D
@@ -85,6 +85,8 @@ Antes da etapa de desempenho no celular, o último commit publicado era cd26c80)
    openstreetmap.org (botão Exportar, área em volta da Rua João Severiano Rodrigues da Cunha, 1855), dá para
    trocar a cidade procedural por ruas e prédios reais.
 4. **Medição em aparelho real** — nunca foi feita; os números vêm de GPU por software.
+5. **Mais realismo nos quartos e banhos** — decoração (quadros, cortinas, roupa de cama) e a poltrona de couro
+   e a mesa de centro retangular já otimizadas em `public/modelos` (ainda sem uso).
 
 ## Como medir
 - `node scripts/_peso.mjs <url>`: bytes da primeira visita e tempo para entrar no apartamento.
