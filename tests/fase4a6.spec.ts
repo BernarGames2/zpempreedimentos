@@ -49,7 +49,9 @@ test("fase 5: lazer e formulário até o WhatsApp", async ({ page, context }, in
   await abrir(page);
   await pularIntro(page);
   await esperarEstado(page, "PREDIO");
-  await page.getByTestId("abrir-lazer").click();
+  // Com GPU por software a página fica segundos sem responder enquanto compila os gráficos do lazer:
+  // o clique não espera "navegação" (não há nenhuma) e o voltar vai direto ao botão, como o ponto da piscina.
+  await page.getByTestId("abrir-lazer").click({ noWaitAfter: true });
   await esperarEstado(page, "LAZER");
   await expect(page.getByTestId("lazer-piscina")).toBeEnabled();
   await page.getByTestId("lazer-piscina").dispatchEvent("click"); // o ponto acompanha a câmera
@@ -59,7 +61,7 @@ test("fase 5: lazer e formulário até o WhatsApp", async ({ page, context }, in
   await expect(cartao).toContainText("5º pavimento · Lazer");
   await expect(page.getByTestId("lazer-ilustrativo")).toBeVisible();
   await capturar(page, "f5-lazer", info.project.name);
-  await page.getByTestId("lazer-voltar").click();
+  await page.getByTestId("lazer-voltar").dispatchEvent("click");
   await esperarEstado(page, "PREDIO");
 
   // formulário: abre o WhatsApp com a mensagem pronta

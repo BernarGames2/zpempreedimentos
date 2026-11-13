@@ -614,13 +614,15 @@ interface Props {
   /** 0 = dia, 1 = noite (janelas e postes acesos). */
   noite: number;
   qualidade?: "alto" | "medio" | "baixo";
+  /** Enquadramentos do lazer: menos árvores detalhadas (a câmera olha o embasamento de cima). */
+  lazer?: boolean;
   /** No interior, o entorno é levado para o referencial da planta (a cidade aparece pelas janelas). */
   posicao?: [number, number, number];
   giro?: number;
 }
 
 /** Cidade em volta do Liwo: chão, ruas, casas, prédios, árvores, postes e serra no horizonte. */
-export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro = 0 }: Props) {
+export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro = 0, lazer = false }: Props) {
   const grupo = useMemo(() => {
     const e = dados();
     const g = new THREE.Group();
@@ -799,9 +801,10 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
   useEffect(() => {
     // modelo detalhado só até 90 m no computador (120 m no nível alto): além disso o simples basta e as ruas
     // podem ter o dobro de árvores sem pesar
-    const raio = interno ? 0 : qualidade === "baixo" ? 40 : toquePrincipal() ? 60 : qualidade === "alto" ? 120 : 90;
+    // no lazer a câmera olha o embasamento de cima: árvores detalhadas só bem perto (as que tapariam já saem de cena)
+    const raio = interno ? 0 : lazer || qualidade === "baixo" ? 40 : toquePrincipal() ? 60 : qualidade === "alto" ? 120 : 90;
     grupo.detalhar(raio, !(qualidade === "baixo" || interno));
-  }, [grupo, qualidade, interno]);
+  }, [grupo, qualidade, interno, lazer]);
   useEffect(() => {
     grupo.g.traverse((o) => {
       if (o.userData.sombra === undefined) o.userData.sombra = o.castShadow;

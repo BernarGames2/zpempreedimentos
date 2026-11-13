@@ -169,7 +169,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
         />
         {/* a mesma cidade serve o exterior e o passeio (vista pelas janelas, no referencial da planta) */}
         <group visible={!comSplat && (!interior || estado === "PASSEIO")}>
-          <Entorno noite={amb.noite} qualidade={qualidade} posicao={refInterior ?? undefined} giro={refInterior ? giro : 0} />
+          <Entorno noite={amb.noite} qualidade={qualidade} posicao={refInterior ?? undefined} giro={refInterior ? giro : 0} lazer={estado === "LAZER"} />
         </group>
         <group visible={!interior}>
           {/* Um predio.glb com malhas bem nomeadas substitui a torre procedural. */}
