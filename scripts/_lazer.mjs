@@ -8,7 +8,7 @@ const page = await ctx.newPage();
 const erros = [];
 page.on("pageerror", (e) => erros.push("pageerror " + e.message));
 page.on("console", (m) => { if (m.type() === "error") erros.push(m.text().slice(0, 200)); });
-await page.goto(`${base}/?debug=1&q=medio`);
+await page.goto(`${base}/?debug=1&q=${process.env.Q ?? "medio"}`);
 await page.waitForFunction(() => window.__zp?.getState().pronto === true, null, { timeout: 180000 });
 await page.evaluate(() => window.__zp.getState().pularIntro());
 await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "PREDIO" && !s.emVoo; }, null, { timeout: 120000 });

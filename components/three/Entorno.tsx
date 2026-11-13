@@ -352,9 +352,10 @@ export function texFolhagem(): THREE.CanvasTexture {
 }
 
 /** Material dos cartões de folhas: recorte pelo alfa e normal da copa nos dois lados do cartão. */
-export function matFolhagem(): THREE.MeshStandardMaterial {
+export function matFolhagem(): THREE.MeshLambertMaterial {
   return memo("mat-folhagem-copa", () => {
-    const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: texFolhagem(), alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.88 });
+    // Lambert: folha não precisa de reflexo PBR, e o cartão recortado é o que mais pesa na tela
+    const m = new THREE.MeshLambertMaterial({ vertexColors: true, map: texFolhagem(), alphaTest: 0.5, side: THREE.DoubleSide });
     // sem isso o verso do cartão inverteria a normal e a copa ficaria salpicada de escuro
     m.onBeforeCompile = (sh) => {
       sh.fragmentShader = sh.fragmentShader.replace("#include <normal_fragment_begin>", "#include <normal_fragment_begin>\nnormal *= faceDirection;");
@@ -370,7 +371,7 @@ export function matFolhagem(): THREE.MeshStandardMaterial {
  */
 function copaFolhas(sx: number, sy: number, sz: number, x: number, y: number, z: number, cor: string, semente: number, quantos?: number): THREE.BufferGeometry {
   const r = gerador(semente * 7 + 3);
-  const n = quantos ?? Math.round(9 * (sx + sy + sz));
+  const n = quantos ?? Math.round(6 * (sx + sy + sz));
   const base = new THREE.Color(cor);
   const [pos, nor, col, uv, idx]: [number[], number[], number[], number[], number[]] = [[], [], [], [], []];
   const q = new THREE.Quaternion();
@@ -412,27 +413,41 @@ function copaFolhas(sx: number, sy: number, sz: number, x: number, y: number, z:
   return g;
 }
 
-/** Moita de floreira: miolo liso (grupo 0) e uma dúzia de cartões de folhas (grupo 1), raio 1. */
+/** Moita lisa, sem cartões (celular): icosaedro com normais suaves. */
+export function geoMoitaLisa(): THREE.BufferGeometry {
+  const base = new THREE.IcosahedronGeometry(1, 0);
+  base.deleteAttribute("normal");
+  base.deleteAttribute("uv");
+  const g = mergeVertices(base);
+  base.dispose();
+  g.computeVertexNormals();
+  return g;
+}
+
+/** Moita de floreira: miolo liso (grupo 0) e sete cartões de folhas (grupo 1), raio 1. */
 export function geoMoitaFolhas(): THREE.BufferGeometry {
   const miolo = tufo(0, 0.74, 0.74, 0.74, 0, 0, 0, "#3f6230", 7);
   miolo.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(miolo.attributes.position!.count * 2), 2));
-  const cartoes = copaFolhas(1, 1, 1, 0, 0, 0, "#6a9150", 5, 12);
+  const cartoes = copaFolhas(1, 1, 1, 0, 0, 0, "#6a9150", 5, 7);
   const g = mergeGeometries([miolo, cartoes], true) as THREE.BufferGeometry;
   miolo.dispose();
   cartoes.dispose();
   return g;
 }
 
-export function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
+/** `folhas`: de perto, copa com cartões de folhas (nível alto); sem ela, os volumes lisos. */
+export function geoEspecie(e: Especie, perto: boolean, folhas = true): THREE.BufferGeometry {
   const d = perto ? 1 : 0;
   const partes: THREE.BufferGeometry[] = [];
   const marrom = "#5b4736";
   // de longe o tronco é um prisma aberto de 3 lados (6 triângulos)
   const tronco = (r0: number, r1: number, h: number, cor: string, incl = 0, x = 0, y = 0, z = 0) => troncoGeo(r0, r1, h, cor, incl, x, y, z, perto ? 5 : 3);
   // de perto as copas são cartões de folhas (2º grupo de material) sobre um miolo escuro e simples
-  const folhas: THREE.BufferGeometry[] = [];
-  const tufoP = (_d: number, sx: number, sy: number, sz: number, x: number, y: number, z: number, cor: string, sem: number) => {
-    folhas.push(copaFolhas(sx, sy, sz, x, y, z, cor, sem));
+  const cartoes: THREE.BufferGeometry[] = [];
+  const comFolhas = folhas;
+  const tufoP = (d: number, sx: number, sy: number, sz: number, x: number, y: number, z: number, cor: string, sem: number) => {
+    if (!comFolhas) return tufo(d, sx, sy, sz, x, y, z, cor, sem);
+    cartoes.push(copaFolhas(sx, sy, sz, x, y, z, cor, sem));
     const miolo = new THREE.Color(cor).multiplyScalar(0.62);
     return tufo(0, sx * 0.66, sy * 0.66, sz * 0.66, x, y, z, `#${miolo.getHexString()}`, sem + 100);
   };
@@ -475,14 +490,14 @@ export function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
   }
   const solidas = mergeGeometries(partes, false) as THREE.BufferGeometry;
   partes.forEach((p) => p.dispose());
-  if (!folhas.length) return solidas;
+  if (!cartoes.length) return solidas;
   // grupo 0: tronco e miolo (sem textura); grupo 1: cartões de folhas
   solidas.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(solidas.attributes.position!.count * 2), 2));
-  const cartoes = mergeGeometries(folhas, false) as THREE.BufferGeometry;
-  folhas.forEach((p) => p.dispose());
-  const g = mergeGeometries([solidas, cartoes], true) as THREE.BufferGeometry;
+  const juntos = mergeGeometries(cartoes, false) as THREE.BufferGeometry;
+  cartoes.forEach((p) => p.dispose());
+  const g = mergeGeometries([solidas, juntos], true) as THREE.BufferGeometry;
   solidas.dispose();
-  cartoes.dispose();
+  juntos.dispose();
   return g;
 }
 
@@ -683,7 +698,8 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
           return mtx(a.x, 0, a.z, s, s * (0.92 + ((a.tom * 7) % 1) * 0.18), s, a.giro);
         });
         const cores = lista.map((a) => new THREE.Color().setRGB(0.86 + a.tom * 0.26, 0.88 + a.tom * 0.2, 0.86 + ((a.tom * 3) % 1) * 0.16));
-        const m = instancias(guardar(geoEspecie(sp, detalhada)), detalhada ? [matArvore, matFolhagem()] : matArvore, mats, cores, detalhada);
+        const m = instancias(guardar(geoEspecie(sp, detalhada, false)), matArvore, mats, cores, detalhada);
+        if (detalhada) m.userData.geos = [m.geometry, guardar(geoEspecie(sp, true, true))];
         g.add(m);
         return m;
       };
@@ -724,10 +740,19 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
         n.medio.count = n.dist.length - k;
         if (n.longe) n.longe.visible = distantes;
       });
-    return { g, ajustar, detalhar, descartar };
+    /** Copas de perto com cartões de folhas (nível alto) ou com os volumes lisos (mais leves). */
+    const folhagem = (on: boolean) =>
+      niveis.forEach((n) => {
+        const [lisa, comFolhas] = n.perto.userData.geos as [THREE.BufferGeometry, THREE.BufferGeometry];
+        n.perto.geometry = on ? comFolhas : lisa;
+        n.perto.material = on ? [matArvore, matFolhagem()] : matArvore;
+      });
+    return { g, ajustar, detalhar, descartar, folhagem };
   }, []);
 
   useEffect(() => grupo.ajustar(noite), [grupo, noite]);
+  // folhas recortadas só no nível alto: o aparelho que cai de nível volta aos volumes lisos
+  useEffect(() => grupo.folhagem(qualidade === "alto"), [grupo, qualidade]);
   // Visto de dentro do apartamento, o entorno não precisa projetar sombra nem das árvores mais distantes:
   // era o maior custo do passeio (toda a cidade era redesenhada no mapa de sombras a cada quadro).
   const interno = giro !== 0 || posicao[0] !== 0 || posicao[1] !== 0 || posicao[2] !== 0;

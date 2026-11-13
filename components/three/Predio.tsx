@@ -6,13 +6,14 @@ import * as THREE from "three";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { poseLazer } from "@/lib/poses";
 import { useExp } from "@/lib/store";
+import { toquePrincipal } from "@/lib/controles";
 import { emp } from "@/lib/dados";
 import { P } from "@/lib/procedural/predio";
 import { construirSitio, contornoLote, geoFolhaPendente } from "@/lib/procedural/sitio";
 import { construirTorre, pecasVazias, type Mat, type Onda, type Plano } from "@/lib/procedural/torre";
 import { Instancias } from "./Instancias";
 import { materiaisExterior, materiaisSitio } from "./materiais";
-import { geoEspecie, geoMoitaFolhas, matFolhagem } from "./Entorno";
+import { geoEspecie, geoMoitaFolhas, geoMoitaLisa, matFolhagem } from "./Entorno";
 
 const SOMBRA: Partial<Record<Mat, boolean>> = { concreto: true, concretoClaro: true, terracota: true, grafite: true, muro: true };
 const ORDEM: Partial<Record<Plano, number>> = { grade: 2, brilho: 3, cone: 3, spot: 1 };
@@ -62,8 +63,11 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       calcada: extrudar(calcada, 0.14),
       tronco: new THREE.CylinderGeometry(0.13, 0.2, 1, 7).translate(0, 0.5, 0),
       copa: new THREE.IcosahedronGeometry(1, 1),
-      arvore: geoEspecie("copa", true),
+      arvore: geoEspecie("copa", true, false),
+      arvoreFolhas: geoEspecie("copa", true, true),
+      // no celular a moita fica lisa: os cartões recortados pesam no processador gráfico do aparelho
       arbusto: geoMoitaFolhas(),
+      moitaLisa: geoMoitaLisa(),
       pendente: geoFolhaPendente(),
     };
   }, []);
@@ -79,8 +83,12 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
     () => sitio.arvores.map((a, i) => new THREE.Matrix4().compose(new THREE.Vector3(a.x, a.y, a.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 1.3), new THREE.Vector3(1.25 * a.escala, 1.25 * a.escala, 1.25 * a.escala))),
     [sitio],
   );
-  const matsMoita = useMemo(() => [ms.arbusto, matFolhagem()], [ms]);
-  const matsArvore = useMemo(() => [new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }), matFolhagem()], []);
+  // folhas recortadas só no nível alto (e as moitas, só fora do celular): quem cai de nível volta ao liso
+  const folhas = useExp((s) => s.qualidade) === "alto";
+  const moitaFolhas = folhas && !toquePrincipal();
+  const matArvore = useMemo(() => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }), []);
+  const matsArvore = useMemo(() => (folhas ? [matArvore, matFolhagem()] : matArvore), [folhas, matArvore]);
+  const matsMoita = useMemo(() => (moitaFolhas ? [ms.arbusto, matFolhagem()] : ms.arbusto), [moitaFolhas, ms]);
   // nos enquadramentos do lazer, as árvores da floreira que ficam entre a câmera e o espaço saem de cena
   // (corte de apresentação: sem isso uma copa a 3 m da câmera tapa meia tela)
   const estado = useExp((s) => s.estado);
@@ -116,7 +124,9 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
     (Object.keys(torre.planos) as Plano[]).forEach((k) => (out[k] = [...torre.planos[k], ...sitio.pecas.planos[k]]));
     return out;
   }, [torre, sitio]);
-  const arbustos = useMemo(() => [...torre.arbustos, ...sitio.pecas.arbustos], [torre, sitio]);
+  // moitas da torre são vistas de longe (lisas); as do embasamento e do lazer, de perto (com folhas)
+  const arbustosTorre = torre.arbustos;
+  const arbustosSitio = sitio.pecas.arbustos;
   const pendentes = useMemo(() => [...torre.pendentes, ...sitio.pecas.pendentes], [torre, sitio]);
 
   const matPainel = { vitrine: ms.vitrine, perfurado: ms.perfurado, letreiro: ms.letreiro, escuro: ms.escuro };
@@ -131,7 +141,8 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       ))}
       {ondas.lajes && <mesh geometry={ondas.lajes} material={mats.laje} castShadow receiveShadow name="lajes_em_onda" />}
       {ondas.fitas && <mesh geometry={ondas.fitas} material={mats.fita} name="fitas_led" />}
-      <Instancias geometria={geos.arbusto} material={matsMoita} matrizes={arbustos} />
+      <Instancias geometria={geos.moitaLisa} material={ms.arbusto} matrizes={arbustosTorre} />
+      <Instancias key={moitaFolhas ? "moita-folhas" : "moita-lisa"} geometria={moitaFolhas ? geos.arbusto : geos.moitaLisa} material={matsMoita} matrizes={arbustosSitio} />
       <Instancias geometria={geos.pendente} material={ms.pendente} matrizes={pendentes} />
 
       <mesh geometry={geos.podio} material={ms.podio} castShadow receiveShadow />
@@ -143,7 +154,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
 
       {/* Entorno */}
       <mesh geometry={geos.calcada} material={ms.calcada} position={[0, -0.02, 0]} receiveShadow />
-      <Instancias geometria={geos.arvore} material={matsArvore} matrizes={arvoresVisiveis} sombra />
+      <Instancias key={folhas ? "arvore-folhas" : "arvore-lisa"} geometria={folhas ? geos.arvoreFolhas : geos.arvore} material={matsArvore} matrizes={arvoresVisiveis} sombra />
     </group>
   );
 }
