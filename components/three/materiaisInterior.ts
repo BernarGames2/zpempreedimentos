@@ -104,7 +104,9 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
       lampada.color.set("#fff4e0").multiplyScalar(0.35 + 1.6 * a);
     };
     // todos os materiais do interior leem a iluminação indireta pré-calculada da planta
-    for (const mt of [...Object.values(mats), piso, pisoExterno]) if ((mt as THREE.MeshStandardMaterial).isMeshStandardMaterial) comLuzVolume(mt);
+    // (só as superfícies com coordenadas no mapa de luz leem o mapa)
+    const comMapa = new Set<THREE.Material>([mats.parede, mats.azulejo, mats.tapete, mats.teto, piso, pisoExterno]);
+    for (const mt of [...Object.values(mats), piso, pisoExterno]) if ((mt as THREE.MeshStandardMaterial).isMeshStandardMaterial) comLuzVolume(mt, comMapa.has(mt));
     return { mats, piso, pisoExterno, ajustar };
   });
 }

@@ -95,22 +95,26 @@ export function luzNoite(n: number): void {
   U.uLuzNoite.value = n;
 }
 
-/** Faz o material ler o volume de luz. Pode ser chamado mais de uma vez no mesmo material. */
-export function comLuzVolume<T extends THREE.Material>(m: T): T {
+/**
+ * Faz o material ler o volume de luz. Pode ser chamado mais de uma vez no mesmo material.
+ * `mapa`: também lê o mapa de luz (só paredes, revestimentos, tapetes, pisos e forros têm coordenadas no
+ * atlas; nos demais a leitura seria uma textura a mais por pixel à toa).
+ */
+export function comLuzVolume<T extends THREE.Material>(m: T, mapa = false): T {
   if (m.userData.luzVolume) return m;
   m.userData.luzVolume = true;
   const antes = m.onBeforeCompile;
-  const chave = `${antes ? antes.toString() : ""}|luz-volume-mapa`;
+  const chave = `${antes ? antes.toString() : ""}|luz-volume${mapa ? "-mapa" : ""}`;
   m.onBeforeCompile = (s, r) => {
     antes?.call(m, s, r);
     Object.assign(s.uniforms, U);
     s.vertexShader = s.vertexShader
-      .replace("#include <common>", "#include <common>\nvarying vec3 vLuzPos;\nattribute vec2 aMapaLuz;\nvarying vec2 vMapaLuz;")
-      .replace("#include <project_vertex>", "#include <project_vertex>\nvLuzPos = (modelMatrix * vec4(transformed, 1.0)).xyz;\nvMapaLuz = aMapaLuz;");
+      .replace("#include <common>", `#include <common>\nvarying vec3 vLuzPos;${mapa ? "\nattribute vec2 aMapaLuz;\nvarying vec2 vMapaLuz;" : ""}`)
+      .replace("#include <project_vertex>", `#include <project_vertex>\nvLuzPos = (modelMatrix * vec4(transformed, 1.0)).xyz;${mapa ? "\nvMapaLuz = aMapaLuz;" : ""}`);
     s.fragmentShader = s.fragmentShader
       .replace(
         "#include <common>",
-        "#include <common>\nvarying vec3 vLuzPos;\nuniform highp sampler3D uLuzVol;\nuniform vec3 uLuzMin;\nuniform vec3 uLuzTam;\nuniform float uLuzNoite;\nuniform float uLuzAtiva;\nvarying vec2 vMapaLuz;\nuniform sampler2D uMapaLuz;\nuniform float uMapaAtivo;\nuniform float uMapaForca;",
+        `#include <common>\nvarying vec3 vLuzPos;\nuniform highp sampler3D uLuzVol;\nuniform vec3 uLuzMin;\nuniform vec3 uLuzTam;\nuniform float uLuzNoite;\nuniform float uLuzAtiva;${mapa ? "\nvarying vec2 vMapaLuz;\nuniform sampler2D uMapaLuz;\nuniform float uMapaAtivo;\nuniform float uMapaForca;" : ""}`,
       )
       .replace(
         "#include <lights_fragment_end>",
@@ -118,13 +122,17 @@ export function comLuzVolume<T extends THREE.Material>(m: T): T {
         {
           vec2 lv = texture(uLuzVol, clamp((vLuzPos - uLuzMin) / uLuzTam, 0.0, 1.0)).rg * 2.0;
           float fl = mix(1.0, mix(lv.r, lv.g, uLuzNoite), uLuzAtiva);
-          // mapa de luz: quem não tem coordenada lê o canto branco do atlas (valor neutro)
-          // (acima de 0,89 conta como aberto: o mapa marca cantos e contatos sem apagar o cômodo inteiro)
+          ${
+            mapa
+              ? `// mapa de luz: quem não tem coordenada lê o canto branco do atlas (valor neutro);
+          // acima de 0,89 conta como aberto: o mapa marca cantos e contatos sem apagar o cômodo inteiro
           float ao = mix(1.0, clamp(texture(uMapaLuz, vMapaLuz).r * 1.12, 0.0, 1.0), uMapaAtivo * uMapaForca);
+          // à noite as luminárias não projetam sombra: o mapa faz esse papel embaixo e atrás dos móveis
+          reflectedLight.directDiffuse *= mix(1.0, ao, 0.6 * uLuzNoite);`
+              : "float ao = 1.0;"
+          }
           reflectedLight.indirectDiffuse *= fl * ao;
           reflectedLight.indirectSpecular *= mix(1.0, fl * ao, 0.6);
-          // à noite as luminárias não projetam sombra: o mapa faz esse papel embaixo e atrás dos móveis
-          reflectedLight.directDiffuse *= mix(1.0, ao, 0.6 * uLuzNoite);
         }`,
       );
   };
