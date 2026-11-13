@@ -8,7 +8,8 @@ import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js
 import { area } from "@/lib/formato";
 import { useGLTF } from "@react-three/drei";
 import { moveisGlb } from "@/lib/controles";
-import { carregarLuz, comLuzVolume, luzNoite } from "@/lib/luzVolume";
+import { carregarLuz, carregarMapa, comLuzVolume, luzNoite } from "@/lib/luzVolume";
+import { MATS_MAPA, facesCaixa, retalhoComodo, uvMapa, type MapaLuzInfo, type Retalho } from "@/lib/procedural/mapaLuz";
 import { acabamentos } from "@/lib/procedural/acabamento";
 import { sorteio, tela } from "@/lib/procedural/canvas";
 import { mobiliar, type MatInt, type Modelo, type Prim } from "@/lib/procedural/mobilia";
@@ -37,7 +38,19 @@ function caixaUV(w: number, h: number, d: number, emMetros: boolean): THREE.Buff
   return g;
 }
 
-function geoPrim(p: Prim, corte: boolean): THREE.BufferGeometry | null {
+/** Coordenadas no mapa de luz (atributo aMapaLuz) de uma geometria plana que cobre um retalho. */
+function comMapa(g: THREE.BufferGeometry, r: Retalho, mapa: MapaLuzInfo): THREE.BufferGeometry {
+  const P = g.attributes.position as THREE.BufferAttribute;
+  const uv = new Float32Array(P.count * 2);
+  for (let i = 0; i < P.count; i++) {
+    const c = uvMapa(mapa, r, P.getX(i), P.getY(i), P.getZ(i));
+    if (c) uv.set(c, i * 2);
+  }
+  g.setAttribute("aMapaLuz", new THREE.BufferAttribute(uv, 2));
+  return g;
+}
+
+function geoPrim(p: Prim, corte: boolean, mapa: MapaLuzInfo | null): THREE.BufferGeometry | null {
   let { pos, tam } = p;
   if (corte) {
     if (p.camada === "teto" || p.camada === "alto") return null;
@@ -58,6 +71,19 @@ function geoPrim(p: Prim, corte: boolean): THREE.BufferGeometry | null {
   else g = new THREE.SphereGeometry(tam[0] / 2, 18, 12);
   if (p.rot) g.applyMatrix4(new THREE.Matrix4().makeRotationFromEuler(new THREE.Euler(p.rot[0], p.rot[1], p.rot[2])));
   g.translate(pos[0], pos[1], pos[2]);
+  if (mapa && MATS_MAPA.includes(p.mat)) {
+    // paredes, revestimentos e tapetes leem o mapa de luz; o que não estiver no atlas lê o canto branco (neutro)
+    const P = g.attributes.position as THREE.BufferAttribute;
+    const uv = new Float32Array(P.count * 2);
+    if (!corte && p.forma === "caixa" && !p.rot && P.count === 24) {
+      const faces = facesCaixa(p.pos, p.tam);
+      for (let i = 0; i < 24; i++) {
+        const c = uvMapa(mapa, faces[Math.floor(i / 4)] as Retalho, P.getX(i), P.getY(i), P.getZ(i));
+        if (c) uv.set(c, i * 2);
+      }
+    }
+    g.setAttribute("aMapaLuz", new THREE.BufferAttribute(uv, 2));
+  }
   // a fusão exige todas indexadas ou nenhuma: a caixa arredondada não tem índice
   if (g.index) {
     const semIndice = g.toNonIndexed();
@@ -67,10 +93,10 @@ function geoPrim(p: Prim, corte: boolean): THREE.BufferGeometry | null {
   return g;
 }
 
-function fundir(prims: Prim[], corte: boolean): Partial<Record<MatInt, THREE.BufferGeometry>> {
+function fundir(prims: Prim[], corte: boolean, mapa: MapaLuzInfo | null): Partial<Record<MatInt, THREE.BufferGeometry>> {
   const porMat = new Map<MatInt, THREE.BufferGeometry[]>();
   for (const p of prims) {
-    const g = geoPrim(p, corte);
+    const g = geoPrim(p, corte, mapa);
     if (!g) continue;
     const lista = porMat.get(p.mat) ?? [];
     lista.push(g);
@@ -202,9 +228,29 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
   const sombras = useMemo(() => sombrasDoPiso(tipo, planta, mob.obstaculos), [tipo, planta, mob]);
   const matSombras = useMemo(() => new THREE.MeshBasicMaterial({ map: sombras.tex, transparent: true, depthWrite: false, toneMapped: false }), [sombras]);
 
-  const geos = useMemo(() => fundir(prims, corte), [prims, corte]);
-  const pisos = useMemo(() => tipo.comodos.map((c) => ({ c, g: geoPiso(c, c.piso === "externo" ? -0.03 : 0, false) })), [tipo]);
-  const tetos = useMemo(() => mergeGeometries(tipo.comodos.map((c) => geoPiso(c, PE_LIVRE, true)), false), [tipo]);
+  // mapa de luz (scripts/assar-mapa.ts): chega depois da planta; com ele a geometria ganha as coordenadas do atlas
+  const [mapa, setMapa] = useState<MapaLuzInfo | null>(null);
+  const geos = useMemo(() => fundir(prims, corte, mapa), [prims, corte, mapa]);
+  const pisos = useMemo(
+    () =>
+      tipo.comodos.map((c) => {
+        const y = c.piso === "externo" ? -0.03 : 0;
+        const g = geoPiso(c, y, false);
+        return { c, g: mapa ? comMapa(g, retalhoComodo(c, false, y), mapa) : g };
+      }),
+    [tipo, mapa],
+  );
+  const tetos = useMemo(
+    () =>
+      mergeGeometries(
+        tipo.comodos.map((c) => {
+          const g = geoPiso(c, PE_LIVRE, true);
+          return mapa ? comMapa(g, retalhoComodo(c, true, PE_LIVRE), mapa) : g;
+        }),
+        false,
+      ),
+    [tipo, mapa],
+  );
   const jardim = useMemo(() => geoJardim(mob.jardins, corte), [mob, corte]);
   const matFolhas = useMemo(
     () => new THREE.MeshStandardMaterial({ map: texCartaoFolhas(), color: "#8a9c7a", alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 }),
@@ -214,8 +260,15 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
 
   useEffect(() => m.ajustar(Math.max(artificial, 0.35)), [m, artificial]);
   useEffect(() => {
+    let vivo = true;
+    setMapa(null);
     void carregarLuz(tipo.id);
-    return () => void carregarLuz(null);
+    void carregarMapa(tipo.id).then((i) => vivo && setMapa(i));
+    return () => {
+      vivo = false;
+      void carregarLuz(null);
+      void carregarMapa(null);
+    };
   }, [tipo.id]);
   useEffect(() => luzNoite(artificial), [artificial]);
   useEffect(
@@ -224,6 +277,13 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
       jardim?.dispose();
     },
     [geos, jardim],
+  );
+  useEffect(
+    () => () => {
+      pisos.forEach((x) => x.g.dispose());
+      tetos?.dispose();
+    },
+    [pisos, tetos],
   );
   useEffect(
     () => () => {
@@ -256,7 +316,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
         <group name="moveis_glb">{mob.modelos?.map((mo, i) => <ModeloGlb key={`${mo.id}-${i}`} m={mo} />)}</group>
       </Suspense>
       {/* acima dos tapetes (1,6 cm) e abaixo de tudo o que tem volume */}
-      <mesh position={[sombras.x, 0.02, sombras.z]} rotation={[-Math.PI / 2, 0, 0]} material={matSombras} renderOrder={1} name="sombras_de_contato">
+      <mesh position={[sombras.x, 0.02, sombras.z]} rotation={[-Math.PI / 2, 0, 0]} material={matSombras} renderOrder={1} name="sombras_de_contato" visible={!mapa}>
         <planeGeometry args={[sombras.w, sombras.h]} />
       </mesh>
       {!corte && tetos && <mesh geometry={tetos} material={m.mats.teto} castShadow name="teto_apartamento" />}

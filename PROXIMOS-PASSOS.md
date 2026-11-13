@@ -1,7 +1,7 @@
 # Liwo — onde continuar
 
-Estado em 12/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa está guardada em
-`maxi-liwo-estavel`, commit 7521e98 — para voltar: publicar esse commit no projeto `liwo-maxi` da Vercel).
+Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa está guardada em
+`maxi-liwo-estavel`, commit 7e366c6 — para voltar: publicar esse commit no projeto `liwo-maxi` da Vercel).
 
 ## Feito até aqui
 - Interiores 3D navegáveis nos finais 01 a 06, com modelos 3D de terceiros (licenças em `CREDITOS.md`),
@@ -13,7 +13,14 @@ Estado em 12/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   espreguiçadeiras de imersão, pufe, planta e mesa; quadra de pickleball com rede; playground com coberturas
   de ripas e montes; luzes embutidas no forro do terraço; enquadramentos de apresentação
   (`CAM_LAZER` em `lib/poses.ts`) que tiram da frente as árvores da floreira (`Predio.tsx`).
-- Vegetação do prédio e da cidade com sombreamento macio (copas e moitas sem facetas).
+- Mapa de luz por planta (`scripts/assar-mapa.ts`, lido em `lib/luzVolume.ts`): sombra de contato e cantos
+  escurecidos em paredes, revestimentos, tapetes, pisos e forros, calculados com a forma real dos modelos 3D.
+  **Rodar de novo sempre que mudar planta ou mobília** (`npx tsx scripts/assar-mapa.ts`); face que mudar
+  sem novo cálculo fica neutra, sem erro.
+- Árvores e moitas de perto com cartões de folhas (`copaFolhas` em `components/three/Entorno.tsx`); de longe
+  seguem os volumes simples.
+- Finais 02 e 04 com camas, cadeiras, cubas, bacias, lavadora, cuba e cooktop em modelo 3D (sofá, mesas e
+  geladeira retrô seguem procedurais porque copiam o render oficial).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
 
 ## Próximas etapas, em ordem
@@ -21,7 +28,9 @@ Estado em 12/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
    são só marcadores com a imagem oficial. Modelar o interior só com projeto da Maxi — hoje seria invenção.
 2. **Fachada** — volumetria sem mudanças desde a fase 2 (`torre.ts`, `sitio.ts`); falta o projeto de
    fachada para detalhar caixilhos, brises e materiais.
-3. **Finais 02 e 04** — seguem os renders oficiais com móveis procedurais; trocar por modelos como nos demais.
+3. **Entorno real** — o acesso ao OpenStreetMap é bloqueado nesta máquina. Com o arquivo `.osm` exportado em
+   openstreetmap.org (botão Exportar, área em volta da Rua João Severiano Rodrigues da Cunha, 1855), dá para
+   trocar a cidade procedural por ruas e prédios reais.
 4. **Medição em aparelho real** — nunca foi feita; os números vêm de GPU por software.
 
 ## Como medir

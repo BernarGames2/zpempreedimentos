@@ -4,6 +4,7 @@ import { useEffect, useMemo } from "react";
 import * as THREE from "three";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { toquePrincipal } from "@/lib/controles";
+import { memo, tela, textura } from "@/lib/procedural/canvas";
 import { CALCADA, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie } from "@/lib/procedural/entorno";
 
 /** Fachadas: brancos, areias, cinzas e um terracota (cores comuns no bairro). */
@@ -327,27 +328,129 @@ function folhaPalmeira(giro: number, y: number, comp: number, semente: number): 
   return g;
 }
 
+/** Cacho de folhas (fundo transparente) para os cartões das copas de perto. */
+export function texFolhagem(): THREE.CanvasTexture {
+  return memo("folhagem-copa", () => {
+    const n = 256;
+    const [c, g] = tela(n, n);
+    g.clearRect(0, 0, n, n);
+    const r = gerador(91);
+    for (let i = 0; i < 950; i++) {
+      const ang = r() * Math.PI * 2;
+      const rad = 116 * Math.pow(r(), 0.7);
+      const tom = 0.58 + r() * 0.42;
+      const quente = r() * 0.16;
+      g.fillStyle = `rgb(${Math.round((200 + 50 * quente) * tom)},${Math.round(242 * tom)},${Math.round(172 * tom)})`;
+      g.beginPath();
+      g.ellipse(128 + Math.cos(ang) * rad, 128 + Math.sin(ang) * rad, 6 + r() * 6, 2.4 + r() * 2.2, r() * Math.PI, 0, Math.PI * 2);
+      g.fill();
+    }
+    const t = textura(c);
+    t.wrapS = t.wrapT = THREE.ClampToEdgeWrapping;
+    return t;
+  });
+}
+
+/** Material dos cartões de folhas: recorte pelo alfa e normal da copa nos dois lados do cartão. */
+export function matFolhagem(): THREE.MeshStandardMaterial {
+  return memo("mat-folhagem-copa", () => {
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: texFolhagem(), alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.88 });
+    // sem isso o verso do cartão inverteria a normal e a copa ficaria salpicada de escuro
+    m.onBeforeCompile = (sh) => {
+      sh.fragmentShader = sh.fragmentShader.replace("#include <normal_fragment_begin>", "#include <normal_fragment_begin>\nnormal *= faceDirection;");
+    };
+    m.customProgramCacheKey = () => "folhagem-copa";
+    return m;
+  });
+}
+
+/**
+ * Copa de perto: cartões com cacho de folhas espalhados num elipsoide, mais densos na casca, com a
+ * normal do elipsoide (luz e sombra de volume) e base mais escura, sobre um miolo escuro que fecha os vãos.
+ */
+function copaFolhas(sx: number, sy: number, sz: number, x: number, y: number, z: number, cor: string, semente: number, quantos?: number): THREE.BufferGeometry {
+  const r = gerador(semente * 7 + 3);
+  const n = quantos ?? Math.round(9 * (sx + sy + sz));
+  const base = new THREE.Color(cor);
+  const [pos, nor, col, uv, idx]: [number[], number[], number[], number[], number[]] = [[], [], [], [], []];
+  const q = new THREE.Quaternion();
+  const eu = new THREE.Euler();
+  const a = new THREE.Vector3();
+  const lado = 0.62 * Math.cbrt(sx * sy * sz);
+  for (let i = 0; i < n; i++) {
+    let [ux, uy, uz, l] = [0, 0, 0, 2];
+    while (l > 1 || l < 0.05) {
+      [ux, uy, uz] = [r() * 2 - 1, r() * 2 - 1, r() * 2 - 1];
+      l = Math.hypot(ux, uy, uz);
+    }
+    [ux, uy, uz] = [ux / l, uy / l, uz / l];
+    const raio = 0.5 + 0.42 * Math.sqrt(r());
+    const [cx, cy, cz] = [x + ux * sx * raio, y + uy * sy * raio, z + uz * sz * raio];
+    const nl = Math.hypot(ux / sx, uy / sy, uz / sz);
+    const [nx, ny, nz] = [ux / sx / nl, uy / sy / nl, uz / sz / nl];
+    const t = lado * (0.75 + r() * 0.5);
+    eu.set(r() * Math.PI, r() * Math.PI * 2, r() * Math.PI);
+    q.setFromEuler(eu);
+    const k = (0.58 + 0.42 * (uy * 0.5 + 0.5)) * (0.7 + 0.3 * raio) * (0.9 + r() * 0.2);
+    const [fu, fv] = [r() < 0.5, r() < 0.5];
+    const ini = pos.length / 3;
+    for (const [px, py] of [[-1, -1], [1, -1], [1, 1], [-1, 1]] as const) {
+      a.set((px * t) / 2, (py * t) / 2, 0).applyQuaternion(q);
+      pos.push(cx + a.x, cy + a.y, cz + a.z);
+      nor.push(nx, ny, nz);
+      col.push(base.r * k, base.g * k, base.b * k);
+      uv.push(fu ? (1 - px) / 2 : (px + 1) / 2, fv ? (1 - py) / 2 : (py + 1) / 2);
+    }
+    idx.push(ini, ini + 1, ini + 2, ini, ini + 2, ini + 3);
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute("normal", new THREE.Float32BufferAttribute(nor, 3));
+  g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+  g.setAttribute("uv", new THREE.Float32BufferAttribute(uv, 2));
+  g.setIndex(idx);
+  return g;
+}
+
+/** Moita de floreira: miolo liso (grupo 0) e uma dúzia de cartões de folhas (grupo 1), raio 1. */
+export function geoMoitaFolhas(): THREE.BufferGeometry {
+  const miolo = tufo(0, 0.74, 0.74, 0.74, 0, 0, 0, "#3f6230", 7);
+  miolo.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(miolo.attributes.position!.count * 2), 2));
+  const cartoes = copaFolhas(1, 1, 1, 0, 0, 0, "#6a9150", 5, 12);
+  const g = mergeGeometries([miolo, cartoes], true) as THREE.BufferGeometry;
+  miolo.dispose();
+  cartoes.dispose();
+  return g;
+}
+
 export function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
   const d = perto ? 1 : 0;
   const partes: THREE.BufferGeometry[] = [];
   const marrom = "#5b4736";
   // de longe o tronco é um prisma aberto de 3 lados (6 triângulos)
   const tronco = (r0: number, r1: number, h: number, cor: string, incl = 0, x = 0, y = 0, z = 0) => troncoGeo(r0, r1, h, cor, incl, x, y, z, perto ? 5 : 3);
+  // de perto as copas são cartões de folhas (2º grupo de material) sobre um miolo escuro e simples
+  const folhas: THREE.BufferGeometry[] = [];
+  const tufoP = (_d: number, sx: number, sy: number, sz: number, x: number, y: number, z: number, cor: string, sem: number) => {
+    folhas.push(copaFolhas(sx, sy, sz, x, y, z, cor, sem));
+    const miolo = new THREE.Color(cor).multiplyScalar(0.62);
+    return tufo(0, sx * 0.66, sy * 0.66, sz * 0.66, x, y, z, `#${miolo.getHexString()}`, sem + 100);
+  };
   switch (e) {
     case "copa":
       partes.push(tronco(0.24, 0.15, 2.8, marrom));
       if (perto) {
-        partes.push(tufo(d, 1.95, 1.5, 1.95, 0, 3.95, 0, "#4b6b30", 11), tufo(d, 1.4, 1.1, 1.4, 1.25, 3.4, 0.5, "#527334", 12), tufo(d, 1.3, 1.0, 1.3, -1.1, 3.5, -0.7, "#47662d", 13), tufo(d, 1.15, 0.9, 1.15, 0.1, 4.75, 0.1, "#5a7a38", 14));
+        partes.push(tufoP(d, 1.95, 1.5, 1.95, 0, 3.95, 0, "#4b6b30", 11), tufoP(d, 1.4, 1.1, 1.4, 1.25, 3.4, 0.5, "#527334", 12), tufoP(d, 1.3, 1.0, 1.3, -1.1, 3.5, -0.7, "#47662d", 13), tufoP(d, 1.15, 0.9, 1.15, 0.1, 4.75, 0.1, "#5a7a38", 14));
       } else partes.push(tufo(0, 2.3, 1.8, 2.3, 0, 4.0, 0, "#4c6b31", 16));
       break;
     case "ipe":
       partes.push(tronco(0.22, 0.13, 3.1, "#4e4035"));
-      if (perto) partes.push(tufo(d, 2.2, 1.05, 2.2, 0, 4.5, 0, "#d9b23a", 21), tufo(d, 1.5, 0.8, 1.5, 1.5, 4.1, 0.6, "#e3c24d", 22), tufo(d, 1.4, 0.75, 1.4, -1.4, 4.2, -0.5, "#a9a03a", 23), tufo(d, 1.1, 0.7, 1.1, 0.2, 5.0, 1.0, "#e6c552", 24));
+      if (perto) partes.push(tufoP(d, 2.2, 1.05, 2.2, 0, 4.5, 0, "#d9b23a", 21), tufoP(d, 1.5, 0.8, 1.5, 1.5, 4.1, 0.6, "#e3c24d", 22), tufoP(d, 1.4, 0.75, 1.4, -1.4, 4.2, -0.5, "#a9a03a", 23), tufoP(d, 1.1, 0.7, 1.1, 0.2, 5.0, 1.0, "#e6c552", 24));
       else partes.push(tufo(0, 2.5, 1.1, 2.5, 0, 4.5, 0, "#d2b03e", 25));
       break;
     case "flamboyant":
       partes.push(tronco(0.26, 0.16, 2.5, "#56493d"));
-      if (perto) partes.push(tufo(d, 2.8, 0.85, 2.8, 0, 3.9, 0, "#c8462b", 31), tufo(d, 1.8, 0.7, 1.8, 1.7, 3.7, 0.9, "#d6582f", 32), tufo(d, 1.7, 0.65, 1.7, -1.6, 3.8, -0.8, "#6a7d34", 33));
+      if (perto) partes.push(tufoP(d, 2.8, 0.85, 2.8, 0, 3.9, 0, "#c8462b", 31), tufoP(d, 1.8, 0.7, 1.8, 1.7, 3.7, 0.9, "#d6582f", 32), tufoP(d, 1.7, 0.65, 1.7, -1.6, 3.8, -0.8, "#6a7d34", 33));
       else partes.push(tufo(0, 3.0, 0.9, 3.0, 0, 3.9, 0, "#c24a2d", 34));
       break;
     case "palmeira": {
@@ -361,17 +464,25 @@ export function geoEspecie(e: Especie, perto: boolean): THREE.BufferGeometry {
     }
     case "cone":
       partes.push(tronco(0.18, 0.12, 1.4, marrom));
-      if (perto) partes.push(tufo(d, 0.95, 1.7, 0.95, 0, 2.6, 0, "#3b5a32", 51), tufo(d, 0.8, 1.55, 0.8, 0, 4.1, 0, "#40603a", 52), tufo(d, 0.55, 1.2, 0.55, 0, 5.4, 0, "#46663c", 53));
+      if (perto) partes.push(tufoP(d, 0.95, 1.7, 0.95, 0, 2.6, 0, "#3b5a32", 51), tufoP(d, 0.8, 1.55, 0.8, 0, 4.1, 0, "#40603a", 52), tufoP(d, 0.55, 1.2, 0.55, 0, 5.4, 0, "#46663c", 53));
       else partes.push(tufo(0, 0.95, 3.0, 0.95, 0, 3.6, 0, "#3e5d35", 54));
       break;
     case "cerrado":
       partes.push(tronco(0.13, 0.09, 1.5, "#4d4033", 0.28), tronco(0.09, 0.07, 1.1, "#4d4033", -0.45, -0.38, 1.35, 0));
-      if (perto) partes.push(tufo(d, 1.5, 0.55, 1.5, 0.3, 2.35, 0.2, "#6e7a3a", 61), tufo(d, 1.0, 0.5, 1.0, -0.7, 2.25, -0.3, "#7a8240", 62));
+      if (perto) partes.push(tufoP(d, 1.5, 0.55, 1.5, 0.3, 2.35, 0.2, "#6e7a3a", 61), tufoP(d, 1.0, 0.5, 1.0, -0.7, 2.25, -0.3, "#7a8240", 62));
       else partes.push(tufo(0, 1.7, 0.6, 1.7, 0, 2.3, 0, "#717d3c", 63));
       break;
   }
-  const g = mergeGeometries(partes, false) as THREE.BufferGeometry;
+  const solidas = mergeGeometries(partes, false) as THREE.BufferGeometry;
   partes.forEach((p) => p.dispose());
+  if (!folhas.length) return solidas;
+  // grupo 0: tronco e miolo (sem textura); grupo 1: cartões de folhas
+  solidas.setAttribute("uv", new THREE.Float32BufferAttribute(new Float32Array(solidas.attributes.position!.count * 2), 2));
+  const cartoes = mergeGeometries(folhas, false) as THREE.BufferGeometry;
+  folhas.forEach((p) => p.dispose());
+  const g = mergeGeometries([solidas, cartoes], true) as THREE.BufferGeometry;
+  solidas.dispose();
+  cartoes.dispose();
   return g;
 }
 
@@ -461,7 +572,7 @@ function geoPoste(): THREE.BufferGeometry {
 
 // ───────────────────────── montagem ─────────────────────────
 
-function instancias(geo: THREE.BufferGeometry, mat: THREE.Material, mats: THREE.Matrix4[], cores?: THREE.Color[], sombra = false): THREE.InstancedMesh {
+function instancias(geo: THREE.BufferGeometry, mat: THREE.Material | THREE.Material[], mats: THREE.Matrix4[], cores?: THREE.Color[], sombra = false): THREE.InstancedMesh {
   const m = new THREE.InstancedMesh(geo, mat, Math.max(mats.length, 1));
   m.count = mats.length;
   mats.forEach((x, i) => m.setMatrixAt(i, x));
@@ -572,7 +683,7 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
           return mtx(a.x, 0, a.z, s, s * (0.92 + ((a.tom * 7) % 1) * 0.18), s, a.giro);
         });
         const cores = lista.map((a) => new THREE.Color().setRGB(0.86 + a.tom * 0.26, 0.88 + a.tom * 0.2, 0.86 + ((a.tom * 3) % 1) * 0.16));
-        const m = instancias(guardar(geoEspecie(sp, detalhada)), matArvore, mats, cores, detalhada);
+        const m = instancias(guardar(geoEspecie(sp, detalhada)), detalhada ? [matArvore, matFolhagem()] : matArvore, mats, cores, detalhada);
         g.add(m);
         return m;
       };

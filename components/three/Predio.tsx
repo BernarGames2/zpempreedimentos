@@ -3,7 +3,7 @@
 import { useEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
 import * as THREE from "three";
-import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
+import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { poseLazer } from "@/lib/poses";
 import { useExp } from "@/lib/store";
 import { emp } from "@/lib/dados";
@@ -12,7 +12,7 @@ import { construirSitio, contornoLote, geoFolhaPendente } from "@/lib/procedural
 import { construirTorre, pecasVazias, type Mat, type Onda, type Plano } from "@/lib/procedural/torre";
 import { Instancias } from "./Instancias";
 import { materiaisExterior, materiaisSitio } from "./materiais";
-import { geoEspecie } from "./Entorno";
+import { geoEspecie, geoMoitaFolhas, matFolhagem } from "./Entorno";
 
 const SOMBRA: Partial<Record<Mat, boolean>> = { concreto: true, concretoClaro: true, terracota: true, grafite: true, muro: true };
 const ORDEM: Partial<Record<Plano, number>> = { grade: 2, brilho: 3, cone: 3, spot: 1 };
@@ -63,7 +63,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       tronco: new THREE.CylinderGeometry(0.13, 0.2, 1, 7).translate(0, 0.5, 0),
       copa: new THREE.IcosahedronGeometry(1, 1),
       arvore: geoEspecie("copa", true),
-      arbusto: moitaLisa(),
+      arbusto: geoMoitaFolhas(),
       pendente: geoFolhaPendente(),
     };
   }, []);
@@ -79,7 +79,8 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
     () => sitio.arvores.map((a, i) => new THREE.Matrix4().compose(new THREE.Vector3(a.x, a.y, a.z), new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), i * 1.3), new THREE.Vector3(1.25 * a.escala, 1.25 * a.escala, 1.25 * a.escala))),
     [sitio],
   );
-  const matArvore = useMemo(() => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }), []);
+  const matsMoita = useMemo(() => [ms.arbusto, matFolhagem()], [ms]);
+  const matsArvore = useMemo(() => [new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }), matFolhagem()], []);
   // nos enquadramentos do lazer, as árvores da floreira que ficam entre a câmera e o espaço saem de cena
   // (corte de apresentação: sem isso uma copa a 3 m da câmera tapa meia tela)
   const estado = useExp((s) => s.estado);
@@ -130,7 +131,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       ))}
       {ondas.lajes && <mesh geometry={ondas.lajes} material={mats.laje} castShadow receiveShadow name="lajes_em_onda" />}
       {ondas.fitas && <mesh geometry={ondas.fitas} material={mats.fita} name="fitas_led" />}
-      <Instancias geometria={geos.arbusto} material={ms.arbusto} matrizes={arbustos} />
+      <Instancias geometria={geos.arbusto} material={matsMoita} matrizes={arbustos} />
       <Instancias geometria={geos.pendente} material={ms.pendente} matrizes={pendentes} />
 
       <mesh geometry={geos.podio} material={ms.podio} castShadow receiveShadow />
@@ -142,18 +143,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
 
       {/* Entorno */}
       <mesh geometry={geos.calcada} material={ms.calcada} position={[0, -0.02, 0]} receiveShadow />
-      <Instancias geometria={geos.arvore} material={matArvore} matrizes={arvoresVisiveis} sombra />
+      <Instancias geometria={geos.arvore} material={matsArvore} matrizes={arvoresVisiveis} sombra />
     </group>
   );
-}
-
-/** Moita de floreira: icosaedro com vértices unidos e normais suaves (antes: facetado). */
-function moitaLisa(): THREE.BufferGeometry {
-  const base = new THREE.IcosahedronGeometry(1, 0);
-  base.deleteAttribute("normal");
-  base.deleteAttribute("uv");
-  const g = mergeVertices(base);
-  base.dispose();
-  g.computeVertexNormals();
-  return g;
 }

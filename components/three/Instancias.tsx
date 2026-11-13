@@ -5,7 +5,7 @@ import * as THREE from "three";
 
 interface Props {
   geometria: THREE.BufferGeometry;
-  material: THREE.Material;
+  material: THREE.Material | THREE.Material[];
   matrizes: THREE.Matrix4[];
   sombra?: boolean;
   recebeSombra?: boolean;

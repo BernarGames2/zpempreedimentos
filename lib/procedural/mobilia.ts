@@ -849,6 +849,7 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
   }
   // plantas sem interior modelado (só a vista do andar): nada a mobiliar
   if (t.id !== "final-02") return { prims: [], obstaculos: [], jardins: [], luzes: [] };
+  m.gl = glb; // camas, cadeiras, cubas, bacias, lavadora, cuba e cooktop da cozinha com modelo 3D
   const e = 0.05; // meia espessura de parede
   const S = de("sala");
   const C = de("cozinha");
@@ -860,21 +861,40 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     const x = C.x0 + e;
     const zi = S.z0 + 1.3;
     const zg = C.z1 - 0.9; // geladeira na ponta da varanda (planta)
-    m.cx("madeiraClara", x, x + 0.6, 0.1, 0.86, zi, zg, "movel");
+    const cuba = zi + 3.45;
+    const cooktop = zi + 2.3;
+    if (m.gl) {
+      // armário e tampo abertos em volta da cuba de embutir (modelo), como na bancada dos outros finais
+      m.cx("madeiraClara", x, x + 0.6, 0.1, 0.86, zi, cuba - 0.21, "movel");
+      m.cx("madeiraClara", x, x + 0.6, 0.1, 0.86, cuba + 0.21, zg, "movel");
+      m.cx("madeiraClara", x + 0.58, x + 0.6, 0.1, 0.86, cuba - 0.21, cuba + 0.21, "movel");
+      m.cx("marmore", x, x + 0.63, 0.86, 0.9, zi, cuba - 0.175);
+      m.cx("marmore", x, x + 0.63, 0.86, 0.9, cuba + 0.175, zg);
+      m.cx("marmore", x, x + 0.215, 0.86, 0.9, cuba - 0.175, cuba + 0.175);
+      m.cx("marmore", x + 0.49, x + 0.63, 0.86, 0.9, cuba - 0.175, cuba + 0.175);
+      m.modelos.push({ id: "cuba-cozinha", pos: [x + 0.235, 0.948, cuba], rotY: Math.PI / 2, escala: [0.01, 0.01, 0.01] });
+      m.modelos.push({ id: "cooktop", pos: [x + 0.3, 0.926, cooktop], rotY: Math.PI / 2, escala: [0.1876, 0.2, 0.269] });
+    } else {
+      m.cx("madeiraClara", x, x + 0.6, 0.1, 0.86, zi, zg, "movel");
+      m.cx("marmore", x, x + 0.63, 0.86, 0.9, zi, zg);
+    }
     m.cx("pretoFosco", x, x + 0.56, 0, 0.1, zi, zg);
-    m.cx("marmore", x, x + 0.63, 0.86, 0.9, zi, zg);
     m.cx("marmore", x, x + 0.02, 0.9, 1.48, zi, zg, "alto");
     m.cx("marmore", x, x + 0.3, 1.48, 1.52, zi + 0.3, zg - 0.1, "alto"); // prateleira
     m.cx("led", x + 0.04, x + 0.28, 1.475, 1.48, zi + 0.4, zg - 0.2, "alto");
     // tanque, máquina de lavar, cooktop com forno embutido e cuba (ordem da planta, da entrada para a varanda)
     m.cx("inox", x + 0.12, x + 0.5, 0.86, 0.91, zi + 0.12, zi + 0.55);
-    m.cx("eletro", x + 0.02, x + 0.6, 0.12, 0.84, zi + 0.85, zi + 1.45);
-    m.cil("vidroFosco", x + 0.61, 0.48, zi + 1.15, 0.2, 0.01, "movel", [0, 0, Math.PI / 2]);
-    m.cx("pretoFosco", x + 0.06, x + 0.58, 0.905, 0.91, zi + 2.0, zi + 2.6); // cooktop
+    m.eletro("lavadora", x + 0.02, x + 0.6, zi + 0.85, zi + 1.45, "x1", () => {
+      m.cx("eletro", x + 0.02, x + 0.6, 0.12, 0.84, zi + 0.85, zi + 1.45);
+      m.cil("vidroFosco", x + 0.61, 0.48, zi + 1.15, 0.2, 0.01, "movel", [0, 0, Math.PI / 2]);
+    });
+    if (!m.gl) m.cx("pretoFosco", x + 0.06, x + 0.58, 0.905, 0.91, zi + 2.0, zi + 2.6); // cooktop
     m.cx("pretoFosco", x + 0.58, x + 0.605, 0.22, 0.78, zi + 2.0, zi + 2.6); // forno
     m.cx("inox", x + 0.605, x + 0.615, 0.68, 0.7, zi + 2.05, zi + 2.55);
-    m.cx("inox", x + 0.12, x + 0.5, 0.88, 0.905, zi + 3.2, zi + 3.7); // cuba
-    m.cil("cromo", x + 0.06, 0.9, zi + 3.45, 0.012, 0.32);
+    if (!m.gl) {
+      m.cx("inox", x + 0.12, x + 0.5, 0.88, 0.905, zi + 3.2, zi + 3.7); // cuba
+      m.cil("cromo", x + 0.06, 0.9, zi + 3.45, 0.012, 0.32);
+    }
     // objetos da prateleira (tábuas, vasos)
     m.cil("madeiraNatural", x + 0.12, 1.52, zi + 1.0, 0.16, 0.02, "alto", [0, 0, Math.PI / 2]);
     m.cil("louca", x + 0.15, 1.52, zi + 1.6, 0.04, 0.2, "alto");
@@ -1092,5 +1112,5 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     m.luz((S2.x0 + S2.x1) / 2, 2.2, (S2.z0 + S2.z1) / 2, 0.7, 4);
   }
 
-  return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes };
+  return { prims: m.prims, obstaculos: m.obstaculos, jardins: [], luzes: m.luzes, modelos: m.modelos };
 }
