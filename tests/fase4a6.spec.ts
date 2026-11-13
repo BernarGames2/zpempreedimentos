@@ -68,7 +68,9 @@ test("fase 5: lazer e formulário até o WhatsApp", async ({ page, context }, in
   // formulário: abre o WhatsApp com a mensagem pronta
   await context.route("**/wa.me/**", (r) => r.fulfill({ status: 200, body: "ok" }));
   await context.route("**/api.whatsapp.com/**", (r) => r.fulfill({ status: 200, body: "ok" }));
-  await page.locator("#contato").scrollIntoViewIfNeeded();
+  // rolar pelo próprio navegador: com o 3D por software ainda rodando, a espera de "elemento estável" do
+  // Playwright passa do limite
+  await page.locator("#contato").evaluate((el) => el.scrollIntoView());
   await page.getByLabel("Nome").fill("Maria Teste");
   await page.getByLabel("WhatsApp").fill("(34) 99999-0000");
   await page.getByLabel("Unidade de interesse").fill("1802");

@@ -1,7 +1,8 @@
 # Liwo — onde continuar
 
 Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa está guardada em
-`maxi-liwo-estavel`, commit 7e366c6 — para voltar: publicar esse commit no projeto `liwo-maxi` da Vercel).
+`maxi-liwo-estavel`, commit 7e366c6 — para voltar: publicar esse commit no projeto `liwo-maxi` da Vercel.
+Antes da etapa de desempenho no celular, o último commit publicado era cd26c80).
 
 ## Feito até aqui
 - Interiores 3D navegáveis nos finais 01 a 06, com modelos 3D de terceiros (licenças em `CREDITOS.md`),
@@ -51,8 +52,12 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   visitante lê a ficha (`lib/preaquecer.ts`: shaders e texturas, em pedaços de poucos ms); os móveis baixam
   todos juntos; a cúpula de vidro da luminária não usa mais transmissão (desenhava a cena duas vezes por
   quadro); móveis e materiais do apartamento completam as texturas que faltam com texturas neutras de 1 px
-  para dividirem o mesmo shader. Medição (GPU por software, celular emulado,
-  `node scripts/_entrada.mjs <url>`): shaders compilados ao entrar 36 → 1.
+  para dividirem o mesmo shader. Medição no site publicado (GPU por software, celular emulado,
+  `node scripts/_entrada.mjs <url>`, 8 s na ficha antes de entrar): shaders compilados ao entrar 36 → 14,
+  maior travada 7,0 s (três quadros de 6–7 s) → 4,2–5,8 s (um quadro), tempo até estar dentro com os
+  móveis 58 s → 22–25 s; com o pré-aquecimento completo (ficha aberta por mais tempo), 1 a 2 shaders.
+  Na GPU por software cada shader leva segundos; num iPhone, frações de segundo — o pré-aquecimento deve
+  terminar em poucos segundos de ficha aberta. **Ainda não medido em iPhone de verdade.**
 
 ## Próximas etapas, em ordem
 1. **Espaços internos do lazer** (gourmet, salão, academia, coworking, sauna, lounge, brinquedoteca): no 3D
