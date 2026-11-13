@@ -17,8 +17,10 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   escurecidos em paredes, revestimentos, tapetes, pisos e forros, calculados com a forma real dos modelos 3D.
   **Rodar de novo sempre que mudar planta ou mobília** (`npx tsx scripts/assar-mapa.ts`); face que mudar
   sem novo cálculo fica neutra, sem erro.
-- Árvores e moitas de perto com cartões de folhas (`copaFolhas` em `components/three/Entorno.tsx`); de longe
-  seguem os volumes simples.
+- Árvores e moitas de perto com cartões de folhas (`copaFolhas` em `components/three/Entorno.tsx`), só no
+  nível de qualidade alto (o ajuste automático volta aos volumes lisos se o aparelho não acompanhar; as
+  moitas da torre e as do celular ficam sempre lisas). No nível alto a oclusão em tela (N8AO) fica só no
+  interior: do lado de fora ela pintava as folhas de preto.
 - Finais 02 e 04 com camas, cadeiras, cubas, bacias, lavadora, cuba e cooktop em modelo 3D (sofá, mesas e
   geladeira retrô seguem procedurais porque copiam o render oficial).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
