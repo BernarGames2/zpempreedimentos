@@ -59,6 +59,23 @@ Antes da etapa de desempenho no celular, o último commit publicado era cd26c80)
   Na GPU por software cada shader leva segundos; num iPhone, frações de segundo — o pré-aquecimento deve
   terminar em poucos segundos de ficha aberta. **Ainda não medido em iPhone de verdade.**
 
+- Realismo (13/11, à tarde). Bernardo liberou mudar o que for preciso para ficar mais realista, desde que
+  a planta, os móveis e a vegetação sigam o projeto ("eu explico pra ele depois").
+  - Bug de cor corrigido: `pintar` (lib/procedural/canvas.ts) escrevia no canvas a cor linear do three.js,
+    então toda textura pintada por código saía bem mais escura que o hex escolhido (o bronze virava quase
+    preto, o concreto cinza-escuro). As luzes que compensavam isso foram rebaixadas (`Luzes.tsx`).
+  - Fachada com a paleta dos renders: revestimento greige quente, painéis de bronze, lajes brancas;
+    janelas e portas de vidro de verdade (escuras de frente, espelhadas de lado, persiana/voil ao fundo,
+    luz quente só à noite); janelinhas foscas de dia; moitas das varandas com folhas (fora do nível leve).
+  - Reflexos do lado de fora vêm de um céu em degradê (zênite azul, horizonte claro, chão quente).
+  - Entorno como na foto aérea oficial (`public/referencias/aereo.jpg`): o Liwo encosta numa grande mata
+    densa (copa contínua com as copas em relevo e textura de folhagem, `geoMata` em `Entorno.tsx`), sem
+    ruas cortando a mata; bairro de casas do outro lado; prédios só a partir de ~450 m, em branco/bege/cinza;
+    janelas da cidade escuras de dia; lotes vagos verdes; menos árvores floridas.
+  - Piso do apartamento reflete o próprio cômodo (sonda com projeção em caixa, `lib/reflexoPiso.ts`),
+    refeita ao trocar de cômodo e de dia/noite; desligado no nível leve.
+  - O gradil das varandas continua de montantes de bronze (é o que aparece no render da sala).
+
 ## Próximas etapas, em ordem
 1. **Espaços internos do lazer** (gourmet, salão, academia, coworking, sauna, lounge, brinquedoteca): no 3D
    são só marcadores com a imagem oficial. Modelar o interior só com projeto da Maxi — hoje seria invenção.

@@ -19,7 +19,7 @@ interface ProgramaThree {
  *
  * Devolve uma função que interrompe o trabalho.
  */
-export function preaquecer(gl: THREE.WebGLRenderer, cena: THREE.Scene, camera: THREE.Camera, alvo: THREE.Object3D, comComposicao: boolean): () => void {
+export function preaquecer(gl: THREE.WebGLRenderer, cena: THREE.Scene, camera: THREE.Camera, alvo: THREE.Object3D, comComposicao: boolean, aoTerminar?: () => void): () => void {
   const fila: THREE.Object3D[] = [];
   alvo.traverse((o) => {
     if ((o as THREE.Mesh).isMesh || (o as THREE.Points).isPoints || (o as THREE.Line).isLine) fila.push(o);
@@ -64,7 +64,10 @@ export function preaquecer(gl: THREE.WebGLRenderer, cena: THREE.Scene, camera: T
       gl.setRenderTarget(anterior);
     }
     if (i < fila.length) id = window.setTimeout(passo, 24);
-    else rt?.dispose();
+    else {
+      rt?.dispose();
+      aoTerminar?.();
+    }
   };
   id = window.setTimeout(passo, 0);
   return () => {

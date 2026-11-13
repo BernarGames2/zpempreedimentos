@@ -8,7 +8,7 @@ import type { ParTextura } from "./texturasInterior";
  * bronze nos gradis, madeira clara, mármore branco e porcelanato bege.
  */
 
-/** Concreto aparente com manchas suaves e as juntas das fôrmas. */
+/** Revestimento greige (concreto/porcelanato) com manchas suaves e as juntas das placas. */
 export function texConcreto(claro = false): ParTextura {
   return memo(`concreto-${claro}`, () => {
     const n = 512;
@@ -16,7 +16,8 @@ export function texConcreto(claro = false): ParTextura {
     const b = ruido(n, n, 3, 9);
     const h = new Float32Array(n * n);
     for (let i = 0; i < h.length; i++) h[i] = (a[i] as number) * 0.85 + (b[i] as number) * 0.15;
-    const c = pintar(h, n, n, claro ? ["#b9b2a7", "#d3cdc3"] : ["#9a948b", "#bdb6ab"], 1.6);
+    // greige quente do revestimento das fachadas e do embasamento (renders oficiais); o claro é o das lajes
+    const c = pintar(h, n, n, claro ? ["#dcd6cc", "#ebe6de"] : ["#a19581", "#bbb09c"], 1.1);
     const g = c.getContext("2d");
     if (g) {
       g.strokeStyle = "rgba(60,55,50,0.28)";
@@ -41,7 +42,7 @@ export function texTerracota(): ParTextura {
   return memo("terracota", () => {
     const n = 256;
     const a = fbm(n, n, 90, 4, 61);
-    const c = pintar(a, n, n, ["#6e4a34", "#8a5e43"], 1.2);
+    const c = pintar(a, n, n, ["#76543b", "#8f6648"], 1.0);
     const g = c.getContext("2d");
     if (g) {
       g.fillStyle = "rgba(35,22,15,0.45)";
@@ -157,7 +158,7 @@ export function texMarmore(nome: string, cores: [string, string], veio: string):
     const g = c.getContext("2d");
     if (g) {
       const img = g.getImageData(0, 0, n, n);
-      const cv = new THREE.Color(veio);
+      const cv = new THREE.Color(veio).getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
       for (let i = 0; i < n * n; i++) {
         const t = Math.pow(1 - Math.min(1, (h[i] as number) * 9), 3) * 0.75;
         img.data[i * 4] = (img.data[i * 4] as number) * (1 - t) + cv.r * 255 * t;

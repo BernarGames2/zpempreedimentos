@@ -84,11 +84,15 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
     [sitio],
   );
   // folhas recortadas só no nível alto (e as moitas, só fora do celular): quem cai de nível volta ao liso
-  const folhas = useExp((s) => s.qualidade) === "alto";
+  const qualidade = useExp((s) => s.qualidade);
+  const folhas = qualidade === "alto";
   const moitaFolhas = folhas && !toquePrincipal();
+  // as moitas das varandas aparecem de perto na ficha da unidade: com folhas (eram bolas lisas) fora do nível leve
+  const moitaTorreFolhas = qualidade !== "baixo";
   const matArvore = useMemo(() => new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.92, side: THREE.DoubleSide }), []);
   const matsArvore = useMemo(() => (folhas ? [matArvore, matFolhagem()] : matArvore), [folhas, matArvore]);
   const matsMoita = useMemo(() => (moitaFolhas ? [ms.arbusto, matFolhagem()] : ms.arbusto), [moitaFolhas, ms]);
+  const matsMoitaTorre = useMemo(() => (moitaTorreFolhas ? [ms.arbusto, matFolhagem()] : ms.arbusto), [moitaTorreFolhas, ms]);
   // nos enquadramentos do lazer, as árvores da floreira que ficam entre a câmera e o espaço saem de cena
   // (corte de apresentação: sem isso uma copa a 3 m da câmera tapa meia tela)
   const estado = useExp((s) => s.estado);
@@ -141,7 +145,7 @@ export function Predio({ fonte, artificial, semTorre = false }: { fonte: string;
       ))}
       {ondas.lajes && <mesh geometry={ondas.lajes} material={mats.laje} castShadow receiveShadow name="lajes_em_onda" />}
       {ondas.fitas && <mesh geometry={ondas.fitas} material={mats.fita} name="fitas_led" />}
-      <Instancias geometria={geos.moitaLisa} material={ms.arbusto} matrizes={arbustosTorre} />
+      <Instancias key={moitaTorreFolhas ? "torre-folhas" : "torre-lisa"} geometria={moitaTorreFolhas ? geos.arbusto : geos.moitaLisa} material={matsMoitaTorre} matrizes={arbustosTorre} />
       <Instancias key={moitaFolhas ? "moita-folhas" : "moita-lisa"} geometria={moitaFolhas ? geos.arbusto : geos.moitaLisa} material={matsMoita} matrizes={arbustosSitio} />
       <Instancias geometria={geos.pendente} material={ms.pendente} matrizes={pendentes} />
 

@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { toquePrincipal } from "@/lib/controles";
 import { memo, tela, textura } from "@/lib/procedural/canvas";
-import { CALCADA, caminhoParque, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie } from "@/lib/procedural/entorno";
+import { CALCADA, caminhoParque, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie, type Quadra } from "@/lib/procedural/entorno";
 
 /** Fachadas: brancos, areias, cinzas e um terracota (cores comuns no bairro). */
 const PALETA = ["#e3dfd6", "#d9cbb1", "#bfbfba", "#cbb89a", "#a29d94", "#b07862", "#8e8a83", "#d2d0c8"];
@@ -110,9 +110,14 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
       g.beginPath();
       g.ellipse(x0 + w / 2, z0 + h / 2, w * 0.08, h * 0.08, 0, 0, Math.PI * 2);
       g.fill();
+    } else if (q.uso === "mata") {
+      // chão sombreado da mata (só aparece pelas frestas da copa)
+      ret(q.x0, q.z0, q.x1, q.z1, "#33492a");
+      manchas(40, ["#2b3f23", "#40592f"], x0, z0, w, h, 12);
     } else {
-      ret(q.x0, q.z0, q.x1, q.z1, "#8e8a57");
-      manchas(26 + Math.floor(rr() * 20), ["#a5855a", "#9a9a62", "#b09a6c", "#7e8550"], x0, z0, w, h, 14);
+      // lote vago: campo de cerrado (na foto aérea é verde, com manchas de capim seco e pouca terra)
+      ret(q.x0, q.z0, q.x1, q.z1, "#7d8a4c");
+      manchas(26 + Math.floor(rr() * 20), ["#8f8c55", "#6f8243", "#9a8f5e", "#a08a5c"], x0, z0, w, h, 14);
     }
   }
   // sombra de contato e entrada de carro das casas; deque das piscinas
@@ -195,6 +200,138 @@ function texturaCampo(): THREE.CanvasTexture {
   return t;
 }
 
+// ───────────────────────── mata ─────────────────────────
+
+/** Hash determinístico de uma célula (0 a 1). */
+function hashCel(i: number, j: number, k: number): number {
+  const n = Math.sin(i * 127.1 + j * 311.7 + k * 74.7) * 43758.5453;
+  return n - Math.floor(n);
+}
+
+/**
+ * Mata densa como na foto aérea oficial: uma malha só com as copas das árvores em relevo — cada copa é uma
+ * calota de esfera (raio de 2,6 a 5 m) na altura da sua árvore (8 a 17 m), com o próprio tom de verde e o
+ * miolo mais claro que a borda. Milhares de árvores individuais pesariam demais; as da borda das quadras,
+ * vistas da rua, são árvores de verdade (entorno.ts).
+ */
+function geoMata(qs: Quadra[]): THREE.BufferGeometry | null {
+  if (!qs.length) return null;
+  const tons = ["#24401f", "#2f4d24", "#3c5c29", "#4a6a2f", "#5a7834", "#3f5a33", "#6a7c37", "#4d6328"].map((c) => new THREE.Color(c));
+  const cor = new THREE.Color();
+  const CEL = 5; // uma árvore por célula de 5 m
+  const partes: THREE.BufferGeometry[] = [];
+  // lados que dão para a rua (a copa desce até o chão); do lado de outra quadra de mata ela continua
+  const vizinha = (x: number, z: number) => qs.some((o) => x > o.x0 && x < o.x1 && z > o.z0 && z < o.z1);
+  for (const q of qs) {
+    const W = q.x1 - q.x0;
+    const D = q.z1 - q.z0;
+    const [mx, mz] = [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2];
+    const aberto = { x0: !vizinha(q.x0 - 2, mz), x1: !vizinha(q.x1 + 2, mz), z0: !vizinha(mx, q.z0 - 2), z1: !vizinha(mx, q.z1 + 2) };
+    const perto = Math.hypot((q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2) < 330;
+    const passo = perto ? 1.6 : 3.2;
+    const nx = Math.max(2, Math.round(W / passo));
+    const nz = Math.max(2, Math.round(D / passo));
+    const g = new THREE.PlaneGeometry(W, D, nx, nz).rotateX(-Math.PI / 2).translate((q.x0 + q.x1) / 2, 0, (q.z0 + q.z1) / 2);
+    const pos = g.attributes.position as THREE.BufferAttribute;
+    const cores = new Float32Array(pos.count * 3);
+    for (let v = 0; v < pos.count; v++) {
+      const x = pos.getX(v);
+      const z = pos.getZ(v);
+      const ci = Math.floor(x / CEL);
+      const cj = Math.floor(z / CEL);
+      // copa mais alta que cobre este ponto (sub-bosque a 5 m onde nenhuma cobre)
+      let h = 9;
+      let dona = -1;
+      let frac = 0;
+      for (let a = -1; a <= 1; a++) {
+        for (let b = -1; b <= 1; b++) {
+          const i = ci + a;
+          const j = cj + b;
+          const px = (i + 0.15 + 0.7 * hashCel(i, j, 1)) * CEL;
+          const pz = (j + 0.15 + 0.7 * hashCel(i, j, 2)) * CEL;
+          const r = 3.0 + 2.0 * hashCel(i, j, 3);
+          // dossel quase contínuo (10 a 14 m) com uma árvore emergente aqui e ali: com alturas muito
+          // diferentes a mata parecia um morro
+          const hh = hashCel(i, j, 4);
+          const topo = hh > 0.94 ? 15 + 2 * hh : 10.5 + 3 * hh;
+          const d2 = (x - px) * (x - px) + (z - pz) * (z - pz);
+          if (d2 >= r * r) continue;
+          const y = topo - r * 0.45 + Math.sqrt(r * r - d2) * 0.45;
+          if (y > h) {
+            h = y;
+            dona = hashCel(i, j, 5);
+            frac = 1 - Math.sqrt(d2) / r;
+          }
+        }
+      }
+      const borda = Math.min(aberto.x0 ? x - q.x0 : 99, aberto.x1 ? q.x1 - x : 99, aberto.z0 ? z - q.z0 : 99, aberto.z1 ? q.z1 - z : 99);
+      if (borda < 0.4) h = 0.3;
+      else if (borda < 2.5) h *= 0.5 + 0.5 * (borda / 2.5);
+      pos.setY(v, h);
+      // cada copa com o seu verde (algumas mais amareladas), miolo claro e borda escura
+      const t = (dona < 0 ? 0.1 : dona) * 0.999 * (tons.length - 1);
+      const k = Math.floor(t);
+      cor.copy(tons[k] as THREE.Color).lerp(tons[k + 1] as THREE.Color, t - k);
+      // miolo da copa claro, borda e frestas escuras: o "brócolis" da mata vista de cima
+      cor.multiplyScalar(dona < 0 ? 0.3 : 0.48 + 0.7 * Math.pow(frac, 0.6));
+      cores[v * 3] = cor.r;
+      cores[v * 3 + 1] = cor.g;
+      cores[v * 3 + 2] = cor.b;
+    }
+    g.setAttribute("color", new THREE.BufferAttribute(cores, 3));
+    g.deleteAttribute("uv");
+    g.computeVertexNormals();
+    partes.push(g);
+  }
+  const g = mergeGeometries(partes, false) as THREE.BufferGeometry;
+  partes.forEach((p) => p.dispose());
+  return g;
+}
+
+/** Material da copa: cor por vértice e um grão de folhagem no shader (some de longe, sem chuvisco). */
+function materialMata(): THREE.MeshStandardMaterial {
+  const m = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95 });
+  m.onBeforeCompile = (s) => {
+    s.vertexShader = s.vertexShader
+      .replace("#include <common>", "#include <common>\nvarying vec3 vMataPos;")
+      .replace("#include <project_vertex>", "#include <project_vertex>\nvMataPos = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+    s.fragmentShader = s.fragmentShader
+      .replace(
+        "#include <common>",
+        `#include <common>
+        varying vec3 vMataPos;
+        float hM(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+        float vM(vec2 p) { vec2 i = floor(p); vec2 f = fract(p); f = f * f * (3.0 - 2.0 * f); return mix(mix(hM(i), hM(i + vec2(1.0, 0.0)), f.x), mix(hM(i + vec2(0.0, 1.0)), hM(i + vec2(1.0, 1.0)), f.x), f.y); }`,
+      )
+      .replace(
+        "#include <color_fragment>",
+        `#include <color_fragment>
+        vec2 pMata = vMataPos.xz + vMataPos.y * 0.7;
+        float longeMata = smoothstep(0.35, 1.6, fwidth(pMata.x) * 3.1);
+        {
+          float folhas = 0.55 * vM(pMata * 1.3) + 0.45 * vM(pMata * 3.1);
+          diffuseColor.rgb *= mix(0.62 + 0.7 * folhas, 1.0, longeMata);
+        }`,
+      )
+      .replace(
+        "#include <normal_fragment_maps>",
+        `#include <normal_fragment_maps>
+        {
+          // relevo das folhagens (bump procedural): sem ele a copa sombreava liso, como um morro
+          float alt = 0.6 * vM(pMata * 0.9) + 0.4 * vM(pMata * 2.3);
+          vec3 dpx = dFdx(-vViewPosition);
+          vec3 dpy = dFdy(-vViewPosition);
+          vec3 r1 = cross(dpy, normal);
+          vec3 r2 = cross(normal, dpx);
+          float det = dot(dpx, r1);
+          vec3 grad = sign(det) * (dFdx(alt) * r1 + dFdy(alt) * r2);
+          normal = normalize(abs(det) * normal - grad * 1.6 * (1.0 - longeMata));
+        }`,
+      );
+  };
+  return m;
+}
+
 // ───────────────────────── materiais ─────────────────────────
 
 /** Fachadas com janelas desenhadas no shader pela posição no mundo (andares de 3 m): acesas à noite. */
@@ -254,10 +391,12 @@ function materialFachada(): THREE.MeshStandardMaterial {
           float h = hashJ(vec3(cel, vId + (emX ? 31.0 : 0.0)));
           // de longe a janela fica menor que um pixel: troca o desenho pela média (sem chuvisco)
           vec2 fw = fwidth(q);
-          float longe = smoothstep(0.18, 0.55, max(fw.x, fw.y));
+          float longe = smoothstep(0.1, 0.38, max(fw.x, fw.y));
           float cobertura = (corrida ? 0.88 : largJ) * 0.52;
           float limiar = mix(0.55, 0.8, h1);
-          vec3 vidroDia = mix(vec3(0.33, 0.4, 0.47), vec3(0.52, 0.6, 0.66), h3) * (0.85 + 0.25 * h);
+          // de dia a janela é mais escura que a parede (interior na sombra): antes era cinza-azulado claro e os
+          // prédios viravam blocos brancos chuviscados
+          vec3 vidroDia = mix(vec3(0.06, 0.075, 0.09), vec3(0.15, 0.17, 0.19), h3) * (0.85 + 0.3 * h);
           vec3 vidro = mix(vidroDia, vec3(0.05, 0.06, 0.085), uNoite);
           jan = mix(jan, parede * step(0.0, q.y) * cobertura, longe);
           diffuseColor.rgb *= 1.0 - laje * 0.14 * (1.0 - longe);
@@ -696,6 +835,16 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
     const vias = new THREE.Mesh(guardar(geoVias(e)), guardar(new THREE.MeshStandardMaterial({ map: guardar(texturaVia()), roughness: 0.92 })));
     vias.receiveShadow = true;
     g.add(chao, campo, serra, vias);
+
+    // mata densa em volta (foto aérea oficial)
+    const geoM = geoMata(e.quadras.filter((q) => q.uso === "mata"));
+    if (geoM) {
+      const mata = new THREE.Mesh(guardar(geoM), guardar(materialMata()));
+      mata.name = "mata";
+      mata.castShadow = true;
+      mata.receiveShadow = true;
+      g.add(mata);
+    }
 
     // prédios e casas (um único material com janelas no shader)
     const fachada = guardar(materialFachada());

@@ -2,37 +2,56 @@ import * as THREE from "three";
 import { memo, sorteio, tela, textura } from "./canvas";
 
 
-/** Janela com veneziana: metade persiana, metade vidro (acesa ou apagada). */
+/**
+ * Janela vista de fora: caixilho claro de alumínio, duas folhas. Apagada (dia) é vidro escuro — quem dá a
+ * cor é o reflexo do céu no material — com persiana clara meio baixada numa folha e cortina na outra;
+ * acesa (noite), a luz quente do cômodo na folha de vidro.
+ */
 export function texJanela(acesa: boolean): THREE.CanvasTexture {
   return memo(`janela-${acesa}`, () => {
     const [c, g] = tela(128, 144);
-    g.fillStyle = "#15171c";
+    g.fillStyle = acesa ? "#15171c" : "#bcb8b0";
     g.fillRect(0, 0, 128, 144);
-    // persiana
-    g.fillStyle = "#23262d";
-    g.fillRect(8, 8, 52, 128);
-    g.strokeStyle = "#0c0d10";
-    g.lineWidth = 2;
-    for (let y = 14; y < 136; y += 7) {
-      g.beginPath();
-      g.moveTo(8, y);
-      g.lineTo(60, y);
-      g.stroke();
-    }
-    // vidro
-    const grad = g.createLinearGradient(0, 8, 0, 136);
+    const vidro = (x: number) => {
+      const grad = g.createLinearGradient(0, 8, 0, 136);
+      if (acesa) {
+        grad.addColorStop(0, "#ffe2b0");
+        grad.addColorStop(1, "#e9a85c");
+      } else {
+        grad.addColorStop(0, "#2c3438");
+        grad.addColorStop(1, "#14181b");
+      }
+      g.fillStyle = grad;
+      g.fillRect(x, 8, 54, 128);
+    };
+    vidro(66);
     if (acesa) {
-      grad.addColorStop(0, "#ffe2b0");
-      grad.addColorStop(1, "#e9a85c");
-    } else {
-      grad.addColorStop(0, "#3b5a8f");
-      grad.addColorStop(1, "#1a2740");
-    }
-    g.fillStyle = grad;
-    g.fillRect(66, 8, 54, 128);
-    if (acesa) {
+      // folha da persiana (fechada) e cortina contra a luz
+      g.fillStyle = "#23262d";
+      g.fillRect(8, 8, 52, 128);
+      g.strokeStyle = "#0c0d10";
+      g.lineWidth = 2;
+      for (let y = 14; y < 136; y += 7) {
+        g.beginPath();
+        g.moveTo(8, y);
+        g.lineTo(60, y);
+        g.stroke();
+      }
       g.fillStyle = "rgba(120,70,30,0.35)";
       for (let x = 70; x < 120; x += 9) g.fillRect(x, 8, 3, 128);
+    } else {
+      vidro(8);
+      // persiana clara meio baixada (as frestas escuras entre as lâminas)
+      g.fillStyle = "#a9a39a";
+      g.fillRect(8, 8, 52, 58);
+      g.fillStyle = "rgba(40,36,32,0.45)";
+      for (let y = 12; y < 66; y += 5) g.fillRect(8, y, 52, 1);
+      // cortina de voil ao fundo da outra folha
+      const r = sorteio(11);
+      for (let x = 98; x < 120; x += 4) {
+        g.fillStyle = `rgba(150,142,128,${0.22 + r() * 0.12})`;
+        g.fillRect(x, 8, 2, 128);
+      }
     }
     return textura(c);
   });
@@ -53,6 +72,23 @@ export function texJanelaLuz(): THREE.CanvasTexture {
   });
 }
 
+/** Janelinha do banho de dia: vidro fosco claro com caixilho escuro. */
+export function texJanelinhaDia(): THREE.CanvasTexture {
+  return memo("janelinha-dia", () => {
+    const [c, g] = tela(64, 64);
+    g.fillStyle = "#2a2a2c";
+    g.fillRect(0, 0, 64, 64);
+    const grad = g.createLinearGradient(0, 0, 0, 64);
+    grad.addColorStop(0, "#c9cccc");
+    grad.addColorStop(1, "#a9adad");
+    g.fillStyle = grad;
+    g.fillRect(7, 7, 50, 50);
+    g.fillStyle = "#2a2a2c";
+    g.fillRect(30, 7, 4, 50);
+    return textura(c);
+  });
+}
+
 /** Janelinha quadrada com caixilho escuro, acesa. */
 export function texJanelinha(): THREE.CanvasTexture {
   return memo("janelinha", () => {
@@ -66,6 +102,34 @@ export function texJanelinha(): THREE.CanvasTexture {
     g.fillRect(7, 7, 50, 50);
     g.fillStyle = "#14161a";
     g.fillRect(30, 7, 4, 50);
+    return textura(c);
+  });
+}
+
+/** Porta de vidro da sacada de dia: interior na penumbra, cortina de voil e caixilho escuro (o brilho vem do reflexo). */
+export function texPortaVidroDia(): THREE.CanvasTexture {
+  return memo("porta-vidro-dia", () => {
+    const [c, g] = tela(256, 256);
+    const grad = g.createLinearGradient(0, 0, 0, 256);
+    grad.addColorStop(0, "#34302c");
+    grad.addColorStop(0.6, "#25221f");
+    grad.addColorStop(1, "#1a1816");
+    g.fillStyle = grad;
+    g.fillRect(0, 0, 256, 256);
+    const r = sorteio(7);
+    // voil claro numa das folhas, com as dobras
+    for (let x = 150; x < 250; x += 5) {
+      g.fillStyle = `rgba(196,188,174,${0.28 + r() * 0.16})`;
+      g.fillRect(x, 0, 3, 256);
+    }
+    // silhueta dos móveis contra a luz do fundo
+    g.fillStyle = "rgba(10,9,8,0.55)";
+    g.fillRect(20, 190, 110, 66);
+    g.fillStyle = "#1b1a19";
+    g.fillRect(0, 0, 256, 7);
+    g.fillRect(0, 0, 6, 256);
+    g.fillRect(250, 0, 6, 256);
+    g.fillRect(125, 0, 6, 256);
     return textura(c);
   });
 }

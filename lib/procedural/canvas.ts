@@ -101,12 +101,15 @@ export function pintar(valores: Float32Array, larg: number, alt: number, cores: 
   const b = new THREE.Color(cores[1]);
   const img = g.createImageData(larg, alt);
   const cor = new THREE.Color();
+  // o canvas guarda sRGB (é assim que a textura é lida): a cor de trabalho do three.js é linear e, escrita
+  // direto, deixava tudo bem mais escuro que o hex escolhido (um bronze #8a5e43 virava quase preto)
+  const srgb = { r: 0, g: 0, b: 0 };
   for (let i = 0; i < valores.length; i++) {
     const t = Math.min(1, Math.max(0, ((valores[i] as number) - 0.5) * contraste + 0.5));
-    cor.copy(a).lerp(b, t);
-    img.data[i * 4] = cor.r * 255;
-    img.data[i * 4 + 1] = cor.g * 255;
-    img.data[i * 4 + 2] = cor.b * 255;
+    cor.copy(a).lerp(b, t).getRGB(srgb, THREE.SRGBColorSpace);
+    img.data[i * 4] = srgb.r * 255;
+    img.data[i * 4 + 1] = srgb.g * 255;
+    img.data[i * 4 + 2] = srgb.b * 255;
     img.data[i * 4 + 3] = 255;
   }
   g.putImageData(img, 0, 0);

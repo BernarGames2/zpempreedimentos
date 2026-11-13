@@ -8,7 +8,7 @@
  */
 import { P } from "./predio";
 
-export type Uso = "liwo" | "casas" | "vertical" | "vazio" | "praca" | "comercial" | "parque";
+export type Uso = "liwo" | "casas" | "vertical" | "vazio" | "praca" | "comercial" | "parque" | "mata";
 export type Especie = "copa" | "ipe" | "flamboyant" | "palmeira" | "cone" | "cerrado";
 
 export interface Quadra { x0: number; x1: number; z0: number; z1: number; uso: Uso; semente: number }
@@ -32,6 +32,8 @@ export interface Entorno {
 }
 
 export const LARG_RUA = 10;
+/** Índices da paleta de fachadas (Entorno.tsx) usados nas torres: brancos, beges e cinzas, como no skyline real. */
+const CORES_TORRE = [0, 1, 2, 3, 4, 7];
 export const CALCADA = 2.6;
 const PASSO_Z = 92; // distância entre ruas paralelas ao eixo x
 const PASSO_X = 112; // distância entre ruas paralelas ao eixo z
@@ -45,6 +47,14 @@ const LIVRE = { x0: -26, x1: 34, z0: BASE_Z + 4, z1: BASE_Z + 46 };
 export function gerador(semente: number) {
   let s = semente >>> 0;
   return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 2 ** 32);
+}
+
+/**
+ * Onde fica a mata: na foto aérea oficial o Liwo encosta numa grande área de mata densa (à direita e atrás),
+ * com o bairro de casas do outro lado e os prédios só bem longe. Campo suave, para formar manchas contínuas.
+ */
+export function campoMata(x: number, z: number): number {
+  return 0.55 * Math.sin(x * 0.0065 + 0.8) + 0.45 * Math.cos(z * 0.0072 - 0.4) + 0.35 * Math.sin((x - z) * 0.011 + 2.1) + (x > 40 ? 0.55 : -0.25);
 }
 
 const dentro = (x: number, z: number, r: { x0: number; x1: number; z0: number; z1: number }, m = 0) =>
@@ -64,34 +74,14 @@ export function gerarEntorno(): Entorno {
   const lim = MEIO_LADO;
   const meia = LARG_RUA / 2;
 
-  // ── Vias: trechos entre cruzamentos (sem sobreposição) e os próprios cruzamentos ──
-  const vias: Via[] = [];
-  for (const z of zs) {
-    if (Math.abs(z) > lim) continue;
-    for (let j = 0; j < xs.length - 1; j++) {
-      const a = (xs[j] as number) + meia;
-      const b = (xs[j + 1] as number) - meia;
-      if (b < -lim || a > lim) continue;
-      vias.push({ x0: Math.max(a, -lim), x1: Math.min(b, lim), z0: z - meia, z1: z + meia, eixo: "x", faixa: true });
-    }
-  }
-  for (const x of xs) {
-    if (Math.abs(x) > lim) continue;
-    for (let k = 0; k < zs.length - 1; k++) {
-      const a = (zs[k] as number) + meia;
-      const b = (zs[k + 1] as number) - meia;
-      if (b < -lim || a > lim) continue;
-      vias.push({ x0: x - meia, x1: x + meia, z0: Math.max(a, -lim), z1: Math.min(b, lim), eixo: "z", faixa: true });
-    }
-    for (const z of zs) if (Math.abs(z) < lim) vias.push({ x0: x - meia, x1: x + meia, z0: z - meia, z1: z + meia, eixo: "x", faixa: false });
-  }
-
-  // ── Quadras e uso do solo ──
-  const quadras: Quadra[] = [];
+  // ── Uso do solo por quadra (antes das ruas: entre duas quadras de mata não passa rua) ──
   const recuo = meia + CALCADA;
+  const usos = new Map<string, Uso>();
+  const chave = (j: number, k: number) => `${j},${k}`;
+  const celula = (j: number, k: number) => ({ x0: (xs[j] as number) + recuo, x1: (xs[j + 1] as number) - recuo, z0: (zs[k] as number) + recuo, z1: (zs[k + 1] as number) - recuo });
   for (let j = 0; j < xs.length - 1; j++) {
     for (let k = 0; k < zs.length - 1; k++) {
-      const q = { x0: (xs[j] as number) + recuo, x1: (xs[j + 1] as number) - recuo, z0: (zs[k] as number) + recuo, z1: (zs[k + 1] as number) - recuo };
+      const q = celula(j, k);
       const cx = (q.x0 + q.x1) / 2;
       const cz = (q.z0 + q.z1) / 2;
       const d = Math.hypot(cx, cz);
@@ -101,17 +91,67 @@ export function gerarEntorno(): Entorno {
       // Parque Sul Karaíba: parque linear com árvores adultas que "abraça as torres" (Maxi / Udicult, 2025).
       // A posição exata não é pública: fica em frente ao Liwo, ao longo da rua, o que mantém a vista aberta.
       else if (q.z0 < BASE_Z + 30 && q.z1 > BASE_Z + 30 && Math.abs(cx - 4) < PASSO_X * 1.6) uso = "parque";
+      else if (d < 620 && campoMata(cx, cz) > 0.25) uso = "mata";
       else {
+        // perto do Liwo, bairro de casas (foto aérea); prédios só a partir de ~450 m e mais longe
         const t = r();
         const longe = d > 520;
-        const perto = d < 260;
-        if (perto) uso = t < 0.52 ? "casas" : t < 0.6 ? "vazio" : t < 0.78 ? "vertical" : t < 0.9 ? "praca" : "comercial";
-        else if (longe) uso = t < 0.34 ? "casas" : t < 0.74 ? "vertical" : t < 0.86 ? "comercial" : t < 0.94 ? "praca" : "vazio";
-        else uso = t < 0.46 ? "casas" : t < 0.7 ? "vertical" : t < 0.77 ? "vazio" : t < 0.89 ? "comercial" : "praca";
+        const perto = d < 300;
+        if (perto) uso = t < 0.78 ? "casas" : t < 0.88 ? "praca" : t < 0.94 ? "vazio" : "comercial";
+        else if (longe) uso = t < 0.4 ? "casas" : t < 0.7 ? "vertical" : t < 0.84 ? "comercial" : t < 0.94 ? "praca" : "vazio";
+        else uso = t < 0.64 ? "casas" : t < 0.74 ? "vertical" : t < 0.8 ? "vazio" : t < 0.9 ? "comercial" : "praca";
+      }
+      usos.set(chave(j, k), uso);
+    }
+  }
+  const ehMata = (j: number, k: number) => usos.get(chave(j, k)) === "mata";
+
+  // ── Vias: trechos entre cruzamentos (sem sobreposição) e os próprios cruzamentos; não cortam a mata ──
+  const vias: Via[] = [];
+  zs.forEach((z, k) => {
+    if (Math.abs(z) > lim) return;
+    for (let j = 0; j < xs.length - 1; j++) {
+      const a = (xs[j] as number) + meia;
+      const b = (xs[j + 1] as number) - meia;
+      if (b < -lim || a > lim) continue;
+      if (ehMata(j, k - 1) && ehMata(j, k)) continue;
+      vias.push({ x0: Math.max(a, -lim), x1: Math.min(b, lim), z0: z - meia, z1: z + meia, eixo: "x", faixa: true });
+    }
+  });
+  xs.forEach((x, j) => {
+    if (Math.abs(x) > lim) return;
+    for (let k = 0; k < zs.length - 1; k++) {
+      const a = (zs[k] as number) + meia;
+      const b = (zs[k + 1] as number) - meia;
+      if (b < -lim || a > lim) continue;
+      if (ehMata(j - 1, k) && ehMata(j, k)) continue;
+      vias.push({ x0: x - meia, x1: x + meia, z0: Math.max(a, -lim), z1: Math.min(b, lim), eixo: "z", faixa: true });
+    }
+    zs.forEach((z, k) => {
+      if (Math.abs(z) >= lim) return;
+      if (ehMata(j - 1, k - 1) && ehMata(j, k - 1) && ehMata(j - 1, k) && ehMata(j, k)) return;
+      vias.push({ x0: x - meia, x1: x + meia, z0: z - meia, z1: z + meia, eixo: "x", faixa: false });
+    });
+  });
+
+  // ── Quadras: a mata avança sobre a rua que não existe mais, até emendar com a vizinha ──
+  const quadras: Quadra[] = [];
+  for (let j = 0; j < xs.length - 1; j++) {
+    for (let k = 0; k < zs.length - 1; k++) {
+      const uso = usos.get(chave(j, k));
+      if (!uso) continue;
+      const q = celula(j, k);
+      if (uso === "mata") {
+        if (ehMata(j - 1, k)) q.x0 = xs[j] as number;
+        if (ehMata(j + 1, k)) q.x1 = xs[j + 1] as number;
+        if (ehMata(j, k - 1)) q.z0 = zs[k] as number;
+        if (ehMata(j, k + 1)) q.z1 = zs[k + 1] as number;
       }
       quadras.push({ ...q, uso, semente: Math.floor(r() * 1e9) });
     }
   }
+  /** O ponto cai dentro de uma quadra de mata (sem rua, árvore de calçada nem poste). */
+  const naMata = (x: number, z: number) => quadras.some((q) => q.uso === "mata" && x > q.x0 - 1 && x < q.x1 + 1 && z > q.z0 - 1 && z < q.z1 + 1);
 
   const predios: Volume[] = [];
   const casas: Casa[] = [];
@@ -124,7 +164,8 @@ export function gerarEntorno(): Entorno {
     arvores.push({ x, z, especie, escala, tom: rr(), giro: rr() * Math.PI * 2 });
   };
   // sibipirunas (amarelas) e flamboyants (vermelhos) florescem em novembro em Uberlândia
-  const especieRua = (t: number): Especie => (t < 0.5 ? "copa" : t < 0.6 ? "ipe" : t < 0.68 ? "flamboyant" : t < 0.86 ? "palmeira" : "cone");
+  // menos copas floridas que antes: na foto aérea o verde domina
+  const especieRua = (t: number): Especie => (t < 0.6 ? "copa" : t < 0.66 ? "ipe" : t < 0.7 ? "flamboyant" : t < 0.86 ? "palmeira" : "cone");
 
   for (const q of quadras) {
     const rr = gerador(q.semente);
@@ -170,7 +211,7 @@ export function gerarEntorno(): Entorno {
         const cx = q.x0 + ((i + 0.5) / n) * W + (rr() - 0.5) * 6;
         const cz = q.z0 + 14 + prof / 2 + rr() * Math.max(0, D - prof - 28);
         const andares = andaresBase + Math.floor(rr() * 16);
-        const cor = Math.floor(rr() * 6);
+        const cor = CORES_TORRE[Math.floor(rr() * CORES_TORRE.length)] as number;
         const alt = andares * 3 + 2;
         predios.push({ x: cx, z: cz, larg, prof, alt, giro: 0, cor });
         predios.push({ x: cx, z: cz, larg: larg + 8, prof: prof + 8, alt: 4.5, giro: 0, cor: 6 }); // embasamento
@@ -199,7 +240,29 @@ export function gerarEntorno(): Entorno {
         const z = q.z0 + 5 + rr() * (D - 7);
         if (Math.abs(z - caminhoParque(q, x)) < 3.2) continue;
         const t = rr();
-        arvore(x, z, t < 0.6 ? "copa" : t < 0.8 ? "ipe" : t < 0.9 ? "flamboyant" : "cerrado", 1.05 + rr() * 0.6, rr);
+        arvore(x, z, t < 0.74 ? "copa" : t < 0.82 ? "ipe" : t < 0.86 ? "flamboyant" : "cerrado", 1.05 + rr() * 0.6, rr);
+      }
+    } else if (q.uso === "mata") {
+      // a massa da mata é uma copa contínua (Entorno.tsx); aqui só as árvores da borda, vistas da rua
+      if (Math.hypot((q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2) < 420) {
+        const borda = (x: number, z: number) => {
+          const t = rr();
+          arvore(x, z, t < 0.55 ? "copa" : t < 0.8 ? "cerrado" : t < 0.92 ? "ipe" : "flamboyant", 1.0 + rr() * 0.7, rr);
+        };
+        // só nos lados que dão para a rua (do lado de outra quadra de mata a copa é contínua)
+        const [cx, cz] = [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2];
+        const ruaZ0 = !naMata(cx, q.z0 - 4);
+        const ruaZ1 = !naMata(cx, q.z1 + 4);
+        const ruaX0 = !naMata(q.x0 - 4, cz);
+        const ruaX1 = !naMata(q.x1 + 4, cz);
+        for (let x = q.x0 + 3; x < q.x1 - 3; x += 7 + rr() * 5) {
+          if (ruaZ0) borda(x, q.z0 + 2.5 + rr() * 2);
+          if (ruaZ1) borda(x, q.z1 - 2.5 - rr() * 2);
+        }
+        for (let z = q.z0 + 8; z < q.z1 - 8; z += 7 + rr() * 5) {
+          if (ruaX0) borda(q.x0 + 2.5 + rr() * 2, z);
+          if (ruaX1) borda(q.x1 - 2.5 - rr() * 2, z);
+        }
       }
     } else if (q.uso === "praca") {
       const n = 18 + Math.floor(rr() * 14);
@@ -228,7 +291,7 @@ export function gerarEntorno(): Entorno {
     for (let x = -ALCANCE; x <= ALCANCE; x += 11 + r() * 5) {
       for (const lado of [-1, 1]) {
         const zz = z + lado * passeio;
-        if (!perto(x, zz, 390) || naEsquina(x, zz) || r() < 0.18) continue;
+        if (!perto(x, zz, 390) || naEsquina(x, zz) || r() < 0.18 || naMata(x, zz)) continue;
         // frente do Liwo: só as quatro árvores dos renders
         if (lado === -1 && Math.abs(z - BASE_Z) < 1 && x > lote.x0 - 8 && x < lote.x1 + 8) continue;
         arvore(x, zz, especieRua(r()), 0.62 + r() * 0.3, r);
@@ -237,7 +300,7 @@ export function gerarEntorno(): Entorno {
     for (let x = -ALCANCE, i = 0; x <= ALCANCE; x += 34, i++) {
       const lado = i % 2 ? 1 : -1;
       const zz = z + lado * (meia + 0.5);
-      if (!perto(x, zz, 380) || naEsquina(x, zz) || !livreDoLiwo(x, zz, 1)) continue;
+      if (!perto(x, zz, 380) || naEsquina(x, zz) || !livreDoLiwo(x, zz, 1) || naMata(x, zz)) continue;
       postes.push({ x, z: zz, giro: lado > 0 ? Math.PI : 0 });
     }
   }
@@ -245,14 +308,14 @@ export function gerarEntorno(): Entorno {
     for (let z = -ALCANCE; z <= ALCANCE; z += 11 + r() * 5) {
       for (const lado of [-1, 1]) {
         const xx = x + lado * passeio;
-        if (!perto(xx, z, 390) || naEsquina(xx, z) || r() < 0.18) continue;
+        if (!perto(xx, z, 390) || naEsquina(xx, z) || r() < 0.18 || naMata(xx, z)) continue;
         arvore(xx, z, especieRua(r()), 0.62 + r() * 0.3, r);
       }
     }
     for (let z = -ALCANCE, i = 0; z <= ALCANCE; z += 34, i++) {
       const lado = i % 2 ? 1 : -1;
       const xx = x + lado * (meia + 0.5);
-      if (!perto(xx, z, 380) || naEsquina(xx, z) || !livreDoLiwo(xx, z, 1)) continue;
+      if (!perto(xx, z, 380) || naEsquina(xx, z) || !livreDoLiwo(xx, z, 1) || naMata(xx, z)) continue;
       postes.push({ x: xx, z, giro: lado > 0 ? -Math.PI / 2 : Math.PI / 2 });
     }
   }
@@ -268,7 +331,7 @@ export function gerarEntorno(): Entorno {
     const z = centro.z + Math.sin(a) * d;
     const alt = 30 + Math.pow(r(), 1.6) * 95 * (1 - d / 520);
     const [larg, prof, giro] = [18 + r() * 20, 16 + r() * 18, r() * Math.PI];
-    predios.push({ x, z, larg, prof, alt, giro, cor: Math.floor(r() * 6) });
+    predios.push({ x, z, larg, prof, alt, giro, cor: CORES_TORRE[Math.floor(r() * CORES_TORRE.length)] as number });
     if (r() < 0.6) predios.push({ x, z, larg: larg * 0.45, prof: prof * 0.45, alt: alt + 4 + r() * 6, giro, cor: 6 });
   }
   for (let i = 0; i < 150; i++) {
@@ -277,7 +340,7 @@ export function gerarEntorno(): Entorno {
     const x = Math.cos(a) * d;
     const z = Math.sin(a) * d;
     if (Math.hypot(x - centro.x, z - centro.z) < 420) continue;
-    predios.push({ x, z, larg: 16 + r() * 16, prof: 14 + r() * 14, alt: 18 + Math.pow(r(), 2) * 60, giro: r() * Math.PI, cor: Math.floor(r() * 6) });
+    predios.push({ x, z, larg: 16 + r() * 16, prof: 14 + r() * 14, alt: 18 + Math.pow(r(), 2) * 60, giro: r() * Math.PI, cor: CORES_TORRE[Math.floor(r() * CORES_TORRE.length)] as number });
   }
 
   return { quadras, vias, predios, casas, arvores, postes, piscinas, meioLado: lim };

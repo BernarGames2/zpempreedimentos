@@ -90,7 +90,8 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
     const mats: Record<MatInt, THREE.Material> = {
       parede,
       azulejo,
-      teto: std({ color: "#e4d6bd", roughness: 0.96 }),
+      // forro bege claro dos renders (recebe só a luz rebatida do piso: mais claro que a cor "real")
+      teto: std({ color: "#f0e6d3", roughness: 0.96 }),
       madeiraClara: foto("carvalho", 1.1, { color: "#f1e6d6" }),
       madeiraNatural: foto("okoume", 1.1, { color: "#c2a07c" }),
       marmore: tex(ladrilho(texMarmore("branco", ["#e9e7e3", "#f6f5f2"], "#8d8a86"), 1.6), { roughness: 0.18, metalness: 0.02 }),

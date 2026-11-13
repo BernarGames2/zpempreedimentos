@@ -11,6 +11,7 @@ import { useFrame, useThree } from "@react-three/fiber";
 import { moveisGlb } from "@/lib/controles";
 import { N_LUMINARIAS, carregarLuz, carregarMapa, comLuzVolume, luminarias, luzNoite } from "@/lib/luzVolume";
 import { preaquecer } from "@/lib/preaquecer";
+import { comProjecaoCaixa, criarSonda, fotografarSonda } from "@/lib/reflexoPiso";
 import { MATS_MAPA, facesCaixa, retalhoComodo, uvMapa, type MapaLuzInfo, type Retalho } from "@/lib/procedural/mapaLuz";
 import { acabamentos } from "@/lib/procedural/acabamento";
 import { sorteio, tela } from "@/lib/procedural/canvas";
@@ -208,7 +209,7 @@ function ModeloGlb({ m }: { m: Modelo }) {
  * da unidade (o apartamento já está montado, invisível). Fica no mesmo Suspense dos móveis: só roda quando
  * todos chegaram, e de novo quando o mapa de luz chega.
  */
-function Preaquecer({ alvo, versao }: { alvo: RefObject<THREE.Group | null>; versao: unknown }) {
+function Preaquecer({ alvo, versao, aoTerminar }: { alvo: RefObject<THREE.Group | null>; versao: unknown; aoTerminar?: () => void }) {
   const gl = useThree((s) => s.gl);
   const scene = useThree((s) => s.scene);
   const camera = useThree((s) => s.camera);
@@ -216,13 +217,45 @@ function Preaquecer({ alvo, versao }: { alvo: RefObject<THREE.Group | null>; ver
   useEffect(() => {
     let parar = () => {};
     const id = window.setTimeout(() => {
-      if (alvo.current) parar = preaquecer(gl, scene, camera, alvo.current, qualidade !== "baixo");
+      if (alvo.current) parar = preaquecer(gl, scene, camera, alvo.current, qualidade !== "baixo", aoTerminar);
     }, 300);
     return () => {
       window.clearTimeout(id);
       parar();
     };
-  }, [gl, scene, camera, alvo, qualidade, versao]);
+  }, [gl, scene, camera, alvo, qualidade, versao, aoTerminar]);
+  return null;
+}
+
+/**
+ * Reflexo do cômodo atual no porcelanato (lib/reflexoPiso.ts). A foto da sonda é refeita ao trocar de cômodo,
+ * de dia/noite e quando os móveis ou o mapa de luz chegam; no nível leve fica desligado.
+ */
+function ReflexoPiso({ piso, tipo, comodo, alvo, pisos, versao }: { piso: THREE.MeshStandardMaterial; tipo: TipoPlanta; comodo: string | null; alvo: RefObject<THREE.Group | null>; pisos: RefObject<THREE.Group | null>; versao: unknown }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const sonda = useMemo(() => criarSonda(), []);
+  useMemo(() => comProjecaoCaixa(piso, sonda), [piso, sonda]);
+  // a foto só vale com a cena montada para o apartamento (cidade em volta dele, prédio escondido): na ficha da
+  // unidade o apartamento fica na origem, dentro do embasamento
+  const dentro = useExp((s) => s.cena) === "interior";
+  useEffect(() => {
+    if (!dentro) return;
+    const c = tipo.comodos.find((x) => x.id === comodo) ?? tipo.comodos[0];
+    const g = alvo.current;
+    if (!c || !g) return;
+    const id = window.setTimeout(() => {
+      const xs = c.poligono.map((p) => p[0]);
+      const zs = c.poligono.map((p) => p[1]);
+      const a = g.localToWorld(new THREE.Vector3(Math.min(...xs), 0, Math.min(...zs)));
+      const b = g.localToWorld(new THREE.Vector3(Math.max(...xs), PE_LIVRE, Math.max(...zs)));
+      const min = a.clone().min(b);
+      const max = a.clone().max(b);
+      const centro = g.localToWorld(new THREE.Vector3((Math.min(...xs) + Math.max(...xs)) / 2, 1.3, (Math.min(...zs) + Math.max(...zs)) / 2));
+      fotografarSonda(gl, scene, sonda, g, min, max, centro, pisos.current ? [pisos.current] : []);
+    }, 80);
+    return () => window.clearTimeout(id);
+  }, [gl, scene, sonda, tipo, comodo, alvo, pisos, versao, dentro]);
   return null;
 }
 
@@ -300,6 +333,7 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
     () => new THREE.MeshStandardMaterial({ map: texCartaoFolhas(), color: "#8a9c7a", alphaTest: 0.45, side: THREE.DoubleSide, roughness: 0.85 }),
     [],
   );
+  // gradil de montantes verticais em bronze escuro, como no render da sala
   const grade = useMemo(() => matGrade("#5a4129"), []);
 
   useEffect(() => m.ajustar(Math.max(artificial, 0.35)), [m, artificial]);
@@ -347,6 +381,9 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
     return [...mob.luzes].sort((a, b) => Math.hypot(a.pos[0] - cx, a.pos[2] - cz) - Math.hypot(b.pos[0] - cx, b.pos[2] - cz)).slice(0, N_LUMINARIAS);
   }, [mob, tipo, comodo]);
   const ancora = useRef<THREE.Group>(null);
+  const grupoPisos = useRef<THREE.Group>(null);
+  // reflexo do cômodo no piso: fora do nível leve (lá a cena vai direto para a tela e a foto compilaria outra leva de shaders)
+  const reflexo = useExp((s) => s.qualidade) !== "baixo";
   useFrame(() => {
     const g = ancora.current;
     if (!g) return;
@@ -373,9 +410,12 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
         <mesh key={k} geometry={geos[k]} material={m.mats[k]} castShadow={k !== "led" && k !== "lampada" && k !== "vidro" && k !== "vidroFosco" && k !== "espelhoFume"} receiveShadow />
       ))}
       <Preaquecer alvo={ancora} versao={geos} />
-      {pisos.map(({ c, g }) => (
-        <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
-      ))}
+      <group ref={grupoPisos}>
+        {pisos.map(({ c, g }) => (
+          <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
+        ))}
+      </group>
+      {reflexo && <ReflexoPiso piso={m.piso as THREE.MeshStandardMaterial} tipo={tipo} comodo={comodo} alvo={ancora} pisos={grupoPisos} versao={`${mapa ? 1 : 0}-${artificial.toFixed(2)}-${corte}`} />}
       <Suspense fallback={null}>
         <group name="moveis_glb">{mob.modelos?.map((mo, i) => <ModeloGlb key={`${mo.id}-${i}`} m={mo} />)}</group>
         <Preaquecer alvo={ancora} versao={mapa} />
