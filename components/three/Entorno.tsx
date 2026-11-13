@@ -325,7 +325,9 @@ function materialMata(): THREE.MeshStandardMaterial {
           vec3 r2 = cross(normal, dpx);
           float det = dot(dpx, r1);
           vec3 grad = sign(det) * (dFdx(alt) * r1 + dFdy(alt) * r2);
-          normal = normalize(abs(det) * normal - grad * 1.6 * (1.0 - longeMata));
+          // longe, as derivadas zeram (det = 0) e normalize(0) daria NaN — que o bloom espalha pela tela inteira
+          float kRelevo = 1.6 * (1.0 - longeMata);
+          if (kRelevo > 0.001 && abs(det) > 1e-10) normal = normalize(abs(det) * normal - grad * kRelevo);
         }`,
       );
   };

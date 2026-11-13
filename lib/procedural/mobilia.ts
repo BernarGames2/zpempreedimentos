@@ -50,6 +50,15 @@ class M {
     if (this.gl) this.modelos.push(...ms);
     else codigo();
   }
+  /**
+   * Vaso com planta. Com modelos 3D, uma planta de verdade (com o próprio vaso) apoiada em `yBase`; sem eles,
+   * o vaso e os tufos gerados por código. `porte` é o raio da folhagem antiga (0,12 de mesa; 0,4 de chão).
+   */
+  vasoPlanta(x: number, yBase: number, z: number, porte: number, codigo: () => void, giro = 0): void {
+    const grande = porte >= 0.3;
+    const s = grande ? porte * 3.3 : porte * 10;
+    this.troca(codigo, { id: grande ? "planta-grande" : "planta-pequena", pos: [x, yBase, z], rotY: giro, escala: [s, s, s] });
+  }
   prims: Prim[] = [];
   obstaculos: Ret[] = [];
   luzes: Mobilia["luzes"] = [];
@@ -581,8 +590,10 @@ function mobiliaFinal03(m: M): void {
   // ═══ LIVING: mesa de jantar junto à parede de cima, sofá de couro, tapete, mesa de centro e painel com TV ═══
   m.cx("madeiraNatural", 8.58, 9.55, 0.72, 0.76, e + 0.02, 1.41);
   for (const [x, z] of [[8.62, 0.12], [9.51, 0.12], [8.62, 1.37], [9.51, 1.37]] as const) m.cx("madeiraNatural", x - 0.03, x + 0.03, 0, 0.72, z - 0.03, z + 0.03);
-  m.cil("louca", 9.06, 0.76, 0.75, 0.07, 0.12);
-  m.esf("planta", 9.06, 0.98, 0.75, 0.12);
+  m.vasoPlanta(9.06, 0.76, 0.75, 0.12, () => {
+    m.cil("louca", 9.06, 0.76, 0.75, 0.07, 0.12);
+    m.esf("planta", 9.06, 0.98, 0.75, 0.12);
+  }, 0.7);
   m.obst(8.58, 9.55, 0, 1.41);
   for (const z of [0.4, 1.05]) {
     m.cadeira(8.3, z, Math.PI / 2, "tecidoVerde");
@@ -594,7 +605,7 @@ function mobiliaFinal03(m: M): void {
   for (const z of [2.12, 3.13]) m.ar("caramelo", 7.4, 7.98, 0.4, 0.58, z, z + 0.98, 0.12);
   m.obst(7.1, 8.0, 2.05, 4.17);
   m.cil("madeiraClara", 8.88, 0, 3.05, 0.3, 0.38);
-  m.esf("planta", 8.88, 0.6, 3.05, 0.13);
+  m.vasoPlanta(8.88, 0.38, 3.05, 0.13, () => m.esf("planta", 8.88, 0.6, 3.05, 0.13), 2.1);
   m.cil("madeiraNatural", 8.55, 0, 3.45, 0.16, 0.48);
   m.obst(8.5, 9.2, 2.72, 3.65);
   m.cx("madeiraNatural", 9.61, 9.98, 0, 2.3, 2.17, 4.26); // painel ripado com a TV (traço preto na planta)
@@ -708,7 +719,7 @@ function mobiliaFinal06(m: M): void {
   m.obst(1.58, 2.0, 2.38, 3.65);
   m.cx("pedraBranca", 1.6, 2.51, 0.74, 0.78, 3.65, 4.99);
   m.cx("pedraBranca", 1.95, 2.15, 0, 0.74, 3.9, 4.75);
-  m.esf("planta", 2.05, 0.92, 4.3, 0.12);
+  m.vasoPlanta(2.05, 0.78, 4.3, 0.12, () => m.esf("planta", 2.05, 0.92, 4.3, 0.12), 1.3);
   m.obst(1.58, 2.53, 3.63, 5.0);
   for (const z of [3.96, 4.6]) {
     m.cadeira(1.36, z, Math.PI / 2, "madeiraNatural");
@@ -720,7 +731,7 @@ function mobiliaFinal06(m: M): void {
   for (const z of [1.98, 3.17]) m.ar("tecidoCinza", 3.57, 4.22, 0.4, 0.58, z, z + 1.12, 0.12);
   m.obst(3.5, 4.54, 1.93, 4.34);
   m.cil("madeiraClara", 2.88, 0, 2.68, 0.35, 0.36);
-  m.esf("planta", 2.88, 0.58, 2.68, 0.12);
+  m.vasoPlanta(2.88, 0.36, 2.68, 0.12, () => m.esf("planta", 2.88, 0.58, 2.68, 0.12), 0.4);
   m.obst(2.5, 3.26, 2.3, 3.06);
   for (const [x, z] of [[0.6, 3.0], [2.1, 4.3], [3.2, 3.0], [1.5, 5.5]] as const) m.spot(x, z);
   m.luz(2.1, 2.2, 4.3, 0.9, 5);
@@ -761,7 +772,7 @@ function mobiliaFinal06(m: M): void {
   m.cil("louca", 4.84, 0.55, 0.25, 0.06, 0.14);
   m.obst(4.58, 5.08, 0, 0.48);
   m.cil("madeiraClara", 4.84, 0, 1.83, 0.2, 0.5);
-  m.esf("planta", 4.84, 0.68, 1.83, 0.12);
+  m.vasoPlanta(4.84, 0.5, 1.83, 0.12, () => m.esf("planta", 4.84, 0.68, 1.83, 0.12), 2.6);
   m.obst(4.6, 5.08, 1.6, 2.06);
   m.cx("laqueado", 4.54 + e, 6.26, 0, 2.3, 2.85, 3.57 - e);
   m.obst(4.54, 6.28, 2.8, 3.6);
@@ -787,7 +798,7 @@ function mobiliaFinal06(m: M): void {
     m.cx("madeiraNatural", 11.08, 11.5, 0, 0.5, z - 0.2, z + 0.2);
     m.obst(11.05, 11.55, z - 0.22, z + 0.22);
   }
-  m.esf("planta", 11.29, 0.68, 1.0, 0.12);
+  m.vasoPlanta(11.29, 0.5, 1.0, 0.12, () => m.esf("planta", 11.29, 0.68, 1.0, 0.12), 1.7);
   m.cil("tecidoBranco", 11.29, 0.5, 3.3, 0.08, 0.22);
   m.cx("laqueado", 10.89, 11.55 - e, 0, 2.3, 3.59, 6.08 - e);
   m.cx("laqueado", 9.67, 10.89, 0, 2.3, 5.53, 6.08 - e);
@@ -952,8 +963,10 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     m.cil("madeiraNatural", mx, 0.73, mz, 0.6, 0.04);
     m.cil("madeiraNatural", mx, 0, mz, 0.08, 0.73);
     m.cil("madeiraNatural", mx, 0, mz, 0.3, 0.03);
-    m.cil("louca", mx, 0.77, mz, 0.06, 0.18);
-    m.esf("planta", mx, 1.0, mz, 0.12);
+    m.vasoPlanta(mx, 0.77, mz, 0.12, () => {
+      m.cil("louca", mx, 0.77, mz, 0.06, 0.18);
+      m.esf("planta", mx, 1.0, mz, 0.12);
+    }, 0.9);
     m.obst(mx - 0.6, mx + 0.6, mz - 0.6, mz + 0.6);
     for (let k = 0; k < 6; k++) {
       const a = (k / 6) * Math.PI * 2 + Math.PI / 6;
@@ -1014,8 +1027,10 @@ export function mobiliar(t: TipoPlanta, glb = false): Mobilia {
     // banco e vaso com planta junto à parede da suíte
     m.cx("marmoreVerde", V.x1 - 0.5, V.x1 - e, 0, 0.45, V.z0 + 0.25, V.z1 - 0.9);
     m.obst(V.x1 - 0.5, V.x1, V.z0 + 0.25, V.z1 - 0.9);
-    m.cil("louca", V.x1 - 0.45, 0, V.z1 - 0.45, 0.24, 0.55);
-    m.esf("planta", V.x1 - 0.45, 0.95, V.z1 - 0.45, 0.42);
+    m.vasoPlanta(V.x1 - 0.45, 0, V.z1 - 0.45, 0.42, () => {
+      m.cil("louca", V.x1 - 0.45, 0, V.z1 - 0.45, 0.24, 0.55);
+      m.esf("planta", V.x1 - 0.45, 0.95, V.z1 - 0.45, 0.42);
+    }, 0.3);
     m.obst(V.x1 - 0.72, V.x1, V.z1 - 0.72, V.z1);
     for (const [sx, sz] of [[tx, tz - 0.5], [tx, tz + 0.5], [x + 0.9, V.z0 + 0.6]] as const) m.spot(sx, sz);
     m.luz(tx, 2.2, tz, 0.8, 4.5);

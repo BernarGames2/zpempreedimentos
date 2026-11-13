@@ -1,6 +1,6 @@
 import * as THREE from "three";
 import { memo } from "@/lib/procedural/canvas";
-import { texBrilho, texCone, texJanela, texJanelaLuz, texJanelinha, texJanelinhaDia, texPortaVidro, texPortaVidroDia } from "@/lib/procedural/texturasExterior";
+import { texBrilho, texCone, texJanela, texJanelaLuz, texJanelinha, texPortaVidro } from "@/lib/procedural/texturasExterior";
 import { texConcreto, texLetreiro, texPendente, texPerfurado, texTerracota, texVitrine } from "@/lib/procedural/texturasLiwo";
 import type { Mat, Plano } from "@/lib/procedural/torre";
 
@@ -74,13 +74,12 @@ export function materiaisExterior(): MateriaisExterior {
     const terr = texTerracota();
     const repetir = (t: THREE.Texture, u: number, v: number) => { const c = t.clone(); c.repeat.set(u, v); c.needsUpdate = true; return c; };
     const concreto = new THREE.MeshStandardMaterial({ map: repetir(conc.map, 0.25, 0.25), normalMap: conc.normalMap ? repetir(conc.normalMap, 0.25, 0.25) : null, roughness: 0.9 });
-    const concretoClaro = new THREE.MeshStandardMaterial({ map: repetir(concClaro.map, 0.3, 0.3), roughness: 0.8 });
+    const concretoClaro = new THREE.MeshStandardMaterial({ map: repetir(concClaro.map, 0.3, 0.3), roughness: 0.88 });
     const fita = new THREE.MeshBasicMaterial({ color: "#ffd59a", toneMapped: false });
     const caixas: Record<Mat, THREE.Material> = {
       concreto,
       concretoClaro,
-      // painéis de bronze das empenas e do coroamento: leve brilho metálico, como o ACM dos renders
-      terracota: new THREE.MeshStandardMaterial({ map: repetir(terr.map, 0.4, 0.4), roughness: 0.55, metalness: 0.18 }),
+      terracota: new THREE.MeshStandardMaterial({ map: repetir(terr.map, 0.4, 0.4), roughness: 0.72, metalness: 0.08 }),
       grafite: pintura("#2e2d2b", 0.7),
       branco: pintura("#efece6"),
       painel: pintura("#d8d2c8", 0.6),
@@ -93,14 +92,10 @@ export function materiaisExterior(): MateriaisExterior {
     };
 
     const luzJanela = texJanelaLuz();
-    // vidro de verdade: dielétrico liso (escuro de frente, espelhado de lado), e a cor vem do céu refletido
-    const vidro = { roughness: 0.05, metalness: 0, envMapIntensity: 1.6 };
     const janelaAcesa = new THREE.MeshStandardMaterial({ map: texJanela(true), emissive: "#ffffff", emissiveMap: luzJanela, emissiveIntensity: 1.6, roughness: 0.5 });
-    const janelaApagada = new THREE.MeshStandardMaterial({ map: texJanela(false), ...vidro });
-    // de dia vidro fosco; à noite a mesma peça acende (emissivo quente)
-    const janelinha = new THREE.MeshStandardMaterial({ map: texJanelinhaDia(), emissive: "#ffffff", emissiveMap: texJanelinha(), emissiveIntensity: 0, roughness: 0.3 });
-    // porta da sacada: de dia o interior na penumbra atrás do reflexo; à noite a luz quente do apartamento
-    const portaVidro = new THREE.MeshStandardMaterial({ map: texPortaVidroDia(), emissive: "#ffffff", emissiveMap: texPortaVidro(), emissiveIntensity: 0, ...vidro });
+    const janelaApagada = new THREE.MeshStandardMaterial({ map: texJanela(false), roughness: 0.18, metalness: 0.45 });
+    const janelinha = new THREE.MeshBasicMaterial({ map: texJanelinha(), toneMapped: false });
+    const portaVidro = new THREE.MeshBasicMaterial({ map: texPortaVidro(), toneMapped: false });
     const brilho = new THREE.MeshBasicMaterial({
       map: texBrilho(), color: QUENTE, transparent: true, opacity: 0.5, depthWrite: false,
       blending: THREE.AdditiveBlending, toneMapped: false, side: THREE.DoubleSide,
@@ -117,12 +112,11 @@ export function materiaisExterior(): MateriaisExterior {
     const ajustarLuz = (a: number) => {
       const acesa = a > 0.35;
       janelaAcesa.map = acesa ? mapaNoite : mapaDia;
-      janelaAcesa.roughness = acesa ? 0.5 : 0.05;
-      janelaAcesa.metalness = 0;
-      janelaAcesa.envMapIntensity = acesa ? 1 : 1.6;
+      janelaAcesa.roughness = acesa ? 0.5 : 0.18;
+      janelaAcesa.metalness = acesa ? 0 : 0.45;
       janelaAcesa.emissiveIntensity = acesa ? 0.1 + 1.5 * a : 0;
-      janelinha.emissiveIntensity = acesa ? 0.25 + 1.3 * a : 0;
-      portaVidro.emissiveIntensity = 2.1 * a;
+      janelinha.color.setScalar(0.3 + 1.0 * a);
+      portaVidro.color.setRGB(0.32 + 0.98 * a, 0.33 + 0.95 * a, 0.36 + 0.9 * a);
       brilho.opacity = 0.5 * a;
       cone.opacity = 0.85 * a;
       spot.color.set("#fff3dc").multiplyScalar(0.35 + 1.4 * a);

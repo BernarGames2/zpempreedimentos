@@ -70,12 +70,17 @@ export function comProjecaoCaixa(m: THREE.MeshStandardMaterial, sonda: SondaPiso
           "vec4 envMapColor = textureCubeUV( envMap, envMapRotation * reflectVec, roughness );\n\t\t\treturn envMapColor.rgb * envMapIntensity;",
           `vec4 envMapColor = textureCubeUV( envMap, envMapRotation * reflectVec, roughness );
           vec3 ambiente = envMapColor.rgb * envMapIntensity;
+          if ( uSondaForca < 0.5 ) return ambiente;
           // projeção em caixa: onde o raio refletido sai do cômodo, visto do ponto onde a sonda foi tirada
+          // (sem divisão por zero: um NaN aqui vira tela preta inteira depois do bloom)
           vec3 d = normalize( reflectVec );
-          vec3 t = max( ( uCaixaMax - vPisoMundo ) / d, ( uCaixaMin - vPisoMundo ) / d );
-          vec3 dirSonda = vPisoMundo + d * min( min( t.x, t.y ), t.z ) - uSonda;
-          vec3 sonda = textureCubeUV( uSondaMapa, dirSonda, roughness ).rgb;
-          return mix( ambiente, sonda * uSondaForca, step( 0.5, uSondaForca ) );`,
+          vec3 sinal = vec3( d.x >= 0.0 ? 1.0 : -1.0, d.y >= 0.0 ? 1.0 : -1.0, d.z >= 0.0 ? 1.0 : -1.0 );
+          vec3 inv = sinal / max( abs( d ), vec3( 1e-4 ) );
+          vec3 t = max( ( uCaixaMax - vPisoMundo ) * inv, ( uCaixaMin - vPisoMundo ) * inv );
+          float dist = max( min( min( t.x, t.y ), t.z ), 0.0 );
+          vec3 dirSonda = vPisoMundo + d * dist - uSonda;
+          if ( dot( dirSonda, dirSonda ) < 1e-6 ) dirSonda = d;
+          return textureCubeUV( uSondaMapa, dirSonda, roughness ).rgb * uSondaForca;`,
         ),
       );
   };

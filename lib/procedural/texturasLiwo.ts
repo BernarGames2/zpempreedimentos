@@ -16,8 +16,9 @@ export function texConcreto(claro = false): ParTextura {
     const b = ruido(n, n, 3, 9);
     const h = new Float32Array(n * n);
     for (let i = 0; i < h.length; i++) h[i] = (a[i] as number) * 0.85 + (b[i] as number) * 0.15;
-    // greige quente do revestimento das fachadas e do embasamento (renders oficiais); o claro é o das lajes
-    const c = pintar(h, n, n, claro ? ["#dcd6cc", "#ebe6de"] : ["#a19581", "#bbb09c"], 1.1);
+    // mesmas cores que o prédio sempre teve (aprovadas como "igual à foto"); estão escritas já convertidas
+    // porque o pintar() antigo gravava a cor linear no canvas
+    const c = pintar(h, n, n, claro ? ["#7c7263", "#a69c8b"] : ["#524c42", "#827768"], 1.6);
     const g = c.getContext("2d");
     if (g) {
       g.strokeStyle = "rgba(60,55,50,0.28)";
@@ -42,7 +43,7 @@ export function texTerracota(): ParTextura {
   return memo("terracota", () => {
     const n = 256;
     const a = fbm(n, n, 90, 4, 61);
-    const c = pintar(a, n, n, ["#76543b", "#8f6648"], 1.0);
+    const c = pintar(a, n, n, ["#281109", "#411d0e"], 1.2);
     const g = c.getContext("2d");
     if (g) {
       g.fillStyle = "rgba(35,22,15,0.45)";
