@@ -197,10 +197,11 @@ export function gerarEntorno(): Entorno {
   const perto = (x: number, z: number, raio: number) => Math.hypot(x, z) < raio;
   const naEsquina = (x: number, z: number) => xs.some((xx) => Math.abs(x - xx) < meia + 7) && zs.some((zz) => Math.abs(z - zz) < meia + 7);
   for (const z of zs) {
-    for (let x = -ALCANCE; x <= ALCANCE; x += 19 + r() * 6) {
+    // arborização de rua cheia (uma árvore a cada ~13 m de calçada, como nos bairros de Uberlândia)
+    for (let x = -ALCANCE; x <= ALCANCE; x += 11 + r() * 5) {
       for (const lado of [-1, 1]) {
         const zz = z + lado * passeio;
-        if (!perto(x, zz, 390) || naEsquina(x, zz) || r() < 0.32) continue;
+        if (!perto(x, zz, 390) || naEsquina(x, zz) || r() < 0.18) continue;
         // frente do Liwo: só as quatro árvores dos renders
         if (lado === -1 && Math.abs(z - BASE_Z) < 1 && x > lote.x0 - 8 && x < lote.x1 + 8) continue;
         arvore(x, zz, especieRua(r()), 0.62 + r() * 0.3, r);
@@ -214,10 +215,10 @@ export function gerarEntorno(): Entorno {
     }
   }
   for (const x of xs) {
-    for (let z = -ALCANCE; z <= ALCANCE; z += 19 + r() * 6) {
+    for (let z = -ALCANCE; z <= ALCANCE; z += 11 + r() * 5) {
       for (const lado of [-1, 1]) {
         const xx = x + lado * passeio;
-        if (!perto(xx, z, 390) || naEsquina(xx, z) || r() < 0.32) continue;
+        if (!perto(xx, z, 390) || naEsquina(xx, z) || r() < 0.18) continue;
         arvore(xx, z, especieRua(r()), 0.62 + r() * 0.3, r);
       }
     }

@@ -31,7 +31,7 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
   const [c, g] = canvas(N);
   const px = (x: number) => (x + e.meioLado) * k;
   const r = gerador(77);
-  g.fillStyle = "#7a8150";
+  g.fillStyle = "#6f7a48";
   g.fillRect(0, 0, N, N);
   const manchas = (n: number, cores: string[], x0 = 0, z0 = 0, w = N, h = N, tam = 22) => {
     for (let i = 0; i < n; i++) {
@@ -58,7 +58,7 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
     ret(q.x0 - CALCADA, q.z0 - CALCADA, q.x1 + CALCADA, q.z1 + CALCADA, "#b9b5ab");
     const [x0, z0, w, h] = [px(q.x0), px(q.z0), W * k, D * k];
     if (q.uso === "casas") {
-      ret(q.x0, q.z0, q.x1, q.z1, "#6d8a4a");
+      ret(q.x0, q.z0, q.x1, q.z1, "#5f8241");
       manchas(70, ["#7d9656", "#5f7d41", "#8e9a62", "#c7c0b0"], x0, z0, w, h, 9);
     } else if (q.uso === "vertical") {
       ret(q.x0, q.z0, q.x1, q.z1, "#a9a499");
@@ -75,7 +75,7 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
         g.stroke();
       }
     } else if (q.uso === "praca") {
-      ret(q.x0, q.z0, q.x1, q.z1, "#5e8a40");
+      ret(q.x0, q.z0, q.x1, q.z1, "#55803a");
       manchas(60, ["#6d9a4c", "#527a37", "#7a9a52"], x0, z0, w, h, 10);
       g.strokeStyle = "#cfc2a3";
       g.lineWidth = 2.4 * k;
@@ -105,6 +105,16 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
   }
   for (const p of e.predios) if (Math.abs(p.x) < e.meioLado && Math.abs(p.z) < e.meioLado && p.giro === 0) ret(p.x - p.larg / 2 - 1.5, p.z - p.prof / 2 - 1.5, p.x + p.larg / 2 + 1.5, p.z + p.prof / 2 + 1.5, "#2c2b24", 0.32);
   for (const p of e.piscinas) ret(p.x - p.larg / 2 - 2.5, p.z - p.prof / 2 - 2.5, p.x + p.larg / 2 + 2.5, p.z + p.prof / 2 + 2.5, "#d8d1c0");
+  // sombra difusa sob cada copa: as árvores longe da câmera não têm sombra em tempo real e pareciam soltas
+  for (const a of e.arvores) {
+    if (Math.abs(a.x) > e.meioLado || Math.abs(a.z) > e.meioLado) continue;
+    const raio = (a.especie === "palmeira" ? 1.6 : a.especie === "cone" ? 1.4 : 2.9) * a.escala * k;
+    const grad = g.createRadialGradient(px(a.x), px(a.z), 0, px(a.x), px(a.z), Math.max(1.5, raio));
+    grad.addColorStop(0, "rgba(28,36,20,0.42)");
+    grad.addColorStop(1, "rgba(28,36,20,0)");
+    g.fillStyle = grad;
+    g.fillRect(px(a.x) - raio, px(a.z) - raio, raio * 2, raio * 2);
+  }
   for (const v of e.vias) ret(v.x0, v.z0, v.x1, v.z1, "#3b3e41");
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
@@ -641,6 +651,17 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
             float grao = 0.45 * vn(pm * 1.7) + 0.35 * vn(pm * 0.45) + 0.2 * vn(pm * 6.0);
             float longe = smoothstep(0.25, 1.4, fwidth(pm.x) + fwidth(pm.y));
             diffuseColor.rgb *= mix(0.8 + 0.4 * grao, 1.0, longe);
+            // manchas de 30 a 90 m (grama mais viva ou mais seca) que continuam visíveis de longe:
+            // sem elas os gramados grandes viravam uma cor chapada
+            float macro = 0.6 * vn(pm * 0.035) + 0.4 * vn(pm * 0.011 + 7.0);
+            float verde = smoothstep(0.0, 0.05, diffuseColor.g - max(diffuseColor.r, diffuseColor.b) * 0.95);
+            vec3 seco = diffuseColor.rgb * vec3(1.14, 1.02, 0.74);
+            vec3 vivo = diffuseColor.rgb * vec3(0.84, 1.03, 0.84);
+            diffuseColor.rgb = mix(diffuseColor.rgb, mix(vivo, seco, smoothstep(0.25, 0.75, macro)), verde * 0.85);
+            diffuseColor.rgb *= mix(1.0, 0.86 + 0.26 * macro, verde);
+            // grama mais escura e saturada que o calçamento: sob o sol forte ela saía quase branca
+            float lumG = dot(diffuseColor.rgb, vec3(0.3, 0.59, 0.11));
+            diffuseColor.rgb = mix(diffuseColor.rgb, mix(vec3(lumG), diffuseColor.rgb, 1.2) * 0.62, verde);
           }`,
         );
     };
@@ -713,6 +734,23 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
       });
     }
 
+    // arbustos nos jardins da frente das casas (até 320 m do prédio): mais verde na altura da rua
+    const moitas: THREE.Matrix4[] = [];
+    const coresMoita: THREE.Color[] = [];
+    const rm = gerador(515);
+    for (const h of e.casas) {
+      if (Math.hypot(h.x, h.z) > 320) continue;
+      const frente = h.z < 0 ? -1 : 1;
+      const zf = h.z + frente * (h.prof / 2 + 1.1);
+      for (const fx of [-0.42, -0.12]) {
+        if (rm() < 0.25) continue;
+        const s = 0.55 + rm() * 0.45;
+        moitas.push(mtx(h.x + fx * h.larg, s * 0.5, zf, s * 1.3, s * 0.8, s * 1.1, rm() * 6.28));
+        coresMoita.push(new THREE.Color().setHSL(0.24 + rm() * 0.06, 0.36 + rm() * 0.14, 0.22 + rm() * 0.08));
+      }
+    }
+    if (moitas.length) g.add(instancias(guardar(geoMoitaLisa()), guardar(new THREE.MeshStandardMaterial({ roughness: 0.9 })), moitas, coresMoita));
+
     // postes, lâmpadas e manchas de luz no chão
     const matsPoste = e.postes.map((p) => mtx(p.x, 0, p.z, 1, 1, 1, p.giro));
     g.add(instancias(guardar(geoPoste()), guardar(new THREE.MeshStandardMaterial({ color: "#6f7277", roughness: 0.6, metalness: 0.4 })), matsPoste));
@@ -759,7 +797,9 @@ export function Entorno({ noite, qualidade = "medio", posicao = [0, 0, 0], giro 
   // Árvores detalhadas só onde fazem diferença: 150 m no computador, 60 m no celular, 40 m no nível baixo e
   // nenhuma quando a cidade é vista pela janela do apartamento (ficam dezenas de metros abaixo).
   useEffect(() => {
-    const raio = interno ? 0 : qualidade === "baixo" ? 40 : toquePrincipal() ? 60 : LOD_RAIO;
+    // modelo detalhado só até 90 m no computador (120 m no nível alto): além disso o simples basta e as ruas
+    // podem ter o dobro de árvores sem pesar
+    const raio = interno ? 0 : qualidade === "baixo" ? 40 : toquePrincipal() ? 60 : qualidade === "alto" ? 120 : 90;
     grupo.detalhar(raio, !(qualidade === "baixo" || interno));
   }, [grupo, qualidade, interno]);
   useEffect(() => {

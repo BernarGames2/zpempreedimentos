@@ -25,8 +25,11 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   geladeira retrô seguem procedurais porque copiam o render oficial).
 - Céu com cúmulos que têm relevo (topo claro, base em sombra) e andam devagar (`Ceu.tsx`); de dia as janelas
   "acesas" da torre viram vidro (antes o laranja da luz interna parecia madeira); moitas da torre mais
-  redondas. No nível baixo o céu volta às nuvens simples. Ruas com o dobro de árvores deixavam o teste do
-  lazer lento demais no computador: ficou para depois (precisaria de um nível de detalhe mais leve).
+  redondas. No nível baixo o céu volta às nuvens simples.
+- Paisagem: grama mais escura e saturada com manchas de 30 a 90 m (mais viva ou mais seca) que não somem
+  de longe, sombra difusa sob cada copa pintada no chão, árvores de calçada a cada ~13 m (modelo detalhado
+  só até 90 m no computador e 120 m no nível alto, para não pesar), arbustos nos jardins da frente das casas
+  até 320 m do prédio e névoa do dia começando a 400 m (antes 200 m, desbotava a cidade).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
 
 ## Próximas etapas, em ordem
