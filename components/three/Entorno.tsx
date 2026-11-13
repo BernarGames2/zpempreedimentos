@@ -352,10 +352,10 @@ export function texFolhagem(): THREE.CanvasTexture {
 }
 
 /** Material dos cartões de folhas: recorte pelo alfa e normal da copa nos dois lados do cartão. */
-export function matFolhagem(): THREE.MeshLambertMaterial {
+export function matFolhagem(): THREE.MeshStandardMaterial {
   return memo("mat-folhagem-copa", () => {
-    // Lambert: folha não precisa de reflexo PBR, e o cartão recortado é o que mais pesa na tela
-    const m = new THREE.MeshLambertMaterial({ vertexColors: true, map: texFolhagem(), alphaTest: 0.5, side: THREE.DoubleSide });
+    // PBR como o resto da cena: o Lambert não recebe a luz do ambiente (céu) e as folhas na sombra ficavam pretas
+    const m = new THREE.MeshStandardMaterial({ vertexColors: true, map: texFolhagem(), alphaTest: 0.5, side: THREE.DoubleSide, roughness: 0.9 });
     // sem isso o verso do cartão inverteria a normal e a copa ficaria salpicada de escuro
     m.onBeforeCompile = (sh) => {
       sh.fragmentShader = sh.fragmentShader.replace("#include <normal_fragment_begin>", "#include <normal_fragment_begin>\nnormal *= faceDirection;");

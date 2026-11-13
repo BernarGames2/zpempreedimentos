@@ -11,7 +11,7 @@ page.on("pageerror", (e) => erros.push(e.message));
 page.on("console", (m) => { if (m.type() === "error") erros.push(m.text().slice(0, 200)); });
 let bytes = 0; const arquivos = new Set();
 page.on("response", async (r) => { if (r.url().includes("/modelos/")) { arquivos.add(r.url().split("/").pop()); try { bytes += (await r.body()).length; } catch {} } });
-await page.goto(`${base}/?debug=1&q=medio&unidade=1301${extra}`);
+await page.goto(`${base}/?debug=1&q=${process.env.Q ?? "medio"}&unidade=1301${extra}`);
 await page.waitForFunction(() => window.__zp?.getState().pronto === true, null, { timeout: 150000 });
 await page.evaluate(() => window.__zp.getState().pularIntro());
 await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "UNIDADE" && !s.emVoo; }, null, { timeout: 120000 });
