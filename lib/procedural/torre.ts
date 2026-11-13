@@ -89,10 +89,11 @@ export class Construtor {
     this.plano(tipo, x, y, z, larg, alt, f.rotY, rotX);
   }
 
-  /** Moita de floreira (icosaedro achatado). */
+  /** Moita de floreira. */
   arbusto(x: number, y: number, z: number, s: number, giro = 0): void {
     _e.set(0, giro, 0);
-    this.pecas.arbustos.push(new THREE.Matrix4().compose(_p.set(x, y, z), _q.setFromEuler(_e), _s.set(s * 1.5, s * 0.85, s * 1.15)));
+    // mais redonda que antes (era achatada e de perto parecia um disco boiando na frente da varanda)
+    this.pecas.arbustos.push(new THREE.Matrix4().compose(_p.set(x, y, z), _q.setFromEuler(_e), _s.set(s * 1.35, s * 1.08, s * 1.2)));
   }
 
   /** Folhas que caem pela borda da floreira. `rotY` aponta para fora da fachada. */

@@ -23,6 +23,10 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   interior: do lado de fora ela pintava as folhas de preto.
 - Finais 02 e 04 com camas, cadeiras, cubas, bacias, lavadora, cuba e cooktop em modelo 3D (sofá, mesas e
   geladeira retrô seguem procedurais porque copiam o render oficial).
+- Céu com cúmulos que têm relevo (topo claro, base em sombra) e andam devagar (`Ceu.tsx`); de dia as janelas
+  "acesas" da torre viram vidro (antes o laranja da luz interna parecia madeira); moitas da torre mais
+  redondas. No nível baixo o céu volta às nuvens simples. Ruas com o dobro de árvores deixavam o teste do
+  lazer lento demais no computador: ficou para depois (precisaria de um nível de detalhe mais leve).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
 
 ## Próximas etapas, em ordem

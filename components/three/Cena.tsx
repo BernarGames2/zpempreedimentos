@@ -137,7 +137,7 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
       {/* Perspectiva aérea: o entorno some aos poucos no horizonte, como nos renders */}
       <fog attach="fog" args={[amb.noite > 0.5 ? "#22304d" : "#c3d2de", amb.noite > 0.5 ? 300 : 200, amb.noite > 0.5 ? 4000 : 2600]} />
       {/* Dentro de um splat o céu procedural sai de cena: o mundo capturado já traz o próprio fundo. */}
-      {!comSplat && (!pano || !(interior || estado === "VISTA")) && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} />}
+      {!comSplat && (!pano || !(interior || estado === "VISTA")) && <Ceu solDir={solCena} noite={amb.noite} altura={interior ? altura : 30} giro={0} simples={qualidade === "baixo"} />}
       {pano && !comSplat && (interior || estado === "VISTA") && (
         <Suspense fallback={null}>
           <Panorama arquivo={pano} giro={giro} />

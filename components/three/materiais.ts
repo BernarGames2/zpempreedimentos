@@ -107,8 +107,14 @@ export function materiaisExterior(): MateriaisExterior {
     });
     const planos: Record<Plano, THREE.Material> = { janelaAcesa, janelaApagada, janelinha, portaVidro, grade: matGrade("#5a4129"), brilho, spot, cone };
 
+    // de dia a janela "acesa" é vidro como as outras (antes o laranja da luz interna parecia painel de madeira)
+    const [mapaDia, mapaNoite] = [texJanela(false), texJanela(true)];
     const ajustarLuz = (a: number) => {
-      janelaAcesa.emissiveIntensity = 0.1 + 1.5 * a;
+      const acesa = a > 0.35;
+      janelaAcesa.map = acesa ? mapaNoite : mapaDia;
+      janelaAcesa.roughness = acesa ? 0.5 : 0.18;
+      janelaAcesa.metalness = acesa ? 0 : 0.45;
+      janelaAcesa.emissiveIntensity = acesa ? 0.1 + 1.5 * a : 0;
       janelinha.color.setScalar(0.3 + 1.0 * a);
       portaVidro.color.setRGB(0.32 + 0.98 * a, 0.33 + 0.95 * a, 0.36 + 0.9 * a);
       brilho.opacity = 0.5 * a;

@@ -13,6 +13,8 @@ interface Props {
   altura: number;
   /** Giro do céu em Y (para a vista acompanhar a fachada da unidade). */
   giro?: number;
+  /** Nível de qualidade baixo: nuvens simples (mais leves). */
+  simples?: boolean;
 }
 
 const VERT = /* glsl */ `
@@ -31,6 +33,8 @@ const FRAG = /* glsl */ `
   uniform vec3 uSolDir;
   uniform float uNoite;
   uniform float uAltura;
+  uniform float uTempo;
+  uniform float uSimples;
   varying vec3 vDir;
 
   float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -44,20 +48,43 @@ const FRAG = /* glsl */ `
     for (int i = 0; i < 4; i++) { v += a * ruido(p); p *= 2.03; a *= 0.5; }
     return v;
   }
+  // 5 oitavas com giro entre elas: borda de nuvem recortada, sem o padrão de grade do ruído de valor
+  float fbmN(vec2 p) {
+    float a = 0.5; float v = 0.0;
+    mat2 g = mat2(0.8, -0.6, 0.6, 0.8);
+    for (int i = 0; i < 5; i++) { v += a * ruido(p); p = g * p * 2.07; a *= 0.5; }
+    return v;
+  }
 
   void main() {
     vec3 d = normalize(vDir);
     float h = clamp(d.y, 0.0, 1.0);
     vec3 cor = mix(uHorizonte, uTopo, pow(h, 0.55));
 
-    // nuvens ralas, mais visíveis perto do horizonte
-    vec2 uvN = d.xz / max(d.y + 0.35, 0.05) * 1.6; // evita divisão por zero (NaN apaga a tela no bloom)
-    float nuv = smoothstep(0.52, 0.85, fbm(uvN + 3.7)) * smoothstep(0.02, 0.3, d.y) * (1.0 - h * 0.6);
-    cor = mix(cor, mix(uHorizonte * 1.25 + 0.06, vec3(1.0), 0.25 * (1.0 - uNoite)), nuv * 0.42);
+    float dia = 1.0 - uNoite;
+    if (uSimples > 0.5) {
+      // nível baixo: nuvens ralas de antes (4 ruídos por pixel)
+      vec2 uvS = d.xz / max(d.y + 0.35, 0.05) * 1.6; // sem divisão por zero (NaN apaga a tela no bloom)
+      float nuvS = smoothstep(0.52, 0.85, fbm(uvS + 3.7)) * smoothstep(0.02, 0.3, d.y) * (1.0 - h * 0.6);
+      cor = mix(cor, mix(uHorizonte * 1.25 + 0.06, vec3(1.0), 0.25 * dia), nuvS * 0.42);
+    } else {
+      // cúmulos num plano de nuvens, deformados (sem cara de ruído), deslizando devagar; a parte mais grossa
+      // de cada nuvem fica mais escura (base em sombra) e a borda fina, clara
+      vec2 uvN = d.xz / max(d.y + 0.08, 0.05) * 0.55 + vec2(uTempo * 0.004, uTempo * 0.0012);
+      float torto = fbm(uvN * 0.7 + 1.3) - 0.5;
+      float base = fbmN(uvN * 1.6 + vec2(torto, -torto) * 1.1);
+      float cobertura = 0.56 - 0.06 * smoothstep(0.0, 0.5, h);
+      float dens = smoothstep(cobertura, cobertura + 0.2, base) * smoothstep(0.015, 0.16, d.y);
+      float sombra = smoothstep(cobertura + 0.06, cobertura + 0.38, base);
+      vec3 claro = mix(uHorizonte * 0.95 + 0.08, vec3(1.0, 0.99, 0.97), dia);
+      vec3 escuro = mix(uHorizonte * 0.62 + vec3(0.02, 0.02, 0.05), vec3(0.64, 0.69, 0.77), dia);
+      vec3 corNuvem = mix(claro, escuro, sombra * 0.7);
+      corNuvem += vec3(1.0, 0.7, 0.42) * 0.12 * uNoite * (1.0 - h); // brilho da cidade por baixo, à noite
+      cor = mix(cor, corNuvem, dens * mix(0.55, 0.9, dia));
+    }
 
     // sol e halo (de dia)
     float cs = max(dot(d, normalize(uSolDir)), 0.0);
-    float dia = 1.0 - uNoite;
     cor += dia * (vec3(1.0, 0.86, 0.62) * pow(cs, 220.0) * 6.0 + vec3(1.0, 0.72, 0.45) * pow(cs, 9.0) * 0.28);
 
     // estrelas (de noite)
@@ -94,7 +121,7 @@ const FRAG = /* glsl */ `
   }`;
 
 /** Céu procedural: azul profundo dos renders à noite, céu claro de dia, cidade ao longe. */
-export function Ceu({ solDir, noite, altura, giro = 0 }: Props) {
+export function Ceu({ solDir, noite, altura, giro = 0, simples = false }: Props) {
   const ref = useRef<THREE.Mesh>(null);
   const material = useMemo(
     () =>
@@ -111,6 +138,8 @@ export function Ceu({ solDir, noite, altura, giro = 0 }: Props) {
           uSolDir: { value: new THREE.Vector3(0, 1, 0) },
           uNoite: { value: 1 },
           uAltura: { value: 30 },
+          uTempo: { value: 0 },
+          uSimples: { value: 0 },
         },
       }),
     [],
@@ -127,8 +156,10 @@ export function Ceu({ solDir, noite, altura, giro = 0 }: Props) {
     [],
   );
 
-  useFrame(({ camera }) => {
+  useFrame(({ camera, clock }) => {
     const u = material.uniforms;
+    u.uTempo!.value = clock.elapsedTime;
+    u.uSimples!.value = simples ? 1 : 0;
     const el = Math.max(0, solDir.y);
     const dourado = (1 - noite) * Math.max(0, 1 - el / 0.32); // sol baixo deixa o horizonte quente
     (u.uTopo!.value as THREE.Color).copy(cores.topoDia).lerp(cores.topoNoite, noite);
