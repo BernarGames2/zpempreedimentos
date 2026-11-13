@@ -20,6 +20,35 @@ export interface MateriaisInterior {
   ajustar: (artificial: number) => void;
 }
 
+function texturaNeutra(rgba: [number, number, number, number], srgb: boolean): THREE.DataTexture {
+  const t = new THREE.DataTexture(new Uint8Array(rgba), 1, 1);
+  if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+  t.needsUpdate = true;
+  return t;
+}
+const NEUTRA_COR = texturaNeutra([255, 255, 255, 255], true);
+const NEUTRA_LINEAR = texturaNeutra([255, 255, 255, 255], false);
+const NEUTRA_NORMAL = texturaNeutra([128, 128, 255, 255], false);
+
+/**
+ * Cada combinação de texturas de um material vira um shader diferente (e cada shader custa caro para
+ * compilar no iPhone). Os materiais do apartamento e os móveis de terceiros vêm cada um com um conjunto;
+ * completando os que faltam com texturas neutras de 1 pixel (branco, normal plana), quase todos passam a
+ * usar o mesmo shader — sem mudar a aparência: branco multiplica por 1 e a normal plana é a própria normal
+ * da superfície.
+ */
+export function padronizarTexturas(mt: THREE.Material): void {
+  const m = mt as THREE.MeshStandardMaterial;
+  if (!m.isMeshStandardMaterial || m.userData.padronizado) return;
+  m.userData.padronizado = true;
+  m.map ??= NEUTRA_COR;
+  m.aoMap ??= NEUTRA_LINEAR;
+  m.normalMap ??= NEUTRA_NORMAL;
+  m.roughnessMap ??= NEUTRA_LINEAR;
+  m.metalnessMap ??= NEUTRA_LINEAR;
+  m.needsUpdate = true;
+}
+
 /**
  * Materiais PBR do interior, com texturas geradas por código. Paleta dos três renders oficiais
  * de interiores do Liwo (Aline Borges): paredes brancas, forro bege, marcenaria de carvalho claro,
@@ -106,7 +135,11 @@ export function materiaisInterior(_fonte: string): MateriaisInterior {
     // todos os materiais do interior leem a iluminação indireta pré-calculada da planta
     // (só as superfícies com coordenadas no mapa de luz leem o mapa)
     const comMapa = new Set<THREE.Material>([mats.parede, mats.azulejo, mats.tapete, mats.teto, piso, pisoExterno]);
-    for (const mt of [...Object.values(mats), piso, pisoExterno]) if ((mt as THREE.MeshStandardMaterial).isMeshStandardMaterial) comLuzVolume(mt, comMapa.has(mt));
+    for (const mt of [...Object.values(mats), piso, pisoExterno])
+      if ((mt as THREE.MeshStandardMaterial).isMeshStandardMaterial) {
+        padronizarTexturas(mt);
+        comLuzVolume(mt, comMapa.has(mt));
+      }
     return { mats, piso, pisoExterno, ajustar };
   });
 }

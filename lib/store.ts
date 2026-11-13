@@ -70,6 +70,8 @@ interface Experiencia {
   solTocado: boolean;
   qualidade: Qualidade;
   qualidadeAuto: boolean;
+  /** O navegador derrubou o 3D (memória de vídeo): mostra o aviso para recarregar. */
+  contextoPerdido: boolean;
   medidas: boolean;
   foto: { aberta: boolean; mix: number };
   som: boolean;
@@ -129,6 +131,7 @@ export const useExp = create<Experiencia>((set, get) => ({
   solTocado: false,
   qualidade: "medio",
   qualidadeAuto: true,
+  contextoPerdido: false,
   medidas: false,
   foto: { aberta: false, mix: 1 },
   som: false,

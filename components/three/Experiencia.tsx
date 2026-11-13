@@ -6,9 +6,8 @@ import * as THREE from "three";
 import { poseIntro } from "@/lib/poses";
 import { linkInicial, poseCamera, useExp } from "@/lib/store";
 import type { Manifesto } from "@/lib/types";
+import { dprInicial } from "@/lib/qualidade";
 import { Cena } from "./Cena";
-
-const DPR: Record<"alto" | "medio" | "baixo", [number, number]> = { alto: [1, 1.75], medio: [1, 1.25], baixo: [0.7, 1] };
 
 /** O Canvas 3D. Pausa quando a aba está oculta ou a experiência saiu da tela. */
 export default function Experiencia({ fonte, manifesto }: { fonte: string; manifesto: Manifesto }) {
@@ -16,7 +15,6 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
   const [ativo, setAtivo] = useState(true);
   const [fontePronta, setFontePronta] = useState(false);
   const qualidade = useExp((s) => s.qualidade);
-  const [celular, setCelular] = useState(false);
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -27,12 +25,16 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
     if (p.get("debug") === "1") Object.assign(window, { __zp: useExp, __pose: poseCamera });
     const reduzido = window.matchMedia("(prefers-reduced-motion: reduce)");
     const movel = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 760;
-    setCelular(movel);
     useExp.getState().set({
       carga: 0.35,
       movimentoReduzido: reduzido.matches,
       vistaReal: manifesto.vistas.some((v) => /andar-?\d+/i.test(v)),
-      ...(q === "alto" || q === "medio" || q === "baixo" ? { qualidade: q, qualidadeAuto: false } : { qualidade: movel ? "baixo" : "medio" }),
+      // O cliente não escolhe qualidade: o computador abre no nível alto; o celular, com sombras e
+      // pós-processamento mas sem os efeitos que mais pesam na GPU (oclusão em tela, folhas recortadas).
+      // Se o 3D caiu por falta de memória (ver webglcontextlost abaixo), a próxima abertura vem no leve.
+      ...(q === "alto" || q === "medio" || q === "baixo"
+        ? { qualidade: q, qualidadeAuto: false }
+        : { qualidade: sessionStorage.getItem("liwo-leve") === "1" ? "baixo" : movel ? "medio" : "alto" }),
     });
     const aoMudar = () => useExp.getState().set({ movimentoReduzido: reduzido.matches });
     reduzido.addEventListener("change", aoMudar);
@@ -70,7 +72,6 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
     };
   }, []);
 
-  const [dprMin, dprMax] = DPR[qualidade];
   const intro = poseIntro();
 
   return (
@@ -78,17 +79,31 @@ export default function Experiencia({ fonte, manifesto }: { fonte: string; manif
       {fontePronta && (
         <Canvas
           frameloop={ativo ? "always" : "never"}
-          dpr={[dprMin, celular ? Math.min(dprMax, 1.5) : dprMax]}
+          dpr={dprInicial()}
           performance={{ min: 0.6 }}
           shadows={qualidade === "baixo" ? false : { type: THREE.PCFSoftShadowMap }}
           gl={{ antialias: false, powerPreference: "high-performance", stencil: false, alpha: false }}
           camera={{ fov: intro.fov, near: 0.1, far: 1200, position: intro.pos.toArray() }}
           onCreated={({ gl, scene }) => {
-            if (new URLSearchParams(window.location.search).get("debug") === "1") Object.assign(window, { __cena: scene, __gl: gl });
+            const debug = new URLSearchParams(window.location.search).get("debug") === "1";
+            if (debug) Object.assign(window, { __cena: scene, __gl: gl });
+            // conferir erros de cada shader custa tempo de compilação (recomendação do three.js para produção)
+            gl.debug.checkShaderErrors = debug;
             gl.toneMapping = THREE.ACESFilmicToneMapping;
             gl.toneMappingExposure = 1;
             gl.outputColorSpace = THREE.SRGBColorSpace;
             gl.setClearColor("#0a1a4a");
+            // sem memória de vídeo o navegador derruba o 3D e a tela congela na última imagem: avisa e
+            // deixa recarregar no nível leve
+            gl.domElement.addEventListener("webglcontextlost", (e) => {
+              e.preventDefault();
+              try {
+                sessionStorage.setItem("liwo-leve", "1");
+              } catch {
+                // sem sessionStorage (modo privado antigo): recarrega no mesmo nível
+              }
+              useExp.getState().set({ contextoPerdido: true });
+            });
             useExp.getState().set({ carga: 0.7 });
           }}
           style={{ touchAction: "none" }}

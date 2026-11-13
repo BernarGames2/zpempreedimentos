@@ -73,7 +73,8 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
         ref={luz}
         color={noite ? "#dfe8ff" : corSol}
         intensity={intensidade}
-        castShadow={qualidade === "alto" || (qualidade === "medio" && !noite)}
+        // ligar/desligar a sombra muda a chave de todos os shaders (recompila a cena): fica fixa por nível
+        castShadow={qualidade !== "baixo"}
         shadow-mapSize={[mapa, mapa]}
         shadow-bias={-0.0004}
         shadow-normalBias={0.05}
@@ -81,7 +82,9 @@ export function Luzes({ amb, qualidade, hdri, foco, raio, giro = 0, interior = f
       {arquivo ? (
         <Environment files={arquivo} />
       ) : (
-        <Environment key={`${interior}-${noite}`} resolution={interior ? 128 : 64} frames={1}>
+        // mesma resolução dentro e fora: o tamanho do mapa de reflexos entra na chave dos shaders, e trocar
+        // 64 por 128 ao entrar no apartamento recompilava todos os materiais da cena
+        <Environment key={`${interior}-${noite}`} resolution={128} frames={1}>
           {interior && (
             <>
               {/* sala neutra e quente: forro claro, piso bege e duas "janelas" (reflexos de interior, não de céu aberto) */}

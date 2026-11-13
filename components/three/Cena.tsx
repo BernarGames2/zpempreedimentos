@@ -16,6 +16,7 @@ import type { Manifesto } from "@/lib/types";
 import { Camera } from "./Camera";
 import { Ceu } from "./Ceu";
 import { Efeitos } from "./Efeitos";
+import { dprInicial, faixaDpr } from "@/lib/qualidade";
 import { Lazer } from "./Lazer";
 import { Luzes } from "./Luzes";
 import { Panorama, panoramaDoAndar } from "./Panorama";
@@ -73,6 +74,8 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
   const amb = useMemo(() => ambiente(hora, cena === "interior" && !solTocado ? false : noite), [hora, noite, cena, solTocado]);
   const hdri = useMemo(() => escolherHdri(manifesto), [manifesto]);
   const interior = cena === "interior";
+  const setDpr = useThree((s) => s.setDpr);
+  const dpr = useRef(dprInicial());
   const u = unidade(unidadeSel);
   const geo = useMemo(() => (u ? geoUnidade(u, emp) : null), [u]);
   const tipo = u ? tipoDe(u) : null;
@@ -144,17 +147,25 @@ export function Cena({ fonte, manifesto }: { fonte: string; manifesto: Manifesto
           <Panorama arquivo={pano} giro={giro} />
         </Suspense>
       )}
-      {/* Qualidade automática: desce um nível se o aparelho não acompanha, sobe se sobra folga. */}
+      {/* Ajuste automático: muda só a resolução (não recompila nada). No computador, se nem a resolução
+          mínima dá conta, desce uma vez do alto para o médio (sem sombras novas: só o pós-processamento). */}
       <PerformanceMonitor
         bounds={(taxa) => (taxa > 90 ? [50, 100] : [38, 58])}
-        flipflops={3}
+        flipflops={6}
         onDecline={() => {
           const s = useExp.getState();
-          if (s.qualidadeAuto && s.qualidade !== "baixo") s.set({ qualidade: s.qualidade === "alto" ? "medio" : "baixo" });
+          const [min] = faixaDpr();
+          if (dpr.current > min) {
+            dpr.current = Math.max(min, dpr.current - 0.25);
+            setDpr(dpr.current);
+          } else if (s.qualidadeAuto && s.qualidade === "alto") s.set({ qualidade: "medio" });
         }}
         onIncline={() => {
-          const s = useExp.getState();
-          if (s.qualidadeAuto && s.qualidade !== "alto") s.set({ qualidade: s.qualidade === "baixo" ? "medio" : "alto" });
+          const [, max] = faixaDpr();
+          if (dpr.current < max) {
+            dpr.current = Math.min(max, dpr.current + 0.25);
+            setDpr(dpr.current);
+          }
         }}
       />
       <Suspense fallback={null}>

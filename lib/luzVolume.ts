@@ -6,6 +6,10 @@
  */
 import * as THREE from "three";
 import type { MapaLuzInfo } from "./procedural/mapaLuz";
+import { luzesPontuais } from "./qualidade";
+
+/** Luminárias acesas ao mesmo tempo (as mais próximas do cômodo atual): 4 no computador, 2 no celular. */
+export const N_LUMINARIAS = typeof window === "undefined" ? 4 : luzesPontuais();
 
 const neutro = new THREE.Data3DTexture(new Uint8Array([128, 128, 0, 255]), 1, 1, 1);
 neutro.needsUpdate = true;
@@ -22,7 +26,19 @@ const U = {
   uLuzTam: { value: new THREE.Vector3(1, 1, 1) },
   uLuzNoite: { value: 0 },
   uLuzAtiva: { value: 0 },
+  // luminárias: posição no mundo, cor já multiplicada pela intensidade (preto = apagada) e alcance
+  uLumPos: { value: Array.from({ length: N_LUMINARIAS }, () => new THREE.Vector3()) },
+  uLumCor: { value: Array.from({ length: N_LUMINARIAS }, () => new THREE.Color(0, 0, 0)) },
+  uLumAlc: { value: new Array<number>(N_LUMINARIAS).fill(1) },
 };
+
+/**
+ * Luminárias do apartamento. Não são luzes do three.js: o número de luzes pontuais entra na "chave" de todos
+ * os shaders iluminados (acender luzes ao entrar no apartamento recompilava a cena inteira — a travada longa
+ * no iPhone — e cada luz pesava em todos os pixels da cidade também). Aqui a mesma conta da luz pontual do
+ * three.js (atenuação e BRDF) roda só nos materiais do apartamento, com posição e cor em uniforms.
+ */
+export const luminarias = { pos: U.uLumPos.value, cor: U.uLumCor.value, alcance: U.uLumAlc.value };
 let atual: THREE.Data3DTexture | null = null;
 let pedido = 0;
 let mapaAtual: THREE.Texture | null = null;
@@ -104,7 +120,7 @@ export function comLuzVolume<T extends THREE.Material>(m: T, mapa = false): T {
   if (m.userData.luzVolume) return m;
   m.userData.luzVolume = true;
   const antes = m.onBeforeCompile;
-  const chave = `${antes ? antes.toString() : ""}|luz-volume${mapa ? "-mapa" : ""}`;
+  const chave = `${antes ? antes.toString() : ""}|luz-volume${mapa ? "-mapa" : ""}|lum${N_LUMINARIAS}`;
   m.onBeforeCompile = (s, r) => {
     antes?.call(m, s, r);
     Object.assign(s.uniforms, U);
@@ -114,11 +130,23 @@ export function comLuzVolume<T extends THREE.Material>(m: T, mapa = false): T {
     s.fragmentShader = s.fragmentShader
       .replace(
         "#include <common>",
-        `#include <common>\nvarying vec3 vLuzPos;\nuniform highp sampler3D uLuzVol;\nuniform vec3 uLuzMin;\nuniform vec3 uLuzTam;\nuniform float uLuzNoite;\nuniform float uLuzAtiva;${mapa ? "\nvarying vec2 vMapaLuz;\nuniform sampler2D uMapaLuz;\nuniform float uMapaAtivo;\nuniform float uMapaForca;" : ""}`,
+        `#include <common>\nvarying vec3 vLuzPos;\nuniform highp sampler3D uLuzVol;\nuniform vec3 uLuzMin;\nuniform vec3 uLuzTam;\nuniform float uLuzNoite;\nuniform float uLuzAtiva;\nuniform vec3 uLumPos[${N_LUMINARIAS}];\nuniform vec3 uLumCor[${N_LUMINARIAS}];\nuniform float uLumAlc[${N_LUMINARIAS}];${mapa ? "\nvarying vec2 vMapaLuz;\nuniform sampler2D uMapaLuz;\nuniform float uMapaAtivo;\nuniform float uMapaForca;" : ""}`,
       )
       .replace(
         "#include <lights_fragment_end>",
         `#include <lights_fragment_end>
+        {
+          // luminárias (mesma conta das luzes pontuais do three.js, decaimento 1,5)
+          for (int i = 0; i < ${N_LUMINARIAS}; i++) {
+            vec3 dl = (viewMatrix * vec4(uLumPos[i], 1.0)).xyz - geometryPosition;
+            float dd = length(dl);
+            IncidentLight lum;
+            lum.direction = dl / max(dd, 1e-4);
+            lum.color = uLumCor[i] * getDistanceAttenuation(dd, uLumAlc[i], 1.5);
+            lum.visible = true;
+            RE_Direct(lum, geometryPosition, geometryNormal, geometryViewDir, geometryClearcoatNormal, material, reflectedLight);
+          }
+        }
         {
           vec2 lv = texture(uLuzVol, clamp((vLuzPos - uLuzMin) / uLuzTam, 0.0, 1.0)).rg * 2.0;
           float fl = mix(1.0, mix(lv.r, lv.g, uLuzNoite), uLuzAtiva);

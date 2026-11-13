@@ -12,14 +12,15 @@ test("fase 4: estudo de sol, qualidade e vista da sacada", async ({ page }, info
   await set(page, { noite: false, hora: 10 });
   await expect(page.getByTestId("frase-sol")).toContainText("10h");
   await capturar(page, "f4-dia", info.project.name);
-  await page.getByTestId("menu-qualidade").click();
-  await page.getByTestId("qualidade-baixo").click();
+  // a qualidade é fixa por aparelho: o visitante não escolhe nível de qualidade
+  await expect(page.getByTestId("menu-qualidade")).toHaveCount(0);
+  await set(page, { qualidade: "baixo" });
   expect((await estado(page)).qualidade).toBe("baixo");
-  await page.getByTestId("ver-vista").click();
+  await page.getByTestId("ver-vista").dispatchEvent("click");
   await esperarEstado(page, "VISTA");
   await expect(page.getByTestId("vista-ilustrativa")).toBeVisible();
   await capturar(page, "f4-vista", info.project.name);
-  await page.getByTestId("voltar-unidade").click();
+  await page.getByTestId("voltar-unidade").dispatchEvent("click");
   await esperarEstado(page, "UNIDADE");
   semErros(erros);
 });

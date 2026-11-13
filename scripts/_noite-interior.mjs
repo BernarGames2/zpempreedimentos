@@ -1,0 +1,20 @@
+// Captura o living da 1301 à noite (luminárias acesas). Uso: node scripts/_noite-interior.mjs <base> <saida.png>
+import { chromium } from "playwright";
+import { writeFileSync } from "node:fs";
+const [base, saida] = process.argv.slice(2);
+const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
+const ctx = await browser.newContext({ viewport: { width: 900, height: 600 } });
+const page = await ctx.newPage();
+await page.goto(`${base}/?debug=1&q=medio&unidade=1301&comodo=living`);
+await page.waitForFunction(() => window.__zp?.getState().pronto === true, null, { timeout: 240000 });
+await page.waitForFunction(() => { const s = window.__zp.getState(); return s.estado === "PASSEIO" && !s.emVoo && !s.veu; }, null, { timeout: 240000 });
+await page.waitForFunction(() => (window.__cena.getObjectByName("moveis_glb")?.children.length ?? 0) >= 10, null, { timeout: 180000 });
+await page.evaluate(() => window.__zp.getState().set({ noite: true, solTocado: true, hora: 21 }));
+await page.waitForTimeout(9000);
+console.log(JSON.stringify(await page.evaluate(() => { const s = window.__zp.getState(); return { noite: s.noite, solTocado: s.solTocado, hora: s.hora, cena: s.cena, estado: s.estado, quadro: window.__gl.info.render.frame, fundo: window.__cena.fog?.color.getHexString() }; })));
+await page.waitForTimeout(6000);
+console.log(await page.evaluate(() => window.__gl.info.render.frame));
+const cdp = await ctx.newCDPSession(page);
+const { data } = await cdp.send("Page.captureScreenshot", { format: "png" });
+writeFileSync(saida, Buffer.from(data, "base64"));
+await browser.close();

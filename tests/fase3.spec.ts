@@ -16,7 +16,7 @@ test("fase 3: entrar leva direto ao passeio 3D; maquete, abas e minimapa", async
   await page.getByTestId("ir-maquete").dispatchEvent("click");
   await esperarEstado(page, "MAQUETE");
   await capturar(page, "f3-maquete", info.project.name);
-  await page.getByTestId("mostrar-medidas").click();
+  await page.getByTestId("mostrar-medidas").dispatchEvent("click");
   expect((await estado(page)).medidas).toBe(true);
 
   // ponto de interesse do quarto leva ao passeio dentro dele

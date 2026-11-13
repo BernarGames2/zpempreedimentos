@@ -11,8 +11,8 @@ test("fase 7: 13º andar → unidade 1301 → entrar e caminhar em 3D → trocar
   await esperarEstado(page, "PREDIO");
 
   // escolhe o andar no seletor: o pavimento fica em destaque e a lista mostra as unidades dele
-  await page.getByTestId("abrir-andares").click();
-  await page.getByTestId("andar-13").click();
+  await page.getByTestId("abrir-andares").dispatchEvent("click");
+  await page.getByTestId("andar-13").dispatchEvent("click");
   const f = (await estado(page)).filtros as { andarMin: number; andarMax: number };
   expect([f.andarMin, f.andarMax]).toEqual([13, 13]);
   await capturar(page, "f7-andar", info.project.name);

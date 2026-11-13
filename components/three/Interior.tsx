@@ -1,14 +1,16 @@
 "use client";
 
 import { Html, Line } from "@react-three/drei";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState, type RefObject } from "react";
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { area } from "@/lib/formato";
 import { useGLTF } from "@react-three/drei";
+import { useFrame, useThree } from "@react-three/fiber";
 import { moveisGlb } from "@/lib/controles";
-import { carregarLuz, carregarMapa, comLuzVolume, luzNoite } from "@/lib/luzVolume";
+import { N_LUMINARIAS, carregarLuz, carregarMapa, comLuzVolume, luminarias, luzNoite } from "@/lib/luzVolume";
+import { preaquecer } from "@/lib/preaquecer";
 import { MATS_MAPA, facesCaixa, retalhoComodo, uvMapa, type MapaLuzInfo, type Retalho } from "@/lib/procedural/mapaLuz";
 import { acabamentos } from "@/lib/procedural/acabamento";
 import { sorteio, tela } from "@/lib/procedural/canvas";
@@ -18,7 +20,9 @@ import { texCartaoFolhas } from "@/lib/procedural/texturasInterior";
 import { useExp } from "@/lib/store";
 import type { Comodo, TipoPlanta } from "@/lib/types";
 import { matGrade } from "./materiais";
-import { COR_LUZ_QUENTE, materiaisInterior } from "./materiaisInterior";
+import { COR_LUZ_QUENTE, materiaisInterior, padronizarTexturas } from "./materiaisInterior";
+
+const COR_LUMINARIA = new THREE.Color(COR_LUZ_QUENTE);
 
 const SEM_UV: MatInt[] = ["tv", "quadroDegrade", "quadroFormas", "livros"];
 
@@ -179,12 +183,47 @@ function ModeloGlb({ m }: { m: Modelo }) {
       if (malha.isMesh) {
         o.castShadow = true;
         o.receiveShadow = true;
-        for (const mt of Array.isArray(malha.material) ? malha.material : [malha.material]) comLuzVolume(mt);
+        for (const mt of Array.isArray(malha.material) ? malha.material : [malha.material]) {
+          // vidro com transmissão obriga o three.js a desenhar a cena inteira mais uma vez por quadro (e a
+          // compilar outra leva de shaders): no celular é caro demais para uma cúpula de luminária
+          const fis = mt as THREE.MeshPhysicalMaterial;
+          if (fis.isMeshPhysicalMaterial && fis.transmission > 0) {
+            fis.opacity = Math.min(fis.opacity, 0.45);
+            fis.transmission = 0;
+            fis.transparent = true;
+            fis.depthWrite = false;
+          }
+          padronizarTexturas(mt);
+          comLuzVolume(mt);
+        }
       }
     });
     return c;
   }, [scene]);
   return <primitive object={obj} position={m.pos} rotation={[0, m.rotY ?? 0, 0]} scale={m.escala ?? [1, 1, 1]} />;
+}
+
+/**
+ * Compila os shaders e envia as texturas do apartamento para a GPU enquanto o visitante ainda está na ficha
+ * da unidade (o apartamento já está montado, invisível). Fica no mesmo Suspense dos móveis: só roda quando
+ * todos chegaram, e de novo quando o mapa de luz chega.
+ */
+function Preaquecer({ alvo, versao }: { alvo: RefObject<THREE.Group | null>; versao: unknown }) {
+  const gl = useThree((s) => s.gl);
+  const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
+  const qualidade = useExp((s) => s.qualidade);
+  useEffect(() => {
+    let parar = () => {};
+    const id = window.setTimeout(() => {
+      if (alvo.current) parar = preaquecer(gl, scene, camera, alvo.current, qualidade !== "baixo");
+    }, 300);
+    return () => {
+      window.clearTimeout(id);
+      parar();
+    };
+  }, [gl, scene, camera, alvo, qualidade, versao]);
+  return null;
 }
 
 interface Props {
@@ -204,6 +243,11 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
   const m = useMemo(() => materiaisInterior(fonte), [fonte]);
   const planta = useMemo(() => montarPlanta(tipo), [tipo]);
   const mob = useMemo(() => mobiliar(tipo, moveisGlb()), [tipo]);
+  // todos os móveis baixam juntos (em sequência, um esperava o outro: o Suspense só pede o próximo
+  // quando o anterior chega)
+  useMemo(() => {
+    for (const id of new Set(mob.modelos?.map((mo) => mo.id))) useGLTF.preload(`/modelos/${id}.glb`, false, true);
+  }, [mob]);
 
   const prims = useMemo<Prim[]>(() => {
     const paredes: Prim[] = planta.paredes.map((b) => ({
@@ -293,27 +337,48 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
     [sombras, matSombras],
   );
 
-  // Luzes pontuais são caras: no máximo 4 acesas, as mais próximas do cômodo atual.
+  // Luminárias: poucas acesas (4 no computador, 2 no celular), as mais próximas do cômodo atual. Não são
+  // luzes do three.js: a conta é feita só nos materiais do apartamento (ver `luminarias` em lib/luzVolume.ts),
+  // então entrar no apartamento não muda os shaders da cena e a cidade não paga por elas.
   const luzes = useMemo(() => {
     const c = tipo.comodos.find((x) => x.id === comodo);
-    if (!c) return mob.luzes.filter((_, i) => i % 2 === 0).slice(0, 4);
+    if (!c) return mob.luzes.filter((_, i) => i % 2 === 0).slice(0, N_LUMINARIAS);
     const [cx, cz] = centroide(c);
-    return [...mob.luzes].sort((a, b) => Math.hypot(a.pos[0] - cx, a.pos[2] - cz) - Math.hypot(b.pos[0] - cx, b.pos[2] - cz)).slice(0, 4);
+    return [...mob.luzes].sort((a, b) => Math.hypot(a.pos[0] - cx, a.pos[2] - cz) - Math.hypot(b.pos[0] - cx, b.pos[2] - cz)).slice(0, N_LUMINARIAS);
   }, [mob, tipo, comodo]);
+  const ancora = useRef<THREE.Group>(null);
+  useFrame(() => {
+    const g = ancora.current;
+    if (!g) return;
+    for (let i = 0; i < N_LUMINARIAS; i++) {
+      const l = luzes[i];
+      if (!l) {
+        luminarias.cor[i]?.setRGB(0, 0, 0);
+        continue;
+      }
+      const p = luminarias.pos[i];
+      if (p) g.localToWorld(p.set(l.pos[0], l.pos[1], l.pos[2]));
+      luminarias.cor[i]?.copy(COR_LUMINARIA).multiplyScalar(l.forca * (0.3 + 7.7 * artificial));
+      luminarias.alcance[i] = l.alcance * 1.4;
+    }
+  });
+  useEffect(() => () => luminarias.cor.forEach((c) => c.setRGB(0, 0, 0)), []);
 
   const guardas = planta.aberturas.filter((a) => a.tipo === "guarda-corpo");
   const janelas = planta.aberturas.filter((a) => a.tipo === "janela");
 
   return (
-    <group name="interior" visible={!oculto}>
+    <group name="interior" ref={ancora} visible={!oculto}>
       {(Object.keys(geos) as MatInt[]).map((k) => (
         <mesh key={k} geometry={geos[k]} material={m.mats[k]} castShadow={k !== "led" && k !== "lampada" && k !== "vidro" && k !== "vidroFosco" && k !== "espelhoFume"} receiveShadow />
       ))}
+      <Preaquecer alvo={ancora} versao={geos} />
       {pisos.map(({ c, g }) => (
         <mesh key={c.id} geometry={g} material={c.piso === "externo" ? m.pisoExterno : m.piso} receiveShadow name={`comodo_${c.id}`} />
       ))}
       <Suspense fallback={null}>
         <group name="moveis_glb">{mob.modelos?.map((mo, i) => <ModeloGlb key={`${mo.id}-${i}`} m={mo} />)}</group>
+        <Preaquecer alvo={ancora} versao={mapa} />
       </Suspense>
       {/* acima dos tapetes (1,6 cm) e abaixo de tudo o que tem volume */}
       <mesh position={[sombras.x, 0.02, sombras.z]} rotation={[-Math.PI / 2, 0, 0]} material={matSombras} renderOrder={1} name="sombras_de_contato" visible={!mapa}>
@@ -345,9 +410,6 @@ export function Interior({ tipo, corte, artificial, fonte, oculto = false, comod
           </mesh>
         );
       })}
-      {luzes.map((l, i) => (
-        <pointLight key={i} position={l.pos} color={COR_LUZ_QUENTE} intensity={l.forca * (0.3 + 7.7 * artificial)} distance={l.alcance * 1.4} decay={1.5} />
-      ))}
       {corte && <ExtrasMaquete tipo={tipo} />}
     </group>
   );

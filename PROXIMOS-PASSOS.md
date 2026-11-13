@@ -37,6 +37,22 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   piscina, e parte das quadras é condomínio fechado com muro. Coordenadas do mapa oficial: -18.950311,
   -48.256407. O norte do terreno continua sem confirmação (sem acesso ao mapa daqui).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
+- Qualidade sem escolha do visitante (o menu saiu): computador no nível alto, celular no médio (sombras,
+  bloom e céu completo; sem oclusão em tela nem folhas recortadas). O ajuste automático só mexe na resolução
+  (`lib/qualidade.ts`); no computador desce uma vez do alto para o médio se nem a resolução mínima der
+  conta. Se o navegador derrubar o 3D por falta de memória, aparece "O 3D precisa recarregar" e a próxima
+  abertura vem no nível leve (`liwo-leve` no sessionStorage).
+- Entrar no apartamento não recompila mais a cena (era a travada longa no iPhone). O que mudava a "chave"
+  dos shaders e foi fixado: as luminárias deixaram de ser luzes do three.js (acender 4 luzes pontuais ao
+  entrar recompilava todos os materiais) — a mesma conta agora roda só nos materiais do apartamento, com
+  posição e cor em uniforms (`luminarias` em `lib/luzVolume.ts`; 4 no computador, 2 no celular) e a cidade
+  não paga mais por elas; tamanho do mapa de reflexos (128 dentro e fora); sombra ligando/desligando à
+  noite; troca de compositor e props do bloom (`Efeitos.tsx`). O apartamento é pré-aquecido enquanto o
+  visitante lê a ficha (`lib/preaquecer.ts`: shaders e texturas, em pedaços de poucos ms); os móveis baixam
+  todos juntos; a cúpula de vidro da luminária não usa mais transmissão (desenhava a cena duas vezes por
+  quadro); móveis e materiais do apartamento completam as texturas que faltam com texturas neutras de 1 px
+  para dividirem o mesmo shader. Medição (GPU por software, celular emulado,
+  `node scripts/_entrada.mjs <url>`): shaders compilados ao entrar 36 → 1.
 
 ## Próximas etapas, em ordem
 1. **Espaços internos do lazer** (gourmet, salão, academia, coworking, sauna, lounge, brinquedoteca): no 3D
@@ -50,6 +66,10 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
 
 ## Como medir
 - `node scripts/_peso.mjs <url>`: bytes da primeira visita e tempo para entrar no apartamento.
+- `node scripts/_entrada.mjs <url>` (`Q=alto`, `ESPERA=ms` na ficha antes de entrar): shaders compilados ao
+  entrar, maior quadro e tempo até estar dentro com os móveis. `scripts/_diag-shaders.mjs` diz quais
+  shaders foram compilados e por quê; `scripts/_diag-lista.mjs` lista os da cena;
+  `scripts/_noite-interior.mjs <url> <png>` captura o living da 1301 à noite (luminárias acesas).
 - `node scripts/_perfil.mjs <url>`: uso de CPU no carregamento, triângulos por quadro e por grupo (celular emulado).
 - `node scripts/_comparar.mjs <url> <prefixo>`: capturas da 1301 sempre nos mesmos nove ângulos.
 - `node scripts/_lazer.mjs <url> <prefixo> [celular]`: piscina, quadra e playground de dia e de noite.
