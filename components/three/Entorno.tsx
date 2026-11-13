@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { mergeGeometries, mergeVertices } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { toquePrincipal } from "@/lib/controles";
 import { memo, tela, textura } from "@/lib/procedural/canvas";
-import { CALCADA, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie } from "@/lib/procedural/entorno";
+import { CALCADA, caminhoParque, gerador, gerarEntorno, type Entorno as DadosEntorno, type Especie } from "@/lib/procedural/entorno";
 
 /** Fachadas: brancos, areias, cinzas e um terracota (cores comuns no bairro). */
 const PALETA = ["#e3dfd6", "#d9cbb1", "#bfbfba", "#cbb89a", "#a29d94", "#b07862", "#8e8a83", "#d2d0c8"];
@@ -74,6 +74,24 @@ function texturaChao(e: DadosEntorno): THREE.CanvasTexture {
         g.lineTo(px(x), px(q.z1 - 13));
         g.stroke();
       }
+    } else if (q.uso === "parque") {
+      // parque linear: gramado, caminho sinuoso de saibro e ciclovia vermelha na borda da frente
+      ret(q.x0, q.z0, q.x1, q.z1, "#4f7a36");
+      manchas(90, ["#5d8a42", "#46702f", "#6e8f4c"], x0, z0, w, h, 10);
+      g.strokeStyle = "#cdbf9f";
+      g.lineWidth = 2.6 * k;
+      g.beginPath();
+      for (let x = q.x0; x <= q.x1; x += 2) (x === q.x0 ? g.moveTo.bind(g) : g.lineTo.bind(g))(px(x), px(caminhoParque(q, x)));
+      g.stroke();
+      ret(q.x0, q.z0 + 0.6, q.x1, q.z0 + 3.0, "#94493a");
+      g.strokeStyle = "rgba(240,236,228,0.8)";
+      g.lineWidth = Math.max(1, 0.12 * k);
+      g.setLineDash([2.5 * k, 2.5 * k]);
+      g.beginPath();
+      g.moveTo(px(q.x0), px(q.z0 + 1.8));
+      g.lineTo(px(q.x1), px(q.z0 + 1.8));
+      g.stroke();
+      g.setLineDash([]);
     } else if (q.uso === "praca") {
       ret(q.x0, q.z0, q.x1, q.z1, "#55803a");
       manchas(60, ["#6d9a4c", "#527a37", "#7a9a52"], x0, z0, w, h, 10);

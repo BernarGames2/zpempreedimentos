@@ -8,7 +8,7 @@
  */
 import { P } from "./predio";
 
-export type Uso = "liwo" | "casas" | "vertical" | "vazio" | "praca" | "comercial";
+export type Uso = "liwo" | "casas" | "vertical" | "vazio" | "praca" | "comercial" | "parque";
 export type Especie = "copa" | "ipe" | "flamboyant" | "palmeira" | "cone" | "cerrado";
 
 export interface Quadra { x0: number; x1: number; z0: number; z1: number; uso: Uso; semente: number }
@@ -49,6 +49,11 @@ export function gerador(semente: number) {
 
 const dentro = (x: number, z: number, r: { x0: number; x1: number; z0: number; z1: number }, m = 0) =>
   x > r.x0 - m && x < r.x1 + m && z > r.z0 - m && z < r.z1 + m;
+
+/** Linha do caminho sinuoso do parque linear (z em função de x), usada nas árvores e na textura do chão. */
+export function caminhoParque(q: { x0: number; x1: number; z0: number; z1: number }, x: number): number {
+  return (q.z0 + q.z1) / 2 + Math.sin(x * 0.045) * (q.z1 - q.z0) * 0.18;
+}
 
 export function gerarEntorno(): Entorno {
   const r = gerador(1855); // número do Liwo na rua João Severiano Rodrigues da Cunha
@@ -93,7 +98,9 @@ export function gerarEntorno(): Entorno {
       if (d > ALCANCE + 60) continue;
       let uso: Uso;
       if (dentro(0, 0, q)) uso = "liwo";
-      else if (dentro(4, BASE_Z + 30, q)) uso = "praca"; // em frente ao Liwo: a vista da rua fica aberta
+      // Parque Sul Karaíba: parque linear com árvores adultas que "abraça as torres" (Maxi / Udicult, 2025).
+      // A posição exata não é pública: fica em frente ao Liwo, ao longo da rua, o que mantém a vista aberta.
+      else if (q.z0 < BASE_Z + 30 && q.z1 > BASE_Z + 30 && Math.abs(cx - 4) < PASSO_X * 1.6) uso = "parque";
       else {
         const t = r();
         const longe = d > 520;
@@ -124,22 +131,32 @@ export function gerarEntorno(): Entorno {
     const W = q.x1 - q.x0;
     const D = q.z1 - q.z0;
     if (q.uso === "casas") {
-      // duas fileiras de lotes de 12 m voltados para as ruas paralelas a x
-      const n = Math.floor(W / 12);
-      const sobra = (W - n * 12) / 2;
+      // duas fileiras de lotes voltados para as ruas paralelas a x. Perto do Liwo é o Karaíba de alto padrão
+      // (sobrados em lotes de ~20 m, muitos com piscina, e condomínios fechados com muro); mais longe, lotes de 12 m
+      const alto = Math.hypot((q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2) < 430;
+      const loteL = alto ? 20 : 12;
+      const n = Math.floor(W / loteL);
+      const sobra = (W - n * loteL) / 2;
+      if (alto && rr() < 0.4) {
+        // condomínio horizontal fechado: muro claro em volta da quadra
+        const [mx, mz] = [(q.x0 + q.x1) / 2, (q.z0 + q.z1) / 2];
+        predios.push({ x: mx, z: q.z0 + 0.15, larg: W, prof: 0.3, alt: 2.8, giro: 0, cor: 7 }, { x: mx, z: q.z1 - 0.15, larg: W, prof: 0.3, alt: 2.8, giro: 0, cor: 7 });
+        predios.push({ x: q.x0 + 0.15, z: mz, larg: 0.3, prof: D, alt: 2.8, giro: 0, cor: 7 }, { x: q.x1 - 0.15, z: mz, larg: 0.3, prof: D, alt: 2.8, giro: 0, cor: 7 });
+      }
       for (const lado of [0, 1] as const) {
         for (let i = 0; i < n; i++) {
           if (rr() < 0.09) continue; // lote vago
-          const cx = q.x0 + sobra + i * 12 + 6;
-          const larg = 8 + rr() * 2;
-          const prof = 10 + rr() * 6;
-          const recuoFrente = 4 + rr() * 2.5;
+          const cx = q.x0 + sobra + i * loteL + loteL / 2;
+          const larg = alto ? 12.5 + rr() * 4 : 8 + rr() * 2;
+          const prof = alto ? 12 + rr() * 5 : 10 + rr() * 6;
+          const recuoFrente = alto ? 5 + rr() * 2 : 4 + rr() * 2.5;
           const cz = lado === 0 ? q.z0 + recuoFrente + prof / 2 : q.z1 - recuoFrente - prof / 2;
-          const doisAndares = rr() < 0.42;
+          if (alto && rr() < 0.45) piscinas.push({ x: cx + (rr() - 0.5) * 4, z: lado === 0 ? cz + prof / 2 + 4.6 : cz - prof / 2 - 4.6, larg: 7 + rr() * 3, prof: 3.4 + rr() * 1.4 });
+          const doisAndares = rr() < (alto ? 0.72 : 0.42);
           const alt = doisAndares ? 6.2 + rr() * 0.8 : 3.1 + rr() * 0.6;
           const tt = rr();
           casas.push({ x: cx + (rr() - 0.5) * 1.2, z: cz, larg, prof, alt, giro: 0, cor: Math.floor(rr() * 6), telhado: tt < 0.38 ? 0 : tt < 0.72 ? 1 : 2, corTelhado: Math.floor(rr() * 3) });
-          if (rr() < 0.3) arvore(cx + (rr() < 0.5 ? -4.6 : 4.6), lado === 0 ? q.z0 + 2.2 : q.z1 - 2.2, rr() < 0.4 ? "palmeira" : "copa", 0.7 + rr() * 0.35, rr);
+          if (rr() < (alto ? 0.55 : 0.3)) arvore(cx + (rr() < 0.5 ? -loteL * 0.38 : loteL * 0.38), lado === 0 ? q.z0 + 2.2 : q.z1 - 2.2, rr() < 0.4 ? "palmeira" : "copa", 0.7 + rr() * 0.35, rr);
           if (rr() < 0.14) arvore(cx + (rr() - 0.5) * 6, (q.z0 + q.z1) / 2 + (rr() - 0.5) * 8, "copa", 0.8 + rr() * 0.4, rr);
         }
       }
@@ -174,6 +191,16 @@ export function gerarEntorno(): Entorno {
         predios.push({ x: cx, z: cz, larg: Math.min(larg, W / n - 6), prof, alt: 6 + rr() * 7, giro: 0, cor: 6 + Math.floor(rr() * 2) });
       }
       for (let i = 0; i < 6; i++) arvore(q.x0 + 4 + rr() * (W - 8), q.z1 - 4, "copa", 0.7 + rr() * 0.3, rr);
+    } else if (q.uso === "parque") {
+      // árvores adultas e densas dos dois lados de um caminho sinuoso; a ciclovia corre na borda da frente
+      const n = Math.floor((W * D) / 60);
+      for (let i = 0; i < n; i++) {
+        const x = q.x0 + 2 + rr() * (W - 4);
+        const z = q.z0 + 5 + rr() * (D - 7);
+        if (Math.abs(z - caminhoParque(q, x)) < 3.2) continue;
+        const t = rr();
+        arvore(x, z, t < 0.6 ? "copa" : t < 0.8 ? "ipe" : t < 0.9 ? "flamboyant" : "cerrado", 1.05 + rr() * 0.6, rr);
+      }
     } else if (q.uso === "praca") {
       const n = 18 + Math.floor(rr() * 14);
       for (let i = 0; i < n; i++) {

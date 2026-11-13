@@ -30,6 +30,12 @@ Estado em 13/11/2026 (branch `maxi-liwo`; a versão publicada antes desta etapa 
   de longe, sombra difusa sob cada copa pintada no chão, árvores de calçada a cada ~13 m (modelo detalhado
   só até 90 m no computador e 120 m no nível alto, para não pesar), arbustos nos jardins da frente das casas
   até 320 m do prédio e névoa do dia começando a 400 m (antes 200 m, desbotava a cidade).
+- Entorno com o que é público do bairro: o Liwo fica no Parque Sul Karaíba, microbairro da Zona Sul com
+  parque linear de árvores adultas, ciclovias e jardins entre as vias (Udicult, 04/06/2025; página do Liwo
+  em construtoramaxi.com.br). No 3D o parque linear fica em frente ao Liwo, com caminho e ciclovia (a posição
+  exata não é pública); perto do prédio as casas são sobrados de alto padrão em lotes de 20 m, muitas com
+  piscina, e parte das quadras é condomínio fechado com muro. Coordenadas do mapa oficial: -18.950311,
+  -48.256407. O norte do terreno continua sem confirmação (sem acesso ao mapa daqui).
 - Desempenho: HDRI noturno removido (−1,5 MB na primeira visita), árvores detalhadas só perto da câmera.
 
 ## Próximas etapas, em ordem

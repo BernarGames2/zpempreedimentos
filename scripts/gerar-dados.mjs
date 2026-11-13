@@ -267,8 +267,9 @@ const dados = {
   endereco: "Rua João Severiano Rodrigues da Cunha, 1855 – Parque Sul Karaíba, Uberlândia – MG",
   whatsapp: "(34) 99684-4424",
   orientacaoNorteGraus: 90,
-  latitude: -18.957,
-  longitude: -48.287,
+  // ponto do mapa da página oficial do Liwo (construtoramaxi.com.br/projetos/liwo, link "abrir no google maps")
+  latitude: -18.950311,
+  longitude: -48.256407,
   modo: "venda",
   andares: COBERTURA - PRIMEIRO + 1,
   primeiroAndar: PRIMEIRO,
